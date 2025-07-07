@@ -26,9 +26,11 @@ from helper_functions import (
     hospital_admissions,
     ever_matching_event_clinical_ctv3_before,
     first_matching_event_clinical_ctv3_before,
+    last_matching_event_apc_before,
     first_matching_event_clinical_snomed_before,
     last_matching_event_clinical_snomed_before,
     last_matching_event_clinical_ctv3_before,
+    last_matching_med_dmd_before,
     filter_codes_by_category
 )
 
@@ -218,30 +220,8 @@ def add_comorbidities(dataset, index_date):
     add comorbidities. using index_date as a parameter
     means we can derive as binary variables rather than dates
     '''
-'''
-    dataset.copd = first_matching_event_clinical_ctv3_before(
-        copd_ctv3, index_date
-        ).exists_for_patient()
-
-    dataset.ckd = first_matching_event_clinical_snomed_before(
-        ckd_snomed, index_date
-        ).exists_for_patient()
-
-    dataset.diabetes = first_matching_event_clinical_snomed_before(
-        diabetes_snomed, index_date
-        ).exists_for_patient()
-
-    #using latest date for obesity, hypertension, and total cholesterol
-    dataset.obesity = last_matching_event_clinical_snomed_before(
-        bmi_obesity_snomed, index_date
-        ).exists_for_patient()
-
-    dataset.hypertension = last_matching_event_clinical_snomed_before(
-        hypertension_snomed, index_date
-        ).exists_for_patient()
-'''
-### Diabetes 
-    cov_bin_diabetes = (
+    ### Diabetes 
+    dataset.cov_bin_diabetes = (
         (last_matching_event_clinical_snomed_before(
             diabetes_snomed, index_date
         ).exists_for_patient()) |
@@ -253,7 +233,7 @@ def add_comorbidities(dataset, index_date):
         ).exists_for_patient())
     )
  ### Obesity 
-    cov_bin_obesity = (
+    dataset.cov_bin_obesity = (
         (last_matching_event_clinical_snomed_before(
             bmi_obesity_snomed, index_date
         ).exists_for_patient()) |
@@ -262,7 +242,7 @@ def add_comorbidities(dataset, index_date):
         ).exists_for_patient())
     )
 ### COPD
-    cov_bin_copd = (
+    dataset.cov_bin_copd = (
         (last_matching_event_clinical_ctv3_before(
             copd_ctv3, index_date
         ).exists_for_patient()) |
@@ -271,7 +251,7 @@ def add_comorbidities(dataset, index_date):
         ).exists_for_patient())
     )
 ### Hypertension
-    cov_bin_hypertension = (
+    dataset.cov_bin_hypertension = (
         (last_matching_event_clinical_snomed_before(
             hypertension_snomed, index_date
         ).exists_for_patient()) |
@@ -283,17 +263,17 @@ def add_comorbidities(dataset, index_date):
         ).exists_for_patient())
     )
  ### Atrial fibrillation
- '''
+    '''
  codelist to be defined 
- '''
+    '''
 
 ### Ischeamic heart disease
- '''
+    '''
  codelist to be defined 
- '''
+    '''
 
  ### Chronic kidney disease (CKD)
-    cov_bin_ckd = (
+    dataset.cov_bin_ckd = (
         (last_matching_event_clinical_snomed_before(
             ckd_snomed, index_date
         ).exists_for_patient()) |
@@ -301,6 +281,28 @@ def add_comorbidities(dataset, index_date):
             ckd_icd10, index_date
         ).exists_for_patient())
     )
+
+
+    # dataset.copd = first_matching_event_clinical_ctv3_before(
+    #     copd_ctv3, index_date
+    #     ).exists_for_patient()
+
+    # dataset.ckd = first_matching_event_clinical_snomed_before(
+    #     ckd_snomed, index_date
+    #     ).exists_for_patient()
+
+    # dataset.diabetes = first_matching_event_clinical_snomed_before(
+    #     diabetes_snomed, index_date
+    #     ).exists_for_patient()
+
+    # #using latest date for obesity, hypertension, and total cholesterol
+    # dataset.obesity = last_matching_event_clinical_snomed_before(
+    #     bmi_obesity_snomed, index_date
+    #     ).exists_for_patient()
+
+    # dataset.hypertension = last_matching_event_clinical_snomed_before(
+    #     hypertension_snomed, index_date
+    #     ).exists_for_patient()
 
     return dataset
 
