@@ -218,7 +218,7 @@ def add_comorbidities(dataset, index_date):
     add comorbidities. using index_date as a parameter
     means we can derive as binary variables rather than dates
     '''
-
+'''
     dataset.copd = first_matching_event_clinical_ctv3_before(
         copd_ctv3, index_date
         ).exists_for_patient()
@@ -239,6 +239,68 @@ def add_comorbidities(dataset, index_date):
     dataset.hypertension = last_matching_event_clinical_snomed_before(
         hypertension_snomed, index_date
         ).exists_for_patient()
+'''
+### Diabetes 
+    cov_bin_diabetes = (
+        (last_matching_event_clinical_snomed_before(
+            diabetes_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_med_dmd_before(
+            diabetes_drugs_dmd, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            diabetes_icd10, index_date
+        ).exists_for_patient())
+    )
+ ### Obesity 
+    cov_bin_obesity = (
+        (last_matching_event_clinical_snomed_before(
+            bmi_obesity_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            bmi_obesity_icd10, index_date
+        ).exists_for_patient())
+    )
+### COPD
+    cov_bin_copd = (
+        (last_matching_event_clinical_ctv3_before(
+            copd_ctv3, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            copd_icd10, index_date
+        ).exists_for_patient())
+    )
+### Hypertension
+    cov_bin_hypertension = (
+        (last_matching_event_clinical_snomed_before(
+            hypertension_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_med_dmd_before(
+            hypertension_drugs_dmd, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            hypertension_icd10, index_date
+        ).exists_for_patient())
+    )
+ ### Atrial fibrillation
+ '''
+ codelist to be defined 
+ '''
+
+### Ischeamic heart disease
+ '''
+ codelist to be defined 
+ '''
+
+ ### Chronic kidney disease (CKD)
+    cov_bin_ckd = (
+        (last_matching_event_clinical_snomed_before(
+            ckd_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            ckd_icd10, index_date
+        ).exists_for_patient())
+    )
 
     return dataset
 
