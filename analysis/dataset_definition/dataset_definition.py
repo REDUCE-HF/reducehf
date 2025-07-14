@@ -44,9 +44,9 @@ dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
 #exclude historic registrations that ended before project_index_date
 
 has_registration = practice_registrations.where(
-    practice_registrations.start_date <= end_date - years(1)
+        practice_registrations.start_date.is_on_or_before(end_date - years(1))
     ).except_where(
-    practice_registrations.end_date < project_index_date
+        practice_registrations.end_date.is_on_or_before(project_index_date)
     ).exists_for_patient()
 
 dataset.define_population(
