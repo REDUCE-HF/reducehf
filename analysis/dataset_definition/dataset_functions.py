@@ -51,6 +51,17 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
+    
+
+    ethnicity = (
+        clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_snomed))
+        .where(clinical_events.date.is_on_or_before(project_index_date))
+        .sort_by(clinical_events.date)
+        .last_for_patient()
+        .snomedct_code
+    )
+
+    dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
 
     #add practice details
     # most recent practice registration
@@ -83,21 +94,6 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     dataset.imd10 = location.imd_decile
 
     dataset.rural_urban = location.rural_urban_classification
-
-    #was address at patient index date a care home    
-    dataset.carehome_at_start = (
-        location.care_home_is_potential_match |
-        location.care_home_requires_nursing |
-        location.care_home_does_not_require_nursing
-    )
-
-    #was address at deregistration or study end date a care home
-    location = addresses.for_patient_on(maximum_of(practice.end_date, end_date))
-    dataset.carehome_at_end = (
-        location.care_home_is_potential_match |
-        location.care_home_requires_nursing |
-        location.care_home_does_not_require_nursing
-    )
 
     # date of death
     dataset.death_date = minimum_of(patients.date_of_death, ons_deaths.date)
@@ -161,6 +157,35 @@ def add_time_dependent_core(dataset, index_date):
     dataset.last_cholesterol_value = last_matching_event_clinical_snomed_before(
         cholesterol_snomed, index_date
         ).numeric_value
+
+    return dataset
+
+
+def add_underserved(dataset, index_date):
+
+    practice = practice_registrations.sort_by(
+        practice_registrations.start_date,
+        practice_registrations.end_date,
+        practice_registrations.practice_pseudo_id).last_for_patient()
+    
+    #Care home status
+
+    location = addresses.for_patient_on(dataset.patient_index)
+    
+    #was address at patient index date a care home
+    dataset.carehome_at_start = (
+        location.care_home_is_potential_match |
+        location.care_home_requires_nursing |
+        location.care_home_does_not_require_nursing
+    )
+
+    #was address at deregistration or study end date a care home
+    location = addresses.for_patient_on(maximum_of(practice.end_date, end_date))
+    dataset.carehome_at_end = (
+        location.care_home_is_potential_match |
+        location.care_home_requires_nursing |
+        location.care_home_does_not_require_nursing
+    )
 
     return dataset
 
