@@ -263,14 +263,24 @@ def add_comorbidities(dataset, index_date):
         ).exists_for_patient())
     )
  ### Atrial fibrillation
-    '''
- codelist to be defined 
-    '''
+    dataset.cov_bin_af = (
+        (last_matching_event_clinical_snomed_before(
+           af_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+           af_icd10, index_date
+        ).exists_for_patient())
+    )
 
 ### Ischeamic heart disease
-    '''
- codelist to be defined 
-    '''
+    dataset.cov_bin_ihd = (
+        (last_matching_event_clinical_snomed_before(
+           ihd_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+           ihd_icd10, index_date
+        ).exists_for_patient())
+    )
 
  ### Chronic kidney disease (CKD)
     dataset.cov_bin_ckd = (

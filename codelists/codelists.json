@@ -203,6 +203,30 @@
       "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/hf_cod/70b49c5d/",
       "downloaded_at": "2025-06-28 16:44:36.635168Z",
       "sha": "c682301df15a68467f95a94abeb93e572b65e06d"
+    },
+    "bristol-atrial-fibrillation-snomed.csv": {
+      "id": "bristol/atrial-fibrillation-snomed/6be6c30f",
+      "url": "https://www.opencodelists.org/codelist/bristol/atrial-fibrillation-snomed/6be6c30f/",
+      "downloaded_at": "2025-07-13 13:31:43.322545Z",
+      "sha": "599ece2ce3f97cb504d4e023151a1ba0edbd3140"
+    },
+    "bristol-atrial-fibrillation-icd10.csv": {
+      "id": "bristol/atrial-fibrillation-icd10/52d74fda",
+      "url": "https://www.opencodelists.org/codelist/bristol/atrial-fibrillation-icd10/52d74fda/",
+      "downloaded_at": "2025-07-13 13:31:43.468252Z",
+      "sha": "deda1f4b7573e0590e97e996671f8acc0debca75"
+    },
+    "bristol-ischaemic-heart-disease-icd10.csv": {
+      "id": "bristol/ischaemic-heart-disease-icd10/37151caf",
+      "url": "https://www.opencodelists.org/codelist/bristol/ischaemic-heart-disease-icd10/37151caf/",
+      "downloaded_at": "2025-07-13 13:31:43.604806Z",
+      "sha": "b6b2254b0221f73784b1c0266313d5bd9da5d907"
+    },
+    "bristol-ischaemic-heart-disease-snomed.csv": {
+      "id": "bristol/ischaemic-heart-disease-snomed/50248fe4",
+      "url": "https://www.opencodelists.org/codelist/bristol/ischaemic-heart-disease-snomed/50248fe4/",
+      "downloaded_at": "2025-07-13 13:31:43.772250Z",
+      "sha": "7422177fe7f7da97e83c887d11bc607e10b5062c"
     }
   }
 }

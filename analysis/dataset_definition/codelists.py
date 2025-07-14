@@ -192,6 +192,28 @@ copd_icd10 = codelist_from_csv(
     column="code"
 )
 
+#ischaemic heart diseae (ihd)
+ihd_snomed = codelist_from_csv(
+    "codelists/bristol-ischaemic-heart-disease-snomed.csv",
+    column="code"
+)
+
+ihd_icd10 = codelist_from_csv(
+    "codelists/bristol-ischaemic-heart-disease-icd10.csv",
+    column="code"
+)
+
+#Atrial fibrillation (af)
+af_snomed = codelist_from_csv(
+    "codelists/bristol-atrial-fibrillation-snomed.csv",
+    column="code"
+)
+
+af_icd10 = codelist_from_csv (
+    "codelists/bristol-atrial-fibrillation-icd10.csv",
+    column ="code"
+)
+
 # HF (for script development)
 
 hf_snomed = codelist_from_csv(
