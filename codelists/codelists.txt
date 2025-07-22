@@ -23,6 +23,8 @@ primis-covid19-vacc-uptake/smhres/v1/
 user/RochelleKnight/stroke_isch_icd10/278d734e
 user/elsie_horne/bmi_obesity_snomed/0764e9b4
 user/elsie_horne/bmi_obesity_icd10/6e55767e
+opensafely/weight-snomed/5459abc6/
+opensafely/height-snomed/3b4a3891/
 user/elsie_horne/ckd_snomed/25d9dcd5
 user/elsie_horne/ckd_icd10/0cca69a0
 user/elsie_horne/diabetes_snomed/43881c67

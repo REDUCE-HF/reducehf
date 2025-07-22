@@ -31,6 +31,8 @@ from helper_functions import (
     last_matching_event_clinical_snomed_before,
     last_matching_event_clinical_ctv3_before,
     last_matching_med_dmd_before,
+    last_matching_event_clinical_snomed_between,
+    last_matching_event_apc_between,
     filter_codes_by_category
 )
 
@@ -232,15 +234,62 @@ def add_comorbidities(dataset, index_date):
             diabetes_icd10, index_date
         ).exists_for_patient())
     )
+ 
  ### Obesity 
-    dataset.cov_bin_obesity = (
-        (last_matching_event_clinical_snomed_before(
-            bmi_obesity_snomed, index_date
-        ).exists_for_patient()) |
-        (last_matching_event_apc_before(
-            bmi_obesity_icd10, index_date
-        ).exists_for_patient())
+
+    dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
+    bmi_obesity_snomed, index_date - days(365), index_date - days(1)
+).date
+    
+    dataset.obesity_sus_date = last_matching_event_apc_between(
+    bmi_obesity_icd10, index_date - days(365), index_date - days(1)
+         ).admission_date
+    
+    dataset.bmi_obesity_date = (
+    clinical_events
+    .where(clinical_events.snomedct_code.is_in(bmi_primis))
+    .where(
+        clinical_events.date.is_on_or_between(index_date - days(365), index_date - days(1))
     )
+    .where(clinical_events.numeric_value >= 30)
+    .sort_by(clinical_events.date)
+    .first_for_patient()
+    .date
+)
+    dataset.first_obesity_date = minimum_of(
+    dataset.obesity_primary_date,
+    dataset.obesity_sus_date,
+    dataset.bmi_obesity_date
+)
+    
+    dataset.obesity_bin = dataset.first_obesity_date.is_on_or_before(index_date)
+
+    # weight 
+    # Do we need to check icd10 codes ? 
+
+    dataset.weight = (
+    clinical_events
+    .where(clinical_events.snomedct_code.is_in(weight_snomed))
+    .where(
+        clinical_events.date.is_on_or_between(index_date - days(365), index_date - days(1))
+    )
+    .sort_by(clinical_events.date)
+    .last_for_patient()
+    .numeric_value
+) 
+    # height
+    # Do we need to check icd10 codes ? 
+    dataset.height = (
+    clinical_events
+    .where(clinical_events.snomedct_code.is_in(height_snomed))
+    .where(clinical_events.date.is_on_or_before(index_date))
+    .sort_by(clinical_events.date)
+    .last_for_patient()
+    .numeric_value
+)   
+
+    
+    
 ### COPD
     dataset.cov_bin_copd = (
         (last_matching_event_clinical_ctv3_before(

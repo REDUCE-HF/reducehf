@@ -22,6 +22,12 @@ bmi_obesity_snomed = codelist_from_csv(
     column="code"
 )
 
+weight_snomed = codelist_from_csv(
+    "codelists/opensafely-weight-snomed.csv", column="code"
+)
+height_snomed = codelist_from_csv(
+    "codelists/opensafely-height-snomed.csv",  column="code"
+)
 bmi_obesity_icd10 = codelist_from_csv(
     "codelists/user-elsie_horne-bmi_obesity_icd10.csv",
     column="code"
