@@ -111,6 +111,21 @@ def last_matching_event_apc_between(codelist, start_date, end_date, where=True):
     query = query.sort_by(apcs.admission_date)
     return query.last_for_patient()
 
+
+def first_matching_event_apc_before(codelist, start_date):
+    
+    query = apcs.where(
+        apcs.primary_diagnosis.is_in(codelist)
+    )
+    
+    
+    query = query.where(
+            apcs.admission_date.is_on_or_before(start_date)
+        )
+    # Sort ascending so the earliest admission comes first
+    query = query.sort_by(apcs.admission_date)
+    return query.first_for_patient()
+
 # filter a codelist based on whether its values included a specified set of allowed values (include)
 def filter_codes_by_category(codelist, include):
     return {k:v for k,v in codelist.items() if v in include}

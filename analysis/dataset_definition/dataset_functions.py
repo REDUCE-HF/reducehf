@@ -33,6 +33,8 @@ from helper_functions import (
     last_matching_med_dmd_before,
     last_matching_event_clinical_snomed_between,
     last_matching_event_apc_between,
+    first_matching_event_apc_before,
+
     filter_codes_by_category
 )
 
@@ -291,14 +293,25 @@ def add_comorbidities(dataset, index_date):
     
     
 ### COPD
-    dataset.cov_bin_copd = (
-        (last_matching_event_clinical_ctv3_before(
+    dataset.copd_bin = (
+        (first_matching_event_clinical_ctv3_before(
             copd_ctv3, index_date
         ).exists_for_patient()) |
-        (last_matching_event_apc_before(
+        (first_matching_event_apc_before(
             copd_icd10, index_date
         ).exists_for_patient())
     )
+    dataset.copd_date_primary = first_matching_event_clinical_ctv3_before(
+    copd_ctv3, index_date
+).date
+    dataset.copd_date_sus      = first_matching_event_apc_before(
+    copd_icd10, index_date
+).admission_date
+# Combine to earliest date
+    dataset.first_copd_date    = minimum_of(
+    dataset.copd_date_primary,
+    dataset.copd_date_sus
+)
 ### Hypertension
     dataset.cov_bin_hypertension = (
         (last_matching_event_clinical_snomed_before(
