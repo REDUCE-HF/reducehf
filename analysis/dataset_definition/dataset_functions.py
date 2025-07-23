@@ -63,17 +63,15 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
     dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
 
-    #add practice details
-    # most recent practice registration
-
-    practice = practice_registrations.sort_by(
-        practice_registrations.start_date,
-        practice_registrations.end_date,
-        practice_registrations.practice_pseudo_id).last_for_patient()
-
-    dataset.practice_id = practice.practice_pseudo_id
-    dataset.practice_registration_date = practice.start_date
-    dataset.practice_deregistration_date = practice.end_date
+    #earliest practice registration
+    first_practice = (
+        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        .sort_by(
+            practice_registrations.start_date,
+            practice_registrations.end_date,
+            practice_registrations.practice_pseudo_id)
+        .first_for_patient()
+    )
 
     #patient index date latest of:
     # - project start
@@ -81,18 +79,38 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     # - 45th birthday
 
     dataset.patient_index = maximum_of(project_index_date,
-        dataset.practice_registration_date - years(1),
+        first_practice.start_date - years(1),
         dataset.dob + years(45))
 
-    #add area level details
+    # practice registration on patient_index_date
+    practice = (
+        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index))
+        .sort_by(practice_registrations.start_date)
+        .last_for_patient()
+    )
 
+    # add practice ID and registration date at patient_index
+    dataset.practice_id = practice.practice_pseudo_id
+    dataset.practice_registration_date = practice.start_date
+
+    #add area level details at patient_index
     dataset.practice_stp = practice.practice_stp
     dataset.region = practice.practice_nuts1_region_name
 
+    # add practice deregistration / end of follow-up in tpp
+    last_practice = (
+        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        .sort_by(
+            practice_registrations.start_date,
+            practice_registrations.end_date,
+            practice_registrations.practice_pseudo_id)
+        .last_for_patient()
+    )
+    dataset.practice_deregistration_date = last_practice.end_date
+
+    #add location details at patient_index
     location = addresses.for_patient_on(dataset.patient_index)
-
     dataset.imd10 = location.imd_decile
-
     dataset.rural_urban = location.rural_urban_classification
 
     # date of death
