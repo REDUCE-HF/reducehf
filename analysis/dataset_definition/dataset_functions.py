@@ -79,7 +79,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     # - 45th birthday
 
     dataset.patient_index = maximum_of(project_index_date,
-        first_practice.start_date - years(1),
+        first_practice.start_date + years(1),
         dataset.dob + years(45))
 
     # practice registration on patient_index_date
@@ -116,6 +116,8 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     # date of death
     dataset.death_date = minimum_of(patients.date_of_death, ons_deaths.date)
 
+    #Household size
+    dataset.household_size = household_memberships_2020.household_size
 
     return dataset
 
@@ -153,9 +155,6 @@ def add_time_dependent_core(dataset, index_date):
         otherwise="M"
     )
 
-    #Household size
-    #NOTE this doesnt depend on index date -- should be in core function
-    dataset.household_size = household_memberships_2020.household_size
     
     # BMI
     dataset.bmi_date = last_matching_event_clinical_snomed_before(
