@@ -57,18 +57,27 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
+    
 
-    #add practice details
-    # most recent practice registration
+    ethnicity = (
+        clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_snomed))
+        .where(clinical_events.date.is_on_or_before(project_index_date))
+        .sort_by(clinical_events.date)
+        .last_for_patient()
+        .snomedct_code
+    )
 
-    practice = practice_registrations.sort_by(
-        practice_registrations.start_date,
-        practice_registrations.end_date,
-        practice_registrations.practice_pseudo_id).last_for_patient()
+    dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
 
-    dataset.practice_id = practice.practice_pseudo_id
-    dataset.practice_registration_date = practice.start_date
-    dataset.practice_deregistration_date = practice.end_date
+    #earliest practice registration
+    first_practice = (
+        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        .sort_by(
+            practice_registrations.start_date,
+            practice_registrations.end_date,
+            practice_registrations.practice_pseudo_id)
+        .first_for_patient()
+    )
 
     #patient index date latest of:
     # - project start
@@ -76,38 +85,45 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     # - 45th birthday
 
     dataset.patient_index = maximum_of(project_index_date,
-        dataset.practice_registration_date - years(1),
+        first_practice.start_date + years(1),
         dataset.dob + years(45))
 
-    #add area level details
+    # practice registration on patient_index_date
+    practice = (
+        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index))
+        .sort_by(practice_registrations.start_date)
+        .last_for_patient()
+    )
 
+    # add practice ID and registration date at patient_index
+    dataset.practice_id = practice.practice_pseudo_id
+    dataset.practice_registration_date = practice.start_date
+
+    #add area level details at patient_index
     dataset.practice_stp = practice.practice_stp
     dataset.region = practice.practice_nuts1_region_name
 
+    # add practice deregistration / end of follow-up in tpp
+    last_practice = (
+        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        .sort_by(
+            practice_registrations.start_date,
+            practice_registrations.end_date,
+            practice_registrations.practice_pseudo_id)
+        .last_for_patient()
+    )
+    dataset.practice_deregistration_date = last_practice.end_date
+
+    #add location details at patient_index
     location = addresses.for_patient_on(dataset.patient_index)
-
     dataset.imd10 = location.imd_decile
-
     dataset.rural_urban = location.rural_urban_classification
-
-    #was address at patient index date a care home    
-    dataset.carehome_at_start = (
-        location.care_home_is_potential_match |
-        location.care_home_requires_nursing |
-        location.care_home_does_not_require_nursing
-    )
-
-    #was address at deregistration or study end date a care home
-    location = addresses.for_patient_on(maximum_of(practice.end_date, end_date))
-    dataset.carehome_at_end = (
-        location.care_home_is_potential_match |
-        location.care_home_requires_nursing |
-        location.care_home_does_not_require_nursing
-    )
 
     # date of death
     dataset.death_date = minimum_of(patients.date_of_death, ons_deaths.date)
 
+    #Household size
+    dataset.household_size = household_memberships_2020.household_size
 
     return dataset
 
@@ -145,9 +161,6 @@ def add_time_dependent_core(dataset, index_date):
         otherwise="M"
     )
 
-    #Household size
-    #NOTE this doesnt depend on index date -- should be in core function
-    dataset.household_size = household_memberships_2020.household_size
     
     # BMI
     dataset.bmi_date = last_matching_event_clinical_snomed_before(
@@ -167,6 +180,35 @@ def add_time_dependent_core(dataset, index_date):
     dataset.last_cholesterol_value = last_matching_event_clinical_snomed_before(
         cholesterol_snomed, index_date
         ).numeric_value
+
+    return dataset
+
+
+def add_underserved(dataset, index_date):
+
+    practice = practice_registrations.sort_by(
+        practice_registrations.start_date,
+        practice_registrations.end_date,
+        practice_registrations.practice_pseudo_id).last_for_patient()
+    
+    #Care home status
+
+    location = addresses.for_patient_on(dataset.patient_index)
+    
+    #was address at patient index date a care home
+    dataset.carehome_at_start = (
+        location.care_home_is_potential_match |
+        location.care_home_requires_nursing |
+        location.care_home_does_not_require_nursing
+    )
+
+    #was address at deregistration or study end date a care home
+    location = addresses.for_patient_on(maximum_of(practice.end_date, end_date))
+    dataset.carehome_at_end = (
+        location.care_home_is_potential_match |
+        location.care_home_requires_nursing |
+        location.care_home_does_not_require_nursing
+    )
 
     return dataset
 
