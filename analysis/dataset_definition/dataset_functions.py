@@ -18,6 +18,7 @@ from ehrql.tables.tpp import (
     apcs,
     household_memberships_2020,
     ons_deaths,
+    ethnicity_from_sus,
 )
 
 from helper_functions import (
@@ -61,8 +62,32 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
         .last_for_patient()
         .snomedct_code
     )
-
+    
     dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
+
+    sus_ethnicity = ethnicity_from_sus.code
+
+    sus_ethnicity_6 = case(
+        when(sus_ethnicity == 'A').then(1),#white
+        when(sus_ethnicity == 'B').then(1),#white
+        when(sus_ethnicity == 'C').then(1),#white
+        when(sus_ethnicity == 'D').then(2),#mixed
+        when(sus_ethnicity == 'E').then(2),#mixed
+        when(sus_ethnicity == 'F').then(2),#mixed
+        when(sus_ethnicity == 'G').then(2),#mixed
+        when(sus_ethnicity == 'H').then(3),#south asian
+        when(sus_ethnicity == 'J').then(3),#south asian
+        when(sus_ethnicity == 'K').then(3),#south asian
+        when(sus_ethnicity == 'L').then(3),#south asian
+        when(sus_ethnicity == 'M').then(4),#black
+        when(sus_ethnicity == 'N').then(4),#black
+        when(sus_ethnicity == 'P').then(4),#black
+        when(sus_ethnicity == 'R').then(5),#other
+        when(sus_ethnicity == 'S').then(5),#othe
+        otherwise=6 #unknown
+    )
+    
+    dataset.sus_ethnicity = sus_ethnicity_6
 
     #earliest practice registration
     first_practice = (
