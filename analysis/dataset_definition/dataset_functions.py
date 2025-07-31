@@ -184,7 +184,7 @@ def add_time_dependent_core(dataset, index_date):
     
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
-        bmi_primis, index_date
+        bmi_cod, index_date
         )
     dataset.bim_date = bmi.date
     dataset.bmi_value = bmi.numeric_value

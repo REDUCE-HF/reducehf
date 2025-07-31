@@ -1,4 +1,3 @@
-# Setup
 from ehrql import codelist_from_csv
 
 
@@ -31,6 +30,12 @@ bmi_primis = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-bmi.csv",
     column="code"
 )
+
+bmi_cod = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
+    column="code"
+)
+
 
 # Total Cholesterol
 cholesterol_snomed = codelist_from_csv(
