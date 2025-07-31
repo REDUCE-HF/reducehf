@@ -78,6 +78,14 @@ def last_matching_event_clinical_snomed_before(codelist, start_date, where=True)
         .last_for_patient()
     )
 
+def first_matching_med_dmd_before(codelist, start_date, where=True):
+    return(
+        medications.where(where)
+        .where(medications.dmd_code.is_in(codelist))
+        .where(medications.date.is_before(start_date))
+        .sort_by(medications.date)
+        .first_for_patient()
+    )
 def last_matching_med_dmd_before(codelist, start_date, where=True):
     return(
         medications.where(where)
@@ -94,7 +102,7 @@ def last_matching_event_apc_before(codelist, start_date, only_prim_diagnoses=Fal
             apcs.primary_diagnosis.is_in(codelist)
         )
     else:
-        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
+        query = query.where(apcs.all_diagnoses.is_in(codelist))
     return query.sort_by(apcs.admission_date).last_for_patient()
 
 def last_matching_event_clinical_snomed_between(codelist, start_date, end_date, where=True):
