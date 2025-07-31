@@ -31,6 +31,8 @@ from helper_functions import (
     last_matching_event_clinical_ranges_snomed_before,
     last_matching_event_clinical_snomed_before,
     last_matching_event_clinical_ctv3_before,
+    last_matching_event_apc_before,
+    last_matching_med_dmd_before,
     filter_codes_by_category
 )
 
@@ -375,5 +377,30 @@ def add_referrals(dataset, index_date):
     for XX (WP2) prior to index_date
     *maybe also need start_date?
     '''
+
+    return dataset
+
+def add_quality_assurance(dataset, index_date):
+
+    # Prostate cancer
+    dataset.prostate_cancer = (
+        (last_matching_event_clinical_snomed_before(
+            prostate_cancer_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            prostate_cancer_icd10, index_date
+        ).exists_for_patient())
+    )
+
+    # Pregnancy
+    dataset.pregnancy = last_matching_event_clinical_snomed_before(
+        pregnancy_snomed, index_date
+    ).exists_for_patient()
+
+
+    # COCP or HRT medication
+    dataset.hrtcocp = last_matching_med_dmd_before(
+        cocp_dmd + hrt_dmd, index_date
+    ).exists_for_patient()
 
     return dataset
