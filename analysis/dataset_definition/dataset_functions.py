@@ -27,6 +27,7 @@ from helper_functions import (
     ever_matching_event_clinical_ctv3_before,
     first_matching_event_clinical_ctv3_before,
     first_matching_event_clinical_snomed_before,
+    last_matching_event_clinical_ranges_snomed_before,
     last_matching_event_clinical_snomed_before,
     last_matching_event_clinical_ctv3_before,
     filter_codes_by_category
@@ -157,23 +158,19 @@ def add_time_dependent_core(dataset, index_date):
 
     
     # BMI
-    dataset.bmi_date = last_matching_event_clinical_snomed_before(
+    bmi = last_matching_event_clinical_ranges_snomed_before(
         bmi_primis, index_date
-        ).date
-
-    dataset.bmi_value = last_matching_event_clinical_snomed_before(
-        bmi_primis, index_date
-        ).numeric_value
+        )
+    dataset.bim_date = bmi.date
+    dataset.bmi_value = bmi.numeric_value
 
 
     #Cholesterol
-    dataset.last_cholesterol_date = last_matching_event_clinical_snomed_before(
+    cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
-        ).date
-
-    dataset.last_cholesterol_value = last_matching_event_clinical_snomed_before(
-        cholesterol_snomed, index_date
-        ).numeric_value
+        )
+    dataset.last_cholesterol_date = cholesterol.date
+    dataset.last_cholesterol_value = cholesterol.numeric_value
 
     return dataset
 
@@ -241,12 +238,12 @@ def add_healthservice_use(dataset, index_date):
 
     for time_name, time in time_periods.items():
 
-        #use in time period before index_date
+        #use in time period after index_date
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
 
-        #use in time period after index_date
+        #use in time period before index_date
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))

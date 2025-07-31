@@ -3,6 +3,7 @@ from functools import reduce # for function building, e.g. any_of
 from ehrql.tables.tpp import (
     apcs, 
     clinical_events, 
+    clinical_events_ranges,
     medications, 
     ons_deaths,
     ec
@@ -75,6 +76,15 @@ def last_matching_event_clinical_snomed_before(codelist, start_date, where=True)
         .where(clinical_events.snomedct_code.is_in(codelist))
         .where(clinical_events.date.is_before(start_date))
         .sort_by(clinical_events.date)
+        .last_for_patient()
+    )
+
+def last_matching_event_clinical_ranges_snomed_before(codelist, start_date, where=True):
+    return(
+        clinical_events_ranges.where(where)
+        .where(clinical_events_ranges.snomedct_code.is_in(codelist))
+        .where(clinical_events_ranges.date.is_before(start_date))
+        .sort_by(clinical_events_ranges.date)
         .last_for_patient()
     )
 
