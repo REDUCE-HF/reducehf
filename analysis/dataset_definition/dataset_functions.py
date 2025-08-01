@@ -310,7 +310,7 @@ def add_comorbidities(dataset, index_date):
     return dataset
 
 
-def add_tests(dataset, index_date):
+def add_tests(dataset):
     # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
 
     first_np = first_matching_event_clinical_snomed_after(NP_snomed,'2017-01-01')
