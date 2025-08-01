@@ -10,11 +10,16 @@ ethnicity_snomed = codelist_from_csv(
 )
 
 # Smoking
-smoking_clear = codelist_from_csv(
-    "codelists/opensafely-smoking-clear.csv",
-    column="CTV3Code",
-    category_column="Category"
+smoking_current = codelist_from_csv(
+    "codelists/reducehf-current-smoker.csv",
+    column="code"
 )
+smoking_former = codelist_from_csv(
+    "codelists/reducehf-former-smoker.csv",
+    column="code"
+)
+
+smoking_ever = smoking_current + smoking_former
 
 # BMI
 bmi_obesity_snomed = codelist_from_csv(
@@ -54,6 +59,12 @@ learndis_primis = codelist_from_csv(
 bmi_stage_primis = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-bmi_stage.csv",
     column="code"
+)
+
+## BMI numeric value
+bmi_numeric = codelist_from_csv(
+    "codelists/reducehf-body-mass-index-numeric-value.csv",
+    column = "code"
 )
 
 ## Severe Obesity code recorded
@@ -196,5 +207,20 @@ copd_icd10 = codelist_from_csv(
 
 hf_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-hf_cod.csv",
+    column = "code"
+)
+
+hf_icd10 = codelist_from_csv(
+    "codelists/reducehf-heart-failure-secondary-care.csv",
+    column = "code"
+)
+
+hf_ecds = codelist_from_csv(
+    "codelists/reducehf-heart-failure-ae.csv",
+    column = "code"
+)
+
+hf_exclude = codelist_from_csv(
+    "codelists/reducehf-heart-failure-broad-for-excluding-people.csv",
     column = "code"
 )

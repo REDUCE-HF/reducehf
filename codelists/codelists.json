@@ -36,12 +36,6 @@
       "downloaded_at": "2025-06-28 15:53:55.172040Z",
       "sha": "2c1fb493d94ce1610482d575ef14c35bd09e47c1"
     },
-    "opensafely-smoking-clear.csv": {
-      "id": "opensafely/smoking-clear/2020-04-29",
-      "url": "https://www.opencodelists.org/codelist/opensafely/smoking-clear/2020-04-29/",
-      "downloaded_at": "2025-06-28 15:53:55.319774Z",
-      "sha": "0b5f3afe1db96dcce5141220e893a42ba2e5a8f7"
-    },
     "primis-covid19-vacc-uptake-bmi.csv": {
       "id": "primis-covid19-vacc-uptake/bmi/v1",
       "url": "https://www.opencodelists.org/codelist/primis-covid19-vacc-uptake/bmi/v1/",
@@ -203,6 +197,42 @@
       "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/hf_cod/70b49c5d/",
       "downloaded_at": "2025-06-28 16:44:36.635168Z",
       "sha": "c682301df15a68467f95a94abeb93e572b65e06d"
+    },
+    "reducehf-heart-failure-secondary-care.csv": {
+      "id": "reducehf/heart-failure-secondary-care/7eadc7d2",
+      "url": "https://www.opencodelists.org/codelist/reducehf/heart-failure-secondary-care/7eadc7d2/",
+      "downloaded_at": "2025-08-01 10:14:55.199799Z",
+      "sha": "3cca256b5be01028ad2c862cf6243351405c57b5"
+    },
+    "reducehf-heart-failure-broad-for-excluding-people.csv": {
+      "id": "reducehf/heart-failure-broad-for-excluding-people/17bd3b08",
+      "url": "https://www.opencodelists.org/codelist/reducehf/heart-failure-broad-for-excluding-people/17bd3b08/",
+      "downloaded_at": "2025-08-01 12:44:20.488894Z",
+      "sha": "a620e8679a5465c66088b873c9fa058152feb86f"
+    },
+    "reducehf-current-smoker.csv": {
+      "id": "reducehf/current-smoker/0285e0a1",
+      "url": "https://www.opencodelists.org/codelist/reducehf/current-smoker/0285e0a1/",
+      "downloaded_at": "2025-08-01 13:06:03.539094Z",
+      "sha": "f8936a60cb33a59fc333c557259f7a76f57322b5"
+    },
+    "reducehf-former-smoker.csv": {
+      "id": "reducehf/former-smoker/37578701",
+      "url": "https://www.opencodelists.org/codelist/reducehf/former-smoker/37578701/",
+      "downloaded_at": "2025-08-01 13:06:05.200203Z",
+      "sha": "8cf4effa5b8ff31b2064fc52731558f822121d83"
+    },
+    "reducehf-heart-failure-ae.csv": {
+      "id": "reducehf/heart-failure-ae/5ad354c5",
+      "url": "https://www.opencodelists.org/codelist/reducehf/heart-failure-ae/5ad354c5/",
+      "downloaded_at": "2025-08-01 13:10:47.587028Z",
+      "sha": "f5bb951116842d7fc99106b7ae657edee8384000"
+    },
+    "reducehf-body-mass-index-numeric-value.csv": {
+      "id": "reducehf/body-mass-index-numeric-value/0538a097",
+      "url": "https://www.opencodelists.org/codelist/reducehf/body-mass-index-numeric-value/0538a097/",
+      "downloaded_at": "2025-08-01 13:32:51.192003Z",
+      "sha": "2fc9695c0029388d5d4741e821688e0c4a1b19ee"
     }
   }
 }
