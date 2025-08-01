@@ -35,6 +35,9 @@ def generate_dataset(project_index_date, end_date):
     # date should be date of HF diagnosis
     dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
 
+    #quality assurance
+    dataset = add_quality_assurance(dataset, dataset.hf_diagnosis_date)
+
     # using date of HF diagnosis as reference -- may need adjusting
     dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
 
@@ -52,14 +55,15 @@ def generate_dataset(project_index_date, end_date):
         ).exists_for_patient()
 
     dataset.define_population(
-        has_registration
-        & patients.sex.is_in(['male','female']) #known sex proxy for data quality
-        & patients.date_of_birth.is_not_null() #known dob proxy for data quality
-        & ~(patients.age_on(end_date) < 45) #remove pts < 45
-        & ~(patients.age_on(project_index_date) >= 110) #remove pts age 110+
-        & (patients.is_alive_on(project_index_date)) #remove pts who died before start
-        & (dataset.hf_exclude.is_not_null()) #remove pts with any evidence of heart failure 
-    )
+      has_registration
+      #& patients.sex.is_in(['male','female']) #known sex proxy for data quality
+      #& patients.date_of_birth.is_not_null() #known dob proxy for data quality
+      #& ~(patients.age_on(end_date) < 45) #remove pts < 45
+      #& ~(patients.age_on(project_index_date) >= 110) #remove pts age 110+
+      & (patients.is_alive_on(project_index_date)) #remove pts who died before start
+      & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_diagnosis_date > project_index_date))
+      )
+
 
     return dataset
 

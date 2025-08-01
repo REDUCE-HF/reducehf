@@ -52,7 +52,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
         .last_for_patient()
         .snomedct_code
     )
-
+    
     dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
 
     sus_ethnicity = ethnicity_from_sus.code
@@ -180,11 +180,12 @@ def add_time_dependent_core(dataset, index_date):
         otherwise="N"
     )
 
-    #BMI
+
+    # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
         bmi_cod, index_date
         )
-    dataset.bmi_date = bmi.date
+    dataset.bim_date = bmi.date
     dataset.bmi_value = bmi.numeric_value
 
     #Cholesterol
@@ -210,9 +211,9 @@ def add_tests(dataset, index_date):
     dataset.np_lower_bound = first_np.lower_bound
     dataset.np_upper_bound = first_np.upper_bound
     
-
     return dataset
 
+  
 def add_underserved(dataset, index_date):
 
     practice = practice_registrations.sort_by(
@@ -280,12 +281,12 @@ def add_healthservice_use(dataset, index_date):
 
     for time_name, time in time_periods.items():
 
-        #use in time period before index_date
+        #use in time period after index_date
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
 
-        #use in time period after index_date
+        #use in time period before index_date
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
@@ -430,3 +431,4 @@ def add_quality_assurance(dataset, index_date):
     ).exists_for_patient()
 
     return dataset
+

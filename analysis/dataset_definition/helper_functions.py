@@ -118,7 +118,7 @@ def last_matching_event_clinical_snomed_before(codelist, start_date, where=True)
         .last_for_patient()
     )
 
-
+  
 def first_matching_event_apc_after(codelist, start_date, only_prim_diagnoses=False, where=True):
     query = apcs.where(where).where(apcs.admission_date.is_on_or_after(start_date))
     if only_prim_diagnoses:
@@ -139,6 +139,7 @@ def first_matching_event_ec_after(codelist, start_date, where=True):
         .sort_by(eca.arrival_date)
         .first_for_patient()
     )
+
 
 # filter a codelist based on whether its values included a specified set of allowed values (include)
 def filter_codes_by_category(codelist, include):
