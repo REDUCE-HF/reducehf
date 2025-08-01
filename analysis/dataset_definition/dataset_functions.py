@@ -29,6 +29,9 @@ from helper_functions import (
     first_matching_event_clinical_snomed_before,
     last_matching_event_clinical_snomed_before,
     last_matching_event_clinical_ctv3_before,
+    first_matching_event_apcs_icd10_after,
+    first_matching_event_clinical_snomed_after,
+    first_matching_event_ec_snomed_after,
     filter_codes_by_category
 )
 
@@ -139,30 +142,38 @@ def add_time_dependent_core(dataset, index_date):
     '''
 
     # Smoking status
-    tmp_most_recent_smoking_cat = (
-        last_matching_event_clinical_ctv3_before(smoking_clear, index_date)
-        .ctv3_code.to_category(smoking_clear)
-    )
-    tmp_ever_smoked = ever_matching_event_clinical_ctv3_before(
-        (filter_codes_by_category(smoking_clear, include=["S", "E"])), index_date
-        ).exists_for_patient()
-
-    dataset.smoking = case(
-        when(tmp_most_recent_smoking_cat == "S").then("S"),
-        when((tmp_most_recent_smoking_cat == "E") | ((tmp_most_recent_smoking_cat == "N") 
-            & (tmp_ever_smoked == True))).then("E"),
-        when((tmp_most_recent_smoking_cat == "N") & (tmp_ever_smoked == False)).then("N"),
-        otherwise="M"
-    )
-
+    # THIS COULD PROBABLY BE WRITTEN MORE EFFICIENTLY!
+    last_smoking_former_date = (
+        last_matching_event_clinical_snomed_before(smoking_former, index_date)
+        ).date
     
+    last_smoking_current_date = (
+        last_matching_event_clinical_snomed_before(smoking_current, index_date)
+        ).date
+    
+    last_smoking_current = (
+        (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_not_null() & (last_smoking_current_date > last_smoking_former_date)) 
+        | (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_null())
+        ) 
+
+    last_smoking_former = (
+        (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_not_null() & (last_smoking_former_date > last_smoking_current_date)) 
+        | (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_null())
+        ) 
+    
+    dataset.smoking = case(
+        when(last_smoking_current == True).then("S"),
+        when(last_smoking_former == True).then("E"),
+        otherwise="N"
+    )
+
     # BMI
     dataset.bmi_date = last_matching_event_clinical_snomed_before(
-        bmi_primis, index_date
+        bmi_numeric, index_date
         ).date
 
     dataset.bmi_value = last_matching_event_clinical_snomed_before(
-        bmi_primis, index_date
+        bmi_numeric, index_date
         ).numeric_value
 
 
@@ -216,12 +227,17 @@ def add_hf_diagnosis(dataset, index_date):
     function should also return location of first diagnosis
     i.e. community or emergency-hospital
     ''' 
+    #primary care
+    dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
 
-    dataset.hf_diagnosis_date = first_matching_event_clinical_snomed_before(
-        hf_snomed, index_date
-        ).date
+    #secondary care - hospital admission (primary OR secondary), or A&E visit
+    dataset.hf_diagnosis_secondary_date = minimum_of(first_matching_event_apcs_icd10_after(hf_icd10, index_date).admission_date, first_matching_event_ec_snomed_after(hf_ecds, index_date).arrival_date)
+
+    #either primary or secondary
+    dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
 
     return dataset
+
 
 def add_healthservice_use(dataset, index_date):
 
