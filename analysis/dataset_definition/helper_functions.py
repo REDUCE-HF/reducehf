@@ -34,6 +34,29 @@ def hospital_admissions(start_date, end_date, where=True):
         .count_distinct_for_patient()
     )
 
+## In Primary care From diabetes algo reusable action 
+
+def count_matching_event_clinical_ctv3_before(codelist, index_date, where=True):
+    return(
+        clinical_events.where(where)
+        .where(clinical_events.ctv3_code.is_in(codelist))
+        .where(clinical_events.date.is_on_or_before(index_date))
+        .count_for_patient()
+    )
+
+## In SECONDARY CARE (Hospital Episodes) From diabetes algo reusable action 
+def count_matching_event_apc_before(codelist, baseline_date, only_prim_diagnoses=False, where=True):
+    query = apcs.where(where).where(apcs.admission_date.is_on_or_before(baseline_date))
+    if only_prim_diagnoses:
+        # If set to True, then check only primary diagnosis field
+        query = query.where(
+            apcs.primary_diagnosis.is_in(codelist)
+        )
+    else:
+        # Else, check all diagnoses (default, i.e. when only_prim_diagnoses argument not defined)
+        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
+    return query.count_for_patient()
+
 def ever_matching_event_clinical_ctv3_before(codelist, start_date, where=True):
     return(
         clinical_events.where(where)
