@@ -302,28 +302,41 @@ def add_comorbidities(dataset, index_date):
 
 
 def add_tests(dataset, index_date):
-    
-    '''
-    derive test dates and results: 
-    -  BNP 
-    -  NT-proBNP
-    '''
+    # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
 
+    np_tests= clinical_events.where(
+        clinical_events.snomedct_code.is_in(NP_snomed)
+
+    first_np = np_tests.sort_by(clinical_events.date).first_for_patient()
+    dataset.np_date = first_np.date
+    dataset.np_result = first_np.numeric_value
+)    
     return dataset
 
 
-def add_symptoms(dataset, start_date, end_date):
+def add_symptoms(dataset, index_date):
+# want first incidence of any of the three symptoms
 
+   dataset.temp_breathless_data_primary=first_matching_event_clinical_snomed_before(
+       breathlessness_snomed, index_date
+   ).date
+
+   dataset.temp_oedema_data_primary=first_matching_event_clinical_snomed_before(
+       oedema_snomed, index_date
+   ).date
+
+   dataset.temp_fatigue_data_primary=first_matching_event_clinical_snomed_before(
+       fatigue_snomed, index_date
+   ).date
+
+# combine to find the earliest date of any symptom
+    dataset.first_symptom.date = minimum_of(
+      dataset.temp_breathless_data_primary,
+      dataset.temp_oedema_data_primary,
+      dataset.temp_fatigue_data_primary
+)
     '''
-    add first date of recording and whether recorded 
-    between start_date and end_date.
-    symptoms:
-    -  breathlesness
-    -  oedema
-    -  fatigue
-    note: for WP2, index_date == date of BNP / NT-proBNP test
-
-    need to add following codelists:
+    Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
     -  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
     -  oedema: not currently available - need to create
     -  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/

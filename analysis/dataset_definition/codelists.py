@@ -224,3 +224,34 @@ hf_exclude = codelist_from_csv(
     "codelists/reducehf-heart-failure-broad-for-excluding-people.csv",
     column = "code"
 )
+
+
+# HF-related breathlessness
+
+breathlessness_snomed = codelist_from_csv(
+    "codelists/reducehf-breathnessness4all-6d0c1be7.csv",
+    column="code"
+)   
+# HF-related oedema
+
+oedema_snomed = codelist_from_csv(
+    "codelists/reducehf-oedema4all-2efcdccd.csv",
+    column="code"
+) 
+# HF-related fatigue
+
+fatigue_snomed = codelist_from_csv(
+    "codelists/reducehf-fatigue4all-7cddf662.csv",
+    column="code"
+) 
+
+# NP testing - need to split into BNP and NT-proBNP for WP(2)
+
+NP_snomed = codelist_from_csv(
+    "codelists/reducehf-np-testing-4all-63ce832d.csv",
+    column="code"
+) 
+NP_ctv3 = codelist_from_csv(
+    "codelists/reducehf-np-testing-read-678a6104.csv",
+    column="code"
+
