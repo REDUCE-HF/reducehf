@@ -14,24 +14,6 @@ actions:
       df_input: dataset.csv.gz
       birth_date: dob
       ethnicity_cat: ethnicity_cat
-      t1dm_date: t1dm_date
-      tmp_t1dm_ctv3_date: tmp_t1dm_ctv3_date
-      tmp_t1dm_count_num: tmp_t1dm_count_num
-      t2dm_date: t2dm_date
-      tmp_t2dm_ctv3_date: tmp_t2dm_ctv3_date
-      tmp_t2dm_count_num: tmp_t2dm_count_num
-      otherdm_date: otherdm_date
-      tmp_otherdm_count_num: tmp_otherdm_count_num
-      gestationaldm_date: gestationaldm_date
-      tmp_poccdm_date: tmp_poccdm_date 
-      tmp_poccdm_ctv3_count_num: tmp_poccdm_ctv3_count_num
-      tmp_max_hba1c_mmol_mol_num: tmp_max_hba1c_mmol_mol_num
-      tmp_max_hba1c_date: tmp_max_hba1c_date
-      tmp_insulin_dmd_date: tmp_insulin_dmd_date
-      tmp_antidiabetic_drugs_dmd_date: tmp_antidiabetic_drugs_dmd_date
-      tmp_nonmetform_drugs_dmd_date: tmp_nonmetform_drugs_dmd_date
-      tmp_diabetes_medication_date: tmp_diabetes_medication_date
-      tmp_first_diabetes_diag_date: tmp_first_diabetes_diag_date
       df_output: data_processed.csv.gz
 
     needs:
