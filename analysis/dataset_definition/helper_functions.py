@@ -107,6 +107,17 @@ def last_matching_event_apc_before(codelist, start_date, only_prim_diagnoses=Fal
         query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
     return query.sort_by(apcs.admission_date).last_for_patient()
 
+def first_matching_event_clinical_snomed_after(codelist, start_date, where=True):
+    return(
+        clinical_events_ranges.where(where)
+        .where(clinical_events_ranges.snomedct_code.is_in(codelist))
+        .where(clinical_events_ranges.date.is_after(start_date))
+        .sort_by(clinical_events_ranges.date)
+        .first_for_patient()
+    )
+
+
+
 # filter a codelist based on whether its values included a specified set of allowed values (include)
 def filter_codes_by_category(codelist, include):
     return {k:v for k,v in codelist.items() if v in include}

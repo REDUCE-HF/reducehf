@@ -1,5 +1,6 @@
 #this script contains functions to add variables to dataset
-#variables are grouped by type, and whether they are WP specific
+#variables 
+# re grouped by type, and whether they are WP specific
 
 from ehrql import (
     case,
@@ -312,12 +313,14 @@ def add_comorbidities(dataset, index_date):
 def add_tests(dataset, index_date):
     # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
 
-    np_tests= clinical_events.where(
-        clinical_events.snomedct_code.is_in(NP_snomed)
+    first_np = first_matching_event_clinical_snomed_after(NP_snomed,'2017-01-01')
 
-    first_np = np_tests.sort_by(clinical_events.date).first_for_patient()
     dataset.np_date = first_np.date
     dataset.np_result = first_np.numeric_value
+    dataset.np_comparator = first_np.comparator
+    dataset.np_lower_bound = first_np.lower_bound
+    dataset.np_upper_bound = first_np.upper_bound
+
 )    
     return dataset
 
