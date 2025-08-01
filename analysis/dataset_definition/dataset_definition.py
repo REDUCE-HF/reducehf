@@ -58,7 +58,7 @@ def generate_dataset(project_index_date, end_date):
         & ~(patients.age_on(end_date) < 45) #remove pts < 45
         & ~(patients.age_on(project_index_date) >= 110) #remove pts age 110+
         & (patients.is_alive_on(project_index_date)) #remove pts who died before start
-        & (dataset.hf_exclude.exists_for_patient()) #remove pts with any evidence of heart failure 
+        & (dataset.hf_exclude.is_not_null()) #remove pts with any evidence of heart failure 
     )
 
     return dataset

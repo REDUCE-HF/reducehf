@@ -1,5 +1,5 @@
 from ehrql import create_dataset
-from dataset_definition_function import generate_dataset
+from dataset_definition import generate_dataset
 
 dataset = create_dataset()
 

@@ -2,7 +2,8 @@ import operator
 from functools import reduce # for function building, e.g. any_of
 from ehrql.tables.tpp import (
     apcs, 
-    clinical_events, 
+    clinical_events,
+    clinical_events_ranges, 
     medications, 
     ons_deaths,
     ec,
@@ -79,6 +80,35 @@ def last_matching_event_clinical_ctv3_before(codelist, start_date, where=True):
         .last_for_patient()
     )
 
+def last_matching_event_clinical_ranges_snomed_before(codelist, start_date, where=True):
+    return(
+        clinical_events_ranges.where(where)
+        .where(clinical_events_ranges.snomedct_code.is_in(codelist))
+        .where(clinical_events_ranges.date.is_before(start_date))
+        .sort_by(clinical_events_ranges.date)
+        .last_for_patient()
+    )
+
+def last_matching_med_dmd_before(codelist, start_date, where=True):
+    return(
+        medications.where(where)
+        .where(medications.dmd_code.is_in(codelist))
+        .where(medications.date.is_before(start_date))
+        .sort_by(medications.date)
+        .last_for_patient()
+    )
+
+def last_matching_event_apc_before(codelist, start_date, only_prim_diagnoses=False, where=True):
+    query = apcs.where(where).where(apcs.admission_date.is_before(start_date))
+    if only_prim_diagnoses:
+        query = query.where(
+            apcs.primary_diagnosis.is_in(codelist)
+        )
+    else:
+        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
+    return query.sort_by(apcs.admission_date).last_for_patient()
+
+
 def last_matching_event_clinical_snomed_before(codelist, start_date, where=True):
     return(
         clinical_events.where(where)
@@ -88,16 +118,20 @@ def last_matching_event_clinical_snomed_before(codelist, start_date, where=True)
         .last_for_patient()
     )
 
-def first_matching_event_apcs_icd10_after(codelist, start_date, where=True):
-    return(
-        apcs.where(where)
-        .where(apcs.all_diagnoses.contains_any_of(codelist))
-        .where(apcs.admission_date.is_on_or_after(start_date))
-        .sort_by(apcs.admission_date)
-        .first_for_patient()
-    )
 
-def first_matching_event_ec_snomed_after(codelist, start_date, where=True):
+def first_matching_event_apc_after(codelist, start_date, only_prim_diagnoses=False, where=True):
+    query = apcs.where(where).where(apcs.admission_date.is_on_or_after(start_date))
+    if only_prim_diagnoses:
+        query = query.where(
+            apcs.primary_diagnosis.is_in(codelist)
+        )
+    else:
+        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
+
+    return query.sort_by(apcs.admission_date).first_for_patient()
+
+
+def first_matching_event_ec_after(codelist, start_date, where=True):
     return(
         eca.where(where)
         .where(eca.diagnosis_01.is_in(codelist))

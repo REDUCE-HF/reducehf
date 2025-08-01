@@ -22,18 +22,8 @@ smoking_former = codelist_from_csv(
 smoking_ever = smoking_current + smoking_former
 
 # BMI
-bmi_obesity_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-bmi_obesity_snomed.csv",
-    column="code"
-)
-
-bmi_obesity_icd10 = codelist_from_csv(
-    "codelists/user-elsie_horne-bmi_obesity_icd10.csv",
-    column="code"
-)
-
-bmi_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-bmi.csv",
+bmi_cod = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
     column="code"
 )
 
@@ -229,29 +219,30 @@ hf_exclude = codelist_from_csv(
 # HF-related breathlessness
 
 breathlessness_snomed = codelist_from_csv(
-    "codelists/reducehf-breathnessness4all-6d0c1be7.csv",
+    "codelists/reducehf-breathlessness4all.csv",
     column="code"
 )   
 # HF-related oedema
 
 oedema_snomed = codelist_from_csv(
-    "codelists/reducehf-oedema4all-2efcdccd.csv",
+    "codelists/reducehf-oedema4all.csv",
     column="code"
 ) 
 # HF-related fatigue
 
 fatigue_snomed = codelist_from_csv(
-    "codelists/reducehf-fatigue4all-7cddf662.csv",
+    "codelists/reducehf-fatigue4all.csv",
     column="code"
 ) 
 
 # NP testing - need to split into BNP and NT-proBNP for WP(2)
 
 NP_snomed = codelist_from_csv(
-    "codelists/reducehf-np-testing-4all-63ce832d.csv",
+    "codelists/reducehf-np-testing-4all.csv",
     column="code"
 ) 
-NP_ctv3 = codelist_from_csv(
-    "codelists/reducehf-np-testing-read-678a6104.csv",
-    column="code"
 
+NP_ctv3 = codelist_from_csv(
+    "codelists/reducehf-np-testing-read.csv",
+    column="code"
+)
