@@ -314,7 +314,7 @@ def add_tests(dataset):
     # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
 
     first_np = first_matching_event_clinical_snomed_after(NP_snomed,'2017-01-01')
-
+# NOTE - may need to change study start date
     dataset.np_date = first_np.date
     dataset.np_result = first_np.numeric_value
     dataset.np_comparator = first_np.comparator
