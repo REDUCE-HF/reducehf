@@ -17,7 +17,7 @@ import codelists
 from helper_functions import *
 from dataset_functions import *
 
-def generate_dataset(project_index_date, end_date):
+def generate_dataset(project_index_date, start_date, end_date):
 
     dataset = create_dataset()
 
@@ -30,7 +30,7 @@ def generate_dataset(project_index_date, end_date):
     #core variables derived based on project_index_date
     dataset = add_core(dataset, project_index_date)
 
-    dataset = add_time_dependent_core(dataset, project_index_date)
+    dataset = add_time_dependent_core(dataset, start_date)
 
     # date should be date of HF diagnosis
     dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
