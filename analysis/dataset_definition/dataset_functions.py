@@ -18,6 +18,7 @@ from ehrql.tables.tpp import (
     apcs,
     household_memberships_2020,
     ons_deaths,
+    ethnicity_from_sus,
 )
 
 from helper_functions import (
@@ -27,8 +28,11 @@ from helper_functions import (
     ever_matching_event_clinical_ctv3_before,
     first_matching_event_clinical_ctv3_before,
     first_matching_event_clinical_snomed_before,
+    last_matching_event_clinical_ranges_snomed_before,
     last_matching_event_clinical_snomed_before,
     last_matching_event_clinical_ctv3_before,
+    last_matching_event_apc_before,
+    last_matching_med_dmd_before,
     filter_codes_by_category
 )
 
@@ -60,8 +64,32 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
         .last_for_patient()
         .snomedct_code
     )
-
+    
     dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
+
+    sus_ethnicity = ethnicity_from_sus.code
+
+    sus_ethnicity_6 = case(
+        when(sus_ethnicity == 'A').then(1),#white
+        when(sus_ethnicity == 'B').then(1),#white
+        when(sus_ethnicity == 'C').then(1),#white
+        when(sus_ethnicity == 'D').then(2),#mixed
+        when(sus_ethnicity == 'E').then(2),#mixed
+        when(sus_ethnicity == 'F').then(2),#mixed
+        when(sus_ethnicity == 'G').then(2),#mixed
+        when(sus_ethnicity == 'H').then(3),#south asian
+        when(sus_ethnicity == 'J').then(3),#south asian
+        when(sus_ethnicity == 'K').then(3),#south asian
+        when(sus_ethnicity == 'L').then(3),#south asian
+        when(sus_ethnicity == 'M').then(4),#black
+        when(sus_ethnicity == 'N').then(4),#black
+        when(sus_ethnicity == 'P').then(4),#black
+        when(sus_ethnicity == 'R').then(5),#other
+        when(sus_ethnicity == 'S').then(5),#othe
+        otherwise=6 #unknown
+    )
+    
+    dataset.sus_ethnicity = sus_ethnicity_6
 
     #earliest practice registration
     first_practice = (
@@ -157,23 +185,19 @@ def add_time_dependent_core(dataset, index_date):
 
     
     # BMI
-    dataset.bmi_date = last_matching_event_clinical_snomed_before(
-        bmi_primis, index_date
-        ).date
-
-    dataset.bmi_value = last_matching_event_clinical_snomed_before(
-        bmi_primis, index_date
-        ).numeric_value
+    bmi = last_matching_event_clinical_ranges_snomed_before(
+        bmi_cod, index_date
+        )
+    dataset.bim_date = bmi.date
+    dataset.bmi_value = bmi.numeric_value
 
 
     #Cholesterol
-    dataset.last_cholesterol_date = last_matching_event_clinical_snomed_before(
+    cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
-        ).date
-
-    dataset.last_cholesterol_value = last_matching_event_clinical_snomed_before(
-        cholesterol_snomed, index_date
-        ).numeric_value
+        )
+    dataset.last_cholesterol_date = cholesterol.date
+    dataset.last_cholesterol_value = cholesterol.numeric_value
 
     return dataset
 
@@ -241,12 +265,12 @@ def add_healthservice_use(dataset, index_date):
 
     for time_name, time in time_periods.items():
 
-        #use in time period before index_date
+        #use in time period after index_date
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
 
-        #use in time period after index_date
+        #use in time period before index_date
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
@@ -366,5 +390,30 @@ def add_referrals(dataset, index_date):
     for XX (WP2) prior to index_date
     *maybe also need start_date?
     '''
+
+    return dataset
+
+def add_quality_assurance(dataset, index_date):
+
+    # Prostate cancer
+    dataset.prostate_cancer = (
+        (last_matching_event_clinical_snomed_before(
+            prostate_cancer_snomed, index_date
+        ).exists_for_patient()) |
+        (last_matching_event_apc_before(
+            prostate_cancer_icd10, index_date
+        ).exists_for_patient())
+    )
+
+    # Pregnancy
+    dataset.pregnancy = last_matching_event_clinical_snomed_before(
+        pregnancy_snomed, index_date
+    ).exists_for_patient()
+
+
+    # COCP or HRT medication
+    dataset.hrtcocp = last_matching_med_dmd_before(
+        cocp_dmd + hrt_dmd, index_date
+    ).exists_for_patient()
 
     return dataset

@@ -1,4 +1,3 @@
-# Setup
 from ehrql import codelist_from_csv
 
 
@@ -31,6 +30,12 @@ bmi_primis = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-bmi.csv",
     column="code"
 )
+
+bmi_cod = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
+    column="code"
+)
+
 
 # Total Cholesterol
 cholesterol_snomed = codelist_from_csv(
@@ -197,6 +202,29 @@ copd_icd10 = codelist_from_csv(
 hf_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-hf_cod.csv",
     column = "code"
+)
+
+# Quality assurance
+
+prostate_cancer_snomed = codelist_from_csv(
+    "codelists/user-RochelleKnight-prostate_cancer_snomed.csv",
+    column="code"
+)
+prostate_cancer_icd10 = codelist_from_csv(
+    "codelists/user-RochelleKnight-prostate_cancer_icd10.csv",
+    column="code"
+)
+pregnancy_snomed = codelist_from_csv(
+    "codelists/user-RochelleKnight-pregnancy_and_birth_snomed.csv",
+    column="code"
+)
+cocp_dmd = codelist_from_csv(
+    "codelists/user-elsie_horne-cocp_dmd.csv",
+    column="dmd_id"
+)
+hrt_dmd = codelist_from_csv(
+    "codelists/user-elsie_horne-hrt_dmd.csv",
+    column="dmd_id"
 )
 
 # HF-related breathlessness
