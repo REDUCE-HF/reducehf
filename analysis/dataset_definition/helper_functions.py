@@ -116,8 +116,6 @@ def first_matching_event_clinical_snomed_after(codelist, start_date, where=True)
         .first_for_patient()
     )
 
-
-
 # filter a codelist based on whether its values included a specified set of allowed values (include)
 def filter_codes_by_category(codelist, include):
     return {k:v for k,v in codelist.items() if v in include}

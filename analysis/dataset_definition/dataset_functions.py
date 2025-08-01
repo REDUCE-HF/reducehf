@@ -320,8 +320,7 @@ def add_tests(dataset, index_date):
     dataset.np_comparator = first_np.comparator
     dataset.np_lower_bound = first_np.lower_bound
     dataset.np_upper_bound = first_np.upper_bound
-
-)    
+  
     return dataset
 
 
