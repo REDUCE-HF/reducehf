@@ -21,4 +21,4 @@ actions:
 
     outputs:
       highly_sensitive:
-        dataset: output/data_processed.csv.gz
+        dataset: output/data_diabetes.csv.gz
