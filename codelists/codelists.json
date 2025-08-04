@@ -168,6 +168,32 @@
       "downloaded_at": "2025-06-28 15:53:58.208717Z",
       "sha": "a4564a582dabdb385a2caf6bb6a24e4bfcaf92dc"
     },
+
+    "user-elsie_horne-bmi_obesity_snomed.csv": {
+      "id": "user/elsie_horne/bmi_obesity_snomed/0764e9b4",
+      "url": "https://www.opencodelists.org/codelist/user/elsie_horne/bmi_obesity_snomed/0764e9b4/",
+      "downloaded_at": "2025-06-28 15:53:58.359903Z",
+      "sha": "18926afcb4bc165e7709a17c89735b2c03b81005"
+    },
+    "user-elsie_horne-bmi_obesity_icd10.csv": {
+      "id": "user/elsie_horne/bmi_obesity_icd10/6e55767e",
+      "url": "https://www.opencodelists.org/codelist/user/elsie_horne/bmi_obesity_icd10/6e55767e/",
+      "downloaded_at": "2025-06-28 15:53:58.517469Z",
+      "sha": "9235bab1c2f3b5581dd34431839db55f3d3bdb59"
+    },
+    "opensafely-weight-snomed.csv": {
+      "id": "opensafely/weight-snomed/5459abc6",
+      "url": "https://www.opencodelists.org/codelist/opensafely/weight-snomed/5459abc6/",
+      "downloaded_at": "2025-08-01 22:12:06.878243Z",
+      "sha": "66c5fa2b4fc41bd55982e97ba2a30b148136b2dd"
+    },
+    "opensafely-height-snomed.csv": {
+      "id": "opensafely/height-snomed/3b4a3891",
+      "url": "https://www.opencodelists.org/codelist/opensafely/height-snomed/3b4a3891/",
+      "downloaded_at": "2025-08-01 22:12:07.030328Z",
+      "sha": "22988f25528e7ebcbcd079afe54c39c883bcf63c"
+    },
+
     "user-elsie_horne-ckd_snomed.csv": {
       "id": "user/elsie_horne/ckd_snomed/25d9dcd5",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/ckd_snomed/25d9dcd5/",
@@ -222,6 +248,103 @@
       "downloaded_at": "2025-06-28 16:44:36.635168Z",
       "sha": "c682301df15a68467f95a94abeb93e572b65e06d"
     },
+
+    "bristol-atrial-fibrillation-snomed.csv": {
+      "id": "bristol/atrial-fibrillation-snomed/6be6c30f",
+      "url": "https://www.opencodelists.org/codelist/bristol/atrial-fibrillation-snomed/6be6c30f/",
+      "downloaded_at": "2025-07-13 13:31:43.322545Z",
+      "sha": "599ece2ce3f97cb504d4e023151a1ba0edbd3140"
+    },
+    "bristol-atrial-fibrillation-icd10.csv": {
+      "id": "bristol/atrial-fibrillation-icd10/52d74fda",
+      "url": "https://www.opencodelists.org/codelist/bristol/atrial-fibrillation-icd10/52d74fda/",
+      "downloaded_at": "2025-07-13 13:31:43.468252Z",
+      "sha": "deda1f4b7573e0590e97e996671f8acc0debca75"
+    },
+    "bristol-ischaemic-heart-disease-icd10.csv": {
+      "id": "bristol/ischaemic-heart-disease-icd10/37151caf",
+      "url": "https://www.opencodelists.org/codelist/bristol/ischaemic-heart-disease-icd10/37151caf/",
+      "downloaded_at": "2025-07-13 13:31:43.604806Z",
+      "sha": "b6b2254b0221f73784b1c0266313d5bd9da5d907"
+    },
+    "bristol-ischaemic-heart-disease-snomed.csv": {
+      "id": "bristol/ischaemic-heart-disease-snomed/50248fe4",
+      "url": "https://www.opencodelists.org/codelist/bristol/ischaemic-heart-disease-snomed/50248fe4/",
+      "downloaded_at": "2025-07-13 13:31:43.772250Z",
+      "sha": "7422177fe7f7da97e83c887d11bc607e10b5062c"
+    },
+    "user-hjforbes-type-1-diabetes.csv": {
+      "id": "user/hjforbes/type-1-diabetes/674fbd7a",
+      "url": "https://www.opencodelists.org/codelist/user/hjforbes/type-1-diabetes/674fbd7a/",
+      "downloaded_at": "2025-08-01 22:46:02.431732Z",
+      "sha": "54a7772024e03c2129cb0c0c7ba77944eacd054a"
+    },
+    "user-hjforbes-type-2-diabetes.csv": {
+      "id": "user/hjforbes/type-2-diabetes/3530d710",
+      "url": "https://www.opencodelists.org/codelist/user/hjforbes/type-2-diabetes/3530d710/",
+      "downloaded_at": "2025-08-01 22:46:02.559445Z",
+      "sha": "08421a5b1e92d07e47cbab2e12ecd71856cee98a"
+    },
+    "user-hjforbes-other-or-nonspecific-diabetes.csv": {
+      "id": "user/hjforbes/other-or-nonspecific-diabetes/0311f0a6",
+      "url": "https://www.opencodelists.org/codelist/user/hjforbes/other-or-nonspecific-diabetes/0311f0a6/",
+      "downloaded_at": "2025-08-01 22:12:08.921327Z",
+      "sha": "1461877af2c069504535089d669e830616629f67"
+    },
+    "user-hjforbes-gestational-diabetes.csv": {
+      "id": "user/hjforbes/gestational-diabetes/1ed423d1",
+      "url": "https://www.opencodelists.org/codelist/user/hjforbes/gestational-diabetes/1ed423d1/",
+      "downloaded_at": "2025-08-01 22:12:09.044317Z",
+      "sha": "4298a4affa79a1f04130cf5c630892a25819292c"
+    },
+    "user-alainamstutz-gestational-diabetes-icd10-bristol.csv": {
+      "id": "user/alainamstutz/gestational-diabetes-icd10-bristol/474e7a09",
+      "url": "https://www.opencodelists.org/codelist/user/alainamstutz/gestational-diabetes-icd10-bristol/474e7a09/",
+      "downloaded_at": "2025-08-01 22:12:09.166636Z",
+      "sha": "f5252471f672989c537156c1dcf3a8ffaae6215d"
+    },
+    "opensafely-type-1-diabetes-secondary-care.csv": {
+      "id": "opensafely/type-1-diabetes-secondary-care/2020-09-27",
+      "url": "https://www.opencodelists.org/codelist/opensafely/type-1-diabetes-secondary-care/2020-09-27/",
+      "downloaded_at": "2025-08-01 22:12:09.291838Z",
+      "sha": "e51303ce0e7eb6ac9e0d1763bd23e49b0f273429"
+    },
+    "user-r_denholm-type-2-diabetes-secondary-care-bristol.csv": {
+      "id": "user/r_denholm/type-2-diabetes-secondary-care-bristol/0b7f6cd4",
+      "url": "https://www.opencodelists.org/codelist/user/r_denholm/type-2-diabetes-secondary-care-bristol/0b7f6cd4/",
+      "downloaded_at": "2025-08-01 22:12:09.405737Z",
+      "sha": "64dfc55f964cd811b59f0d142d661e1ad1b26f29"
+    },
+    "user-hjforbes-nondiagnostic-diabetes-codes.csv": {
+      "id": "user/hjforbes/nondiagnostic-diabetes-codes/50f30a3b",
+      "url": "https://www.opencodelists.org/codelist/user/hjforbes/nondiagnostic-diabetes-codes/50f30a3b/",
+      "downloaded_at": "2025-08-01 22:12:09.528637Z",
+      "sha": "3b3bd24a816d04aeaaad93495d8c04772a12672f"
+    },
+    "opensafely-insulin-medication.csv": {
+      "id": "opensafely/insulin-medication/2020-04-26",
+      "url": "https://www.opencodelists.org/codelist/opensafely/insulin-medication/2020-04-26/",
+      "downloaded_at": "2025-08-01 22:12:09.642233Z",
+      "sha": "e0be9fcdb96da316ff672893b99f727ad4495364"
+    },
+    "opensafely-antidiabetic-drugs.csv": {
+      "id": "opensafely/antidiabetic-drugs/2020-07-16",
+      "url": "https://www.opencodelists.org/codelist/opensafely/antidiabetic-drugs/2020-07-16/",
+      "downloaded_at": "2025-08-01 22:12:09.782921Z",
+      "sha": "821d163d926e12fc6bd07fc78187f2756e1c221f"
+    },
+    "user-r_denholm-non-metformin-antidiabetic-drugs_bristol.csv": {
+      "id": "user/r_denholm/non-metformin-antidiabetic-drugs_bristol/7207eb58",
+      "url": "https://www.opencodelists.org/codelist/user/r_denholm/non-metformin-antidiabetic-drugs_bristol/7207eb58/",
+      "downloaded_at": "2025-08-01 22:12:09.919076Z",
+      "sha": "1ac45646e6612579a38b3eff64524c72d150c6f1"
+    },
+    "opensafely-glycated-haemoglobin-hba1c-tests-numerical-value.csv": {
+      "id": "opensafely/glycated-haemoglobin-hba1c-tests-numerical-value/5134e926",
+      "url": "https://www.opencodelists.org/codelist/opensafely/glycated-haemoglobin-hba1c-tests-numerical-value/5134e926/",
+      "downloaded_at": "2025-08-01 22:12:10.027923Z",
+      "sha": "bc7e48efd370be65686755f0a843058f1ec767e0"
+
     "reducehf-heart-failure-secondary-care.csv": {
       "id": "reducehf/heart-failure-secondary-care/7eadc7d2",
       "url": "https://www.opencodelists.org/codelist/reducehf/heart-failure-secondary-care/7eadc7d2/",
@@ -323,6 +446,7 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/breathlessness4all/6d0c1be7/",
       "downloaded_at": "2025-08-01 15:59:04.618093Z",
       "sha": "61943b1a26c22b7fa10aefe0d884a93d0c63ce10"
+
     }
   }
 }

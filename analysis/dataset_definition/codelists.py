@@ -2,7 +2,7 @@ from ehrql import codelist_from_csv
 
 
 # Ethnicity
-ethnicity_snomed = codelist_from_csv(
+ethnicity_codes = codelist_from_csv(
     "codelists/opensafely-ethnicity-snomed-0removed.csv",
     column="code",
     category_column="Grouping_6"
@@ -17,15 +17,25 @@ smoking_former = codelist_from_csv(
     "codelists/reducehf-former-smoker.csv",
     column="code"
 )
-
 smoking_ever = smoking_current + smoking_former
 
-# BMI
-bmi_cod = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
-    column="code"
+
+weight_snomed = codelist_from_csv(
+    "codelists/opensafely-weight-snomed.csv", column="code"
+)
+height_snomed = codelist_from_csv(
+    "codelists/opensafely-height-snomed.csv",  column="code"
+)
+bmi_obesity_icd10 = codelist_from_csv(
+    "codelists/user-elsie_horne-bmi_obesity_icd10.csv", column="code"
 )
 
+bmi_obesity_snomed = codelist_from_csv(
+    "codelists/user-elsie_horne-bmi_obesity_snomed.csv", column="code"
+)
+
+
+# BMI
 bmi_cod = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
     column="code"
@@ -198,12 +208,91 @@ copd_icd10 = codelist_from_csv(
     column="code"
 )
 
+#ischaemic heart diseae (ihd)
+ihd_snomed = codelist_from_csv(
+    "codelists/bristol-ischaemic-heart-disease-snomed.csv",
+    column="code"
+)
+
+ihd_icd10 = codelist_from_csv(
+    "codelists/bristol-ischaemic-heart-disease-icd10.csv",
+    column="code"
+)
+
+#Atrial fibrillation (af)
+af_snomed = codelist_from_csv(
+    "codelists/bristol-atrial-fibrillation-snomed.csv",
+    column="code"
+)
+
+af_icd10 = codelist_from_csv (
+    "codelists/bristol-atrial-fibrillation-icd10.csv",
+    column ="code"
+)
+
+# DIABETES
+# T1DM
+diabetes_type1_ctv3 = codelist_from_csv(
+    "codelists/user-hjforbes-type-1-diabetes.csv",column="code"
+    )
+
+diabetes_type1_icd10 = codelist_from_csv(
+    "codelists/opensafely-type-1-diabetes-secondary-care.csv",column="icd10_code"
+    )
+
+# T2DM
+diabetes_type2_ctv3 = codelist_from_csv(
+    "codelists/user-hjforbes-type-2-diabetes.csv",column="code"
+    )
+
+diabetes_type2_icd10 = codelist_from_csv(
+    "codelists/user-r_denholm-type-2-diabetes-secondary-care-bristol.csv",column="code"
+    )
+
+# Other or non-specific diabetes
+diabetes_other_ctv3 = codelist_from_csv(
+    "codelists/user-hjforbes-other-or-nonspecific-diabetes.csv",column="code"
+    )
+
+# Gestational diabetes
+diabetes_gestational_ctv3 = codelist_from_csv(
+    "codelists/user-hjforbes-gestational-diabetes.csv",column="code"
+                                              )
+
+diabetes_gestational_icd10 = codelist_from_csv(
+    "codelists/user-alainamstutz-gestational-diabetes-icd10-bristol.csv",column="code"
+    )
+
+# Non-diagnostic diabetes codes
+diabetes_diagnostic_ctv3 = codelist_from_csv(
+    "codelists/user-hjforbes-nondiagnostic-diabetes-codes.csv",column="code"
+                                             )
+
+# HbA1c
+hba1c_snomed = codelist_from_csv(
+    "codelists/opensafely-glycated-haemoglobin-hba1c-tests-numerical-value.csv",column="code"
+                                 )
+
+# Antidiabetic drugs
+insulin_dmd = codelist_from_csv(
+    "codelists/opensafely-insulin-medication.csv",column="id"
+                                )
+
+antidiabetic_drugs_dmd = codelist_from_csv(
+    "codelists/opensafely-antidiabetic-drugs.csv",column="id"
+                                           )
+
+non_metformin_dmd = codelist_from_csv(
+    "codelists/user-r_denholm-non-metformin-antidiabetic-drugs_bristol.csv",column="id"
+                                      )
+
 # HF (for script development)
 
 hf_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-hf_cod.csv",
     column = "code"
 )
+
 
 hf_icd10 = codelist_from_csv(
     "codelists/reducehf-heart-failure-secondary-care.csv",
@@ -274,3 +363,4 @@ NP_ctv3 = codelist_from_csv(
     "codelists/reducehf-np-testing-read.csv",
     column="code"
 )
+
