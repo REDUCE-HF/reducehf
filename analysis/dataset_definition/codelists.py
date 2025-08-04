@@ -2,7 +2,7 @@ from ehrql import codelist_from_csv
 
 
 # Ethnicity
-ethnicity_snomed = codelist_from_csv(
+ethnicity_codes = codelist_from_csv(
     "codelists/opensafely-ethnicity-snomed-0removed.csv",
     column="code",
     category_column="Grouping_6"
@@ -30,14 +30,12 @@ bmi_obesity_icd10 = codelist_from_csv(
     "codelists/user-elsie_horne-bmi_obesity_icd10.csv", column="code"
 )
 
-smoking_ever = smoking_current + smoking_former
-
-# BMI
-bmi_cod = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
-    column="code"
+bmi_obesity_snomed = codelist_from_csv(
+    "codelists/user-elsie_horne-bmi_obesity_snomed.csv", column="code"
 )
 
+
+# BMI
 bmi_cod = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
     column="code"

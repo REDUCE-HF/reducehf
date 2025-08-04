@@ -158,17 +158,6 @@ def last_matching_med_dmd_before(codelist, start_date, where=True):
         .last_for_patient()
     )
 
-def last_matching_event_apc_before(codelist, start_date, only_prim_diagnoses=False, where=True):
-    query = apcs.where(where).where(apcs.admission_date.is_before(start_date))
-        if only_prim_diagnoses:
-            query = query.where(
-            apcs.primary_diagnosis.is_in(codelist)
-            )
-        else:
-            query = query.where(apcs.all_diagnoses.is_in(codelist))
-    return query.sort_by(apcs.admission_date).last_for_patient()
-
-       
 
 def last_matching_event_clinical_snomed_between(codelist, start_date, end_date, where=True):
     return(
