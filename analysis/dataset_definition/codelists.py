@@ -1,4 +1,3 @@
-# Setup
 from ehrql import codelist_from_csv
 
 
@@ -10,17 +9,16 @@ ethnicity_snomed = codelist_from_csv(
 )
 
 # Smoking
-smoking_clear = codelist_from_csv(
-    "codelists/opensafely-smoking-clear.csv",
-    column="CTV3Code",
-    category_column="Category"
-)
-
-# BMI
-bmi_obesity_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-bmi_obesity_snomed.csv",
+smoking_current = codelist_from_csv(
+    "codelists/reducehf-current-smoker.csv",
     column="code"
 )
+smoking_former = codelist_from_csv(
+    "codelists/reducehf-former-smoker.csv",
+    column="code"
+)
+smoking_ever = smoking_current + smoking_former
+
 
 weight_snomed = codelist_from_csv(
     "codelists/opensafely-weight-snomed.csv", column="code"
@@ -29,14 +27,22 @@ height_snomed = codelist_from_csv(
     "codelists/opensafely-height-snomed.csv",  column="code"
 )
 bmi_obesity_icd10 = codelist_from_csv(
-    "codelists/user-elsie_horne-bmi_obesity_icd10.csv",
+    "codelists/user-elsie_horne-bmi_obesity_icd10.csv", column="code"
+)
+
+smoking_ever = smoking_current + smoking_former
+
+# BMI
+bmi_cod = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
     column="code"
 )
 
-bmi_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-bmi.csv",
+bmi_cod = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
     column="code"
 )
+
 
 # Total Cholesterol
 cholesterol_snomed = codelist_from_csv(
@@ -60,6 +66,12 @@ learndis_primis = codelist_from_csv(
 bmi_stage_primis = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-bmi_stage.csv",
     column="code"
+)
+
+## BMI numeric value
+bmi_numeric = codelist_from_csv(
+    "codelists/reducehf-body-mass-index-numeric-value.csv",
+    column = "code"
 )
 
 ## Severe Obesity code recorded
@@ -281,5 +293,76 @@ non_metformin_dmd = codelist_from_csv(
 hf_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-hf_cod.csv",
     column = "code"
+)
+
+
+hf_icd10 = codelist_from_csv(
+    "codelists/reducehf-heart-failure-secondary-care.csv",
+    column = "code"
+)
+
+hf_ecds = codelist_from_csv(
+    "codelists/reducehf-heart-failure-ae.csv",
+    column = "code"
+)
+
+hf_exclude = codelist_from_csv(
+    "codelists/reducehf-heart-failure-broad-for-excluding-people.csv",
+    column = "code"
+)
+
+
+# Quality assurance
+
+prostate_cancer_snomed = codelist_from_csv(
+    "codelists/user-RochelleKnight-prostate_cancer_snomed.csv",
+    column="code"
+)
+prostate_cancer_icd10 = codelist_from_csv(
+    "codelists/user-RochelleKnight-prostate_cancer_icd10.csv",
+    column="code"
+)
+pregnancy_snomed = codelist_from_csv(
+    "codelists/user-RochelleKnight-pregnancy_and_birth_snomed.csv",
+    column="code"
+)
+cocp_dmd = codelist_from_csv(
+    "codelists/user-elsie_horne-cocp_dmd.csv",
+    column="dmd_id"
+)
+hrt_dmd = codelist_from_csv(
+    "codelists/user-elsie_horne-hrt_dmd.csv",
+    column="dmd_id"
+)
+
+# HF-related breathlessness
+
+breathlessness_snomed = codelist_from_csv(
+    "codelists/reducehf-breathlessness4all.csv",
+    column="code"
+)   
+# HF-related oedema
+
+oedema_snomed = codelist_from_csv(
+    "codelists/reducehf-oedema4all.csv",
+    column="code"
+) 
+# HF-related fatigue
+
+fatigue_snomed = codelist_from_csv(
+    "codelists/reducehf-fatigue4all.csv",
+    column="code"
+) 
+
+# NP testing - need to split into BNP and NT-proBNP for WP(2)
+
+NP_snomed = codelist_from_csv(
+    "codelists/reducehf-np-testing-4all.csv",
+    column="code"
+) 
+
+NP_ctv3 = codelist_from_csv(
+    "codelists/reducehf-np-testing-read.csv",
+    column="code"
 )
 

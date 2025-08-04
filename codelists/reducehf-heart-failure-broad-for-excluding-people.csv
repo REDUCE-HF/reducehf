@@ -1,0 +1,360 @@
+code,term
+10091002,High output heart failure
+101281000119107,Congestive heart failure due to cardiomyopathy
+10335000,Chronic right-sided heart failure
+10633002,Acute congestive heart failure
+1064941000000106,Heart failure with reduced ejection fraction
+106741000000105,New York Heart Association classification - class I
+106751000000108,New York Heart Association classification - class II
+1084871000000106,New York Heart Association Classification class
+1085041000000109,"Assessment using congestive heart failure, hypertension, age 75 years or older, diabetes mellitus and previous stroke or transient ischaemic attack score"
+1085111000000109,"Congestive heart failure, hypertension, age 75 years or older, diabetes mellitus and previous stroke or transient ischaemic attack score"
+11016261000119104,Nutritional therapy for congestive heart failure done
+1108711000000108,Excepted from heart failure quality indicators - service unavailable
+1110931000000103,Quality and Outcomes Framework heart failure quality indicator-related care invitation
+111283005,Chronic left-sided heart failure
+11321000175108,Heart failure education declined
+113901000052102,Heart failure following administration of antineoplastic agent
+1204200007,Left ventricular failure with normal ejection fraction due to valvular heart disease
+1204203009,Left ventricular failure with normal ejection fraction due to coronary arteriosclerosis
+1204204003,Left ventricular failure with normal ejection fraction due to myocarditis
+1204206001,Left ventricular failure with normal ejection fraction due to cardiomyopathy
+1204462004,Left ventricular failure with sepsis
+1204468000,Right ventricular failure with sepsis
+120851000119104,Systolic heart failure stage D
+120861000119102,Systolic heart failure stage C
+120871000119108,Systolic heart failure stage B
+120881000119106,Diastolic heart failure stage D
+1208843003,Right ventricular failure due to heart valve disorder
+1208846006,Right ventricular failure due to disorder of lung
+1208848007,Right ventricular failure due to disorder of pulmonary circulation
+1208850004,Right ventricular failure due to right ventricular infarction
+120891000119109,Diastolic heart failure stage C
+120901000119108,Diastolic heart failure stage B
+1264003007,Acute right ventricular failure following incision of heart
+128404006,Right heart failure
+1287376009,Minnesota Living with Heart Failure Questionnaire
+1296659009,Acute exacerbation of chronic heart failure
+134378009,Congestive heart failure monitoring
+134401001,Left ventricular systolic dysfunction
+134434004,New York Heart Assoc classification heart failure symptoms
+134440006,Referral to heart failure clinic
+13839000,Bernheim's syndrome
+138777006,H/O: heart failure
+138789008,H/O: Heart failure in last year
+143411000000100,Quality and Outcomes Framework heart failure quality indicator-related care invitation using preferred method of communication
+153931000119109,Acute combined systolic and diastolic heart failure
+153941000119100,Chronic combined systolic and diastolic heart failure
+153951000119103,Acute on chronic combined systolic and diastolic heart failure
+155374007,Heart failure
+155375008,(Congestive cardiac failure) or (dropsy) or (cardiac insufficiency) or (right heart failure) or (right ventricular failure)
+155377000,Heart failure NOS
+15629541000119106,Congestive heart failure stage C due to ischemic cardiomyopathy
+15629591000119103,Congestive heart failure stage B due to ischemic cardiomyopathy
+15629641000119107,Systolic heart failure stage B due to ischemic cardiomyopathy
+15629741000119102,Systolic heart failure stage C due to ischemic cardiomyopathy
+15781000119107,Hypertensive heart AND chronic kidney disease with congestive heart failure
+15964661000119102,Acute cor pulmonale due to septic pulmonary embolism
+15964701000119109,Acute cor pulmonale co-occurrent and due to saddle embolus of pulmonary artery
+161505003,History of heart failure
+161520009,H/O: Heart failure in last year
+16253001,Dilated peripartum cardiomyopathy
+16838951000119100,Acute on chronic right-sided congestive heart failure
+188151000000107,Admit heart failure emergency
+188171000000103,Referral to heart failure nurse
+188661000000101,Seen in heart failure clinic
+188711000000109,Seen by community heart failure nurse
+191651000000108,Admit heart failure emergency
+191671000000104,Referral to heart failure nurse
+192161000000108,Seen in heart failure clinic
+192211000000103,Seen by community heart failure nurse
+194767001,Benign hypertensive heart disease with congestive cardiac failure
+194779001,Hypertensive heart and renal disease with (congestive) heart failure
+194781004,Hypertensive heart and renal disease with both (congestive) heart failure and renal failure
+195108009,Heart failure: [right] or [congestive]
+195109001,Acute congestive heart failure
+195110006,Chronic congestive heart failure
+195111005,Decompensated cardiac failure
+195112003,Compensated cardiac failure
+195114002,Acute left ventricular failure
+195116000,Acute heart failure
+195117009,Heart: [weak] or [failure NOS]
+195132002,Post cardiac operation heart failure NOS
+200171000000102,Referred by heart failure nurse specialist
+200201000000101,Discharge from practice nurse heart failure clinic
+200361000000106,Did not attend practice nurse heart failure clinic
+202131000000103,Heart failure information given to patient
+202141000000107,Referral to heart failure exercise programme
+202221000000109,Heart failure monitoring administration
+202231000000106,Heart failure review completed
+202251000000104,Heart failure care plan discussed with patient
+203791000000106,Referred to heart failure education group
+206586007,Congenital cardiac failure
+207891000000108,Heart failure information given to patient
+207901000000109,Heart failure information given to patient
+207911000000106,Referral to heart failure exercise programme
+207921000000100,Referral to heart failure exercise programme
+208031000000100,Heart failure monitoring administration
+208041000000109,Heart failure monitoring administration
+208051000000107,Heart failure review completed
+208061000000105,Heart failure review completed
+208091000000104,Heart failure care plan discussed with patient
+208101000000107,Heart failure care plan discussed with patient
+211441000000105,Referred to heart failure education group
+211451000000108,Referred to heart failure education group
+213214001,[Cardiac insufficiency] or [heart failure] as a complication of care
+216741000000105,Referred by heart failure nurse specialist
+216751000000108,Referred by heart failure nurse specialist
+216801000000101,Discharge from practice nurse heart failure clinic
+216811000000104,Discharge from practice nurse heart failure clinic
+217751000000106,Did not attend practice nurse heart failure clinic
+217761000000109,Did not attend practice nurse heart failure clinic
+22959007,Cardiac arrest AND/OR heart failure following molar AND/OR ectopic pregnancy
+23341000119109,Congestive heart failure with right heart failure
+233924009,Heart failure as a complication of care
+233925005,Right ventricular failure
+247361000000100,Heart failure 6 month review
+248381000000108,Heart failure monitoring telephone invitation
+24841007,Cardiorespiratory failure during AND/OR resulting from a procedure
+248501000000107,Heart failure monitoring verbal invitation
+248511000000109,Heart failure monitoring first letter
+248521000000103,Heart failure monitoring second letter
+248531000000101,Heart failure monitoring third letter
+248571000000104,Did not attend heart failure clinic
+248701000000104,Exception reporting: heart failure quality indicators
+249291000000108,Excepted from heart failure quality indicators: Patient unsuitable
+249301000000107,Excepted from heart failure quality indicators: Informed dissent
+250411000000105,Heart failure 6 month review 
+251161000000108,Did not attend heart failure clinic 
+251651000000102,Heart failure monitoring telephone invite 
+251661000000104,Heart failure monitoring verbal invite 
+251671000000106,Heart failure monitoring first letter 
+251681000000108,Heart failure monitoring second letter 
+251691000000105,Heart failure monitoring third letter 
+251951000000108,Exception reporting: heart failure quality indicators 
+251961000000106,Excepted from heart failure quality indicators: Patient unsuitable 
+251971000000104,Excepted from heart failure quality indicators: Informed dissent 
+253041000000107,Heart failure 6 month review 
+25544003,Low output heart failure
+266248006,Heart failure NOS
+266308000,(Congestive cardiac failure) or (dropsy) or (cardiac insufficiency) or (right heart failure) or (right ventricular failure)
+274141000000108,Did not attend heart failure clinic 
+274631000000105,Heart failure monitoring telephone invite 
+274641000000101,Heart failure monitoring verbal invite 
+274651000000103,Heart failure monitoring first letter 
+274661000000100,Heart failure monitoring second letter 
+274671000000107,Heart failure monitoring third letter 
+274931000000102,Exception reporting: heart failure quality indicators 
+274941000000106,Excepted from heart failure quality indicators: Patient unsuitable 
+274951000000109,Excepted from heart failure quality indicators: Informed dissent 
+27511000175107,Heart failure management program
+307481000000103,Heart failure education
+307491000000101,Heart failure education 
+307501000000107,Heart failure education 
+309634009,History of heart failure in last year
+314206003,Refractory heart failure
+319410000,Vasodilators in heart failure [no drugs here]
+325431000000103,Congestive heart failure due to valvular disease
+33644002,Postvalvulotomy syndrome
+338101000000107,Congestive heart failure due to valvular disease
+352161000000109,"Congestive heart failure, hypertension, age, diabetes, stroke 2 stroke risk score"
+352171000000102,"Congestive heart failure, hypertension, age, diabetes, stroke 2, stroke risk score "
+352181000000100,"Congestive heart failure, hypertension, age, diabetes, stroke 2, stroke risk score "
+359617009,Acute right-sided heart failure
+359620001,Acute right heart failure
+364006,Acute left-sided heart failure
+366743000,New York Heart Association classification of heart failure symptoms
+366746008,New York Heart Association classification of heart failure symptoms
+366784002,Congestive heart failure monitoring
+366810007,Referral to heart failure clinic
+366862009,Congestive heart failure monitoring
+366890008,Referral to heart failure clinic
+367363000,Right ventricular failure
+374231000000104,High risk of heart failure screening invitation
+374241000000108,Heart failure screening invitation 
+374251000000106,Heart failure screening invitation 
+389838008,Heart failure annual review
+389898006,Heart failure screen
+389937002,Heart failure follow-up
+390570006,Heart failure annual review
+390630006,Heart failure screen
+390671000,Heart failure follow-up
+390884006,Heart failure follow-up
+390885007,Heart failure annual review
+392748002,Heart failure confirmed
+393703008,Heart failure confirmed
+394887005,Suspected heart failure
+394927007,Heart failure excluded
+395105005,Heart failure confirmed
+403298007,Red half-moon nail in congestive heart failure
+407596008,Echocardiogram shows left ventricular systolic dysfunction
+407605008,New York Heart Association classification - class I
+407606009,New York Heart Association classification - class II
+407607000,New York Heart Association classification - class III
+407608005,New York Heart Association classification - class IV
+410431009,Cardiorespiratory failure
+416683003,Emergency hospital admission for heart failure
+416717003,Seen in heart failure clinic
+417146007,Referral to heart failure nurse
+417359009,Seen by community heart failure nurse
+417996009,Systolic heart failure
+418304008,Diastolic heart failure
+420300004,New York Heart Association Classification - Class I
+420816009,New York Heart Association Classification
+420913000,New York Heart Association Classification - Class III
+421518007,New York Heart Classification finding
+421704003,New York Heart Association Classification - Class II
+422293003,New York Heart Association Classification - Class IV
+42343007,Congestive heart failure
+423475008,Heart failure education
+424404003,Decompensated chronic heart failure
+426012001,Right heart failure due to pulmonary hypertension
+426263006,Congestive heart failure due to left ventricular systolic dysfunction
+426611007,Congestive heart failure due to valvular disease
+430396006,Chronic systolic dysfunction of left ventricle
+43736008,Rheumatic left ventricular failure
+438367009,"Congestive heart failure, hypertension, age 75 years or older, diabetes, and previous stroke or transient ischemic attack risk score"
+440589006,Knowledge level about heart failure management
+44088000,Low cardiac output syndrome
+441481004,Chronic systolic heart failure
+441530006,Chronic diastolic heart failure
+44313006,Right heart failure secondary to left heart failure
+443253003,Acute on chronic systolic heart failure
+443254009,Acute systolic heart failure
+443343001,Acute diastolic heart failure
+443344007,Acute on chronic diastolic heart failure
+445236007,Cardiorenal syndrome
+446221000,Heart failure with normal ejection fraction
+45650007,Kyphoscoliotic heart disease
+46113002,Hypertensive heart failure
+471880001,Heart failure due to end stage congenital heart disease
+473226007,Heart failure medication review
+48447003,Chronic heart failure
+49584005,Acute cor pulmonale
+5053004,Cardiac insufficiency due to prosthesis
+50781000119109,Nutrition therapy for congestive heart failure
+510701000000100,Heart failure self management plan
+5148006,Hypertensive heart disease with congestive heart failure
+521691000000100,Heart failure resolved
+521701000000100,Heart failure resolved 
+5375005,Chronic left-sided congestive heart failure
+55565007,Heart failure following obstetric procedure
+56675007,Acute heart failure
+603891000000100,Post cardiac operation heart failure NOS
+60856006,Cardiac insufficiency following cardiac surgery
+609507007,Induced termination of pregnancy complicated by cardiac failure
+609555007,Diastolic heart failure stage A
+609556008,Systolic heart failure stage A
+61783007,Acute right-sided heart failure
+62377009,Postpartum cardiomyopathy
+66989003,Chronic right-sided congestive heart failure
+67431000119105,Congestive heart failure stage D
+67441000119101,Congestive heart failure stage C
+686171000000103,Heart failure NOS
+698296002,Acute exacerbation of chronic congestive heart failure
+698361000,Heart failure self management plan
+698592004,Asymptomatic left ventricular systolic dysfunction
+698594003,Symptomatic congestive heart failure
+702843005,Congestive heart failure clinic
+703272007,Heart failure with reduced ejection fraction
+703273002,Heart failure with reduced ejection fraction due to coronary artery disease
+703274008,Heart failure with reduced ejection fraction due to myocarditis
+703275009,Heart failure with reduced ejection fraction due to cardiomyopathy
+703276005,Heart failure with reduced ejection fraction due to heart valve disease
+704095000,Referral to heart failure exercise program
+704096004,Referral to heart failure exercise program not indicated
+704097008,Referral to heart failure exercise program declined
+708018005,"Assessment using congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2 - vascular disease, age, sex category score"
+711461000000104,Heart failure monitoring invitation
+713678009,"Congestive heart failure, hypertension, age 75 years or older, diabetes, previous stroke or transient ischemic attack, vascular disease, age 65-74 years, and sex category risk score"
+713791000000101,Heart failure monitoring administration
+715621003,Heart failure education not done
+715951000000107,Exception reporting - heart failure quality indicators
+716621000000101,Heart failure monitoring third letter
+716971000000109,Heart failure monitoring first letter
+717191000000108,Heart failure monitoring second letter
+717481000000104,Excepted from heart failure quality indicators - patient unsuitable
+717491000000102,Excepted from heart failure quality indicators - informed dissent
+717501000000108,Heart failure monitoring verbal invitation
+717531000000102,Heart failure monitoring telephone invitation
+717840005,Congestive heart failure stage B
+718287008,Provision of written information about heart failure
+71892000,Cardiac asthma
+720700006,Congestive heart failure clinical management plan
+722095005,Acute kidney injury due to circulatory failure
+72481000119103,Congestive heart failure as early postoperative complication
+735258002,"Congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2, vascular disease, age, sex category score"
+735259005,"Congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2, vascular disease, age, sex category stroke risk score"
+735984001,Heart failure self management plan
+737430008,Congestive heart failure clinical management plan
+74960003,Acute left-sided congestive heart failure
+749821000000101,Heart failure with normal ejection fraction
+757101000000106,Heart failure with normal ejection fraction
+760361000000100,Fast track heart failure referral for transthoracic two dimensional echocardiogram
+762994006,New York Heart Association Classification class
+762998009,Assessment using New York Heart Association Classification
+763007002,"Assessment using congestive heart failure, hypertension, age 75 years or older, diabetes mellitus and previous stroke or transient ischemic attack score"
+763008007,"Congestive heart failure, hypertension, age 75 years or older, diabetes mellitus and previous stroke or transient ischemic attack score"
+763641000000102,Referral to heart failure education group declined
+763651000000104,Referral to heart failure education group declined 
+765661000000102,Discharge from heart failure nurse service
+765671000000109,Discharge from heart failure nurse service 
+773587008,"X-linked intellectual disability, cardiomegaly, congestive heart failure syndrome"
+776251000000100,Referral to heart failure exercise programme declined
+776261000000102,Referral to heart failure exercise programme declined 
+776291000000108,Referral to heart failure exercise programme not indicated
+776301000000107,Referral to heart failure exercise programme not indicated 
+77737007,Benign hypertensive heart disease with congestive heart failure
+780771000000106,Fast track heart failure referral for transthoracic two dimensional echocardiogram
+781051000000108,Has heart failure management plan
+781061000000106,Has heart failure management plan 
+78862003,Ayerza's syndrome
+788950000,Heart failure with mid range ejection fraction
+789621000000105,Preferred place of care for next exacerbation of heart failure
+789631000000107,Preferred place of care for next exacerbation of heart failure 
+793811000000101,"Congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2, vascular disease, age, sex category score"
+793821000000107,"Congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2 - vascular disease, age, sex category stroke risk "
+793851000000102,"Congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2 - vascular disease, age, sex category stroke risk score"
+793891000000105,"Assessment using congestive heart failure, hypertension, age 2, diabetes mellitus, stroke 2 - vascular disease, age, sex category score"
+79955004,Chronic cor pulmonale
+80479009,Acute right-sided congestive heart failure
+810971000000105,Heart failure self-management plan review
+812001000000102,Heart failure self-management plan agreed
+812011000000100,Heart failure self-management plan agreed 
+813991000000101,Education about deteriorating heart failure
+814001000000106,Education about deteriorating heart failure 
+82523003,Congestive rheumatic heart failure
+83105008,Malignant hypertensive heart disease with congestive heart failure
+832141000000109,Heart failure self-management plan review
+83291003,Cor pulmonale
+835981000000108,Rehabilitation for heart failure
+84114007,Heart failure
+848551000000100,Referral to multidisciplinary heart failure team
+850021000000103,Provision of written information about heart failure
+851071000000108,Heart failure initial assessment
+851521000000102,Heart failure clinical pathway
+851531000000100,Heart failure clinical pathway 
+85232009,Left heart failure
+871617000,Low output heart failure due to and following Fontan operation
+871681000000102,Heart failure monitoring
+872361000000105,Discussion about heart failure care plan
+873881000000100,Referral to rapid access heart failure clinic
+873891000000103,Referral to rapid access heart failure clinic 
+87751000000100,New York Heart Association classification - class III
+87761000000102,New York Heart Association classification - class IV
+879780004,Telehealth monitoring for chronic heart failure
+88805009,Chronic congestive heart failure
+89819002,Cardiac insufficiency during AND/OR resulting from a procedure
+898208007,Heart failure due to thyrotoxicosis
+90727007,Pleural effusion due to congestive heart failure
+915571000000102,On optimal heart failure therapy
+915581000000100,On optimal heart failure therapy 
+92506005,Biventricular congestive heart failure
+939881000000105,Heart failure rehabilitation programme not available
+939891000000107,Heart failure rehabilitation programme not available 
+961881000000101,Provision of information about heart failure
+96311000119109,Exacerbation of congestive heart failure
+98031000000107,New York Heart Association classification - class I
+98041000000103,New York Heart Association classification - class II
+98051000000100,New York Heart Association classification - class III
+98061000000102,New York Heart Association classification - class IV
