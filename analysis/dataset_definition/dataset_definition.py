@@ -7,36 +7,25 @@ from ehrql import (
 from ehrql.tables.tpp import (
     patients, 
     practice_registrations, 
-    clinical_events,
-    apcs,
-    ec
 )
 
-import codelists
-
-from helper_functions import *
 from dataset_functions import *
 
-def generate_dataset(project_index_date, start_date, end_date):
-
-    dataset = create_dataset()
+def generate_dataset(dataset, project_index_date, start_date, end_date):
 
     #ADD VARIABLES TO DATASET
     dataset = add_hf_diagnosis(dataset, project_index_date)
 
-    #any evidence of HF, not just diagnosis codes, before index date
-    dataset.hf_exclude = last_matching_event_clinical_snomed_before(codelists.hf_exclude, project_index_date).date
-
     #core variables derived based on project_index_date
     dataset = add_core(dataset, project_index_date)
 
-    dataset = add_time_dependent_core(dataset, start_date)
+    dataset = add_time_dependent_core(dataset, project_index_date)
 
     # date should be date of HF diagnosis
     dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
 
     #quality assurance
-    dataset = add_quality_assurance(dataset, dataset.hf_diagnosis_date)
+    dataset = add_quality_assurance(dataset, project_index_date)
 
     # using date of HF diagnosis as reference -- may need adjusting
     dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)

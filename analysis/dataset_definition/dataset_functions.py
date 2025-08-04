@@ -252,6 +252,10 @@ def add_hf_diagnosis(dataset, index_date):
     function should also return location of first diagnosis
     i.e. community or emergency-hospital
     ''' 
+
+    #any evidence of HF, not just diagnosis codes, before index date
+    dataset.hf_exclude = last_matching_event_clinical_snomed_before(hf_exclude, index_date).date
+
     #primary care
     dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
 

@@ -12,4 +12,4 @@ end_date = "2025-01-01"
 
 # could also add WP specific covariates here
 
-dataset = generate_dataset(project_index_date, start_date, end_date)
+dataset = generate_dataset(dataset, project_index_date, start_date, end_date)
