@@ -34,6 +34,12 @@ dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
 # using date of HF diagnosis as reference -- may need adjusting
 dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
 
+# using first NT-proBNP test
+dataset = add_ntpro_tests(dataset, project_index_date)
+
+# hf-related symptoms variables
+dataset = add_hf_symptoms(dataset, project_index_date)
+
 #quality assurance
 
 dataset = add_quality_assurance(dataset, dataset.hf_diagnosis_date)

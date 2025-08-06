@@ -313,18 +313,18 @@ def add_comorbidities(dataset, index_date):
     return dataset
 
 
-def add_np_tests(dataset):
+#def add_np_tests(dataset):
     # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Only need the date to compare with symptoms date
 
-    first_np = first_matching_event_clinical_snomed_after(NP_snomed,project_start_date)
-    dataset.np_date = first_np.date
+#    first_np = first_matching_event_clinical_snomed_after(NP_snomed,index_date)
+#    dataset.np_date = first_np.date
     
-    return dataset
+#    return dataset
 
-def add_ntpro_tests(dataset):
+def add_ntpro_tests(dataset, index_date):
     # NTProBNP testing and using SNOMED codes for WP2(2).  
 
-    first_nt = first_matching_event_clinical_snomed_after(NTpro_snomed,project_start_date)
+    first_nt = first_matching_event_clinical_snomed_after(NTpro_snomed,index_date)
     dataset.nt_date = first_nt.date
     dataset.nt_result = first_nt.numeric_value
     dataset.nt_comparator = first_nt.comparator
@@ -334,23 +334,23 @@ def add_ntpro_tests(dataset):
     return dataset
 
 
-def add_hf_symptoms(dataset, index_date): 
-# want first incidence of any of the three symptoms
+def add_hf_symptoms(dataset,index_date): 
+# date of first incidence of any of the three symptoms
 
-   dataset.temp_breathless_date_primary=first_matching_event_clinical_snomed_before(
+   dataset.temp_breathless_date_primary=first_matching_event_clinical_snomed_after(
        breathlessness_snomed, index_date
    ).date
 
-   dataset.temp_oedema_date_primary=first_matching_event_clinical_snomed_before(
-       oedema_snomed, index_date
+   dataset.temp_oedema_date_primary=first_matching_event_clinical_snomed_after(
+       oedema_snomed,index_date
    ).date
 
-   dataset.temp_fatigue_date_primary=first_matching_event_clinical_snomed_before(
+   dataset.temp_fatigue_date_primary=first_matching_event_clinical_snomed_after(
        fatigue_snomed, index_date
    ).date
 
 # combine to find the earliest date of any symptom
-    dataset.first_symptom.date = minimum_of(
+    dataset.first_hfsymptom.date = minimum_of(
       dataset.temp_breathless_date_primary,
       dataset.temp_oedema_date_primary,
       dataset.temp_fatigue_date_primary
@@ -361,6 +361,14 @@ def add_hf_symptoms(dataset, index_date):
     -  oedema: not currently available - need to create
     -  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
     '''
+
+# testing if np test date (BNP or NT-proBNP) closely preceded or followed  hf-related symptoms
+
+    dataset.np_near_symptom =clinical_events.where(
+        clinical_events.snomedct_code.is_in(NP_snomed)
+     ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom.date-30, dataset.first_hfsymptom.dat+90)
+     ).exists_for_patient()
 
     return dataset
 
