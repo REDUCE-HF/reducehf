@@ -39,6 +39,9 @@ from helper_functions import (
 
 from codelists import *
 
+#using this date for now
+project_index_date = '2017-01-01'
+
 def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
 
@@ -313,7 +316,7 @@ def add_comorbidities(dataset, index_date):
 def add_tests(dataset):
     # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
 
-    first_np = first_matching_event_clinical_snomed_after(NP_snomed,'2017-01-01')
+    first_np = first_matching_event_clinical_snomed_after(NP_snomed,project_start_date)
 # NOTE - may need to change study start date
     dataset.np_date = first_np.date
     dataset.np_result = first_np.numeric_value
