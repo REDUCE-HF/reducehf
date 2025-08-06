@@ -314,38 +314,46 @@ def add_comorbidities(dataset, index_date):
 
 
 def add_np_tests(dataset):
-    # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
+    # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Only need the date to compare with symptoms date
 
     first_np = first_matching_event_clinical_snomed_after(NP_snomed,project_start_date)
     dataset.np_date = first_np.date
-    dataset.np_result = first_np.numeric_value
-    dataset.np_comparator = first_np.comparator
-    dataset.np_lower_bound = first_np.lower_bound
-    dataset.np_upper_bound = first_np.upper_bound
+    
+    return dataset
+
+def add_ntpro_tests(dataset):
+    # NTProBNP testing and using SNOMED codes for WP2(2).  
+
+    first_nt = first_matching_event_clinical_snomed_after(NTpro_snomed,project_start_date)
+    dataset.nt_date = first_nt.date
+    dataset.nt_result = first_nt.numeric_value
+    dataset.nt_comparator = first_nt.comparator
+    dataset.nt_lower_bound = first_nt.lower_bound
+    dataset.nt_upper_bound = first_nt.upper_bound
   
     return dataset
 
 
-def add_hf_symptoms(dataset, index_date):
+def add_hf_symptoms(dataset, index_date): 
 # want first incidence of any of the three symptoms
 
-   dataset.temp_breathless_data_primary=first_matching_event_clinical_snomed_before(
+   dataset.temp_breathless_date_primary=first_matching_event_clinical_snomed_before(
        breathlessness_snomed, index_date
    ).date
 
-   dataset.temp_oedema_data_primary=first_matching_event_clinical_snomed_before(
+   dataset.temp_oedema_date_primary=first_matching_event_clinical_snomed_before(
        oedema_snomed, index_date
    ).date
 
-   dataset.temp_fatigue_data_primary=first_matching_event_clinical_snomed_before(
+   dataset.temp_fatigue_date_primary=first_matching_event_clinical_snomed_before(
        fatigue_snomed, index_date
    ).date
 
 # combine to find the earliest date of any symptom
     dataset.first_symptom.date = minimum_of(
-      dataset.temp_breathless_data_primary,
-      dataset.temp_oedema_data_primary,
-      dataset.temp_fatigue_data_primary
+      dataset.temp_breathless_date_primary,
+      dataset.temp_oedema_date_primary,
+      dataset.temp_fatigue_date_primary
 )
     '''
     Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input

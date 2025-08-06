@@ -246,13 +246,16 @@ fatigue_snomed = codelist_from_csv(
     column="code"
 ) 
 
-# NP testing - need to split into BNP and NT-proBNP for WP(2)
+# NP testing 
 
 NP_snomed = codelist_from_csv(
-    "codelists/reducehf-np-testing-4all-63ce832d.csv",
+    "codelists/reducehf-np-testing2-01bf2d12.csv",
     column="code"
 ) 
 NP_ctv3 = codelist_from_csv(
     "codelists/reducehf-np-testing-read-678a6104.csv",
-    column="code"
+    column="code"  
 ) 
+NTpro_snomed = codelist_from_csv(
+    "codelists/reducehf-ntpro-testing-3690d372.csv",
+    column="code"
