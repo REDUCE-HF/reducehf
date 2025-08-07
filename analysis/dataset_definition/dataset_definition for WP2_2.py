@@ -18,6 +18,17 @@ dataset.configure_dummy_data(population_size=1000)
 project_index_date = '2017-01-01'
 end_date = '2025-01-01'
 
+# Define population and cohort entry date for this WP  
+# First NTProBNP test and using SNOMED codes  
+
+first_nt = first_matching_event_clinical_snomed_in(NTpro_snomed,project_index_date, end_date)
+dataset.nt1_date = first_nt.date
+dataset.nt1_result = first_nt.numeric_value
+dataset.nt1_comparator = first_nt.comparator
+dataset.nt1_lower_bound = first_nt.lower_bound
+dataset.nt1_upper_bound = first_nt.upper_bound
+
+
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
 
@@ -43,15 +54,6 @@ dataset.define_population(
     & dataset.where(np1_date.is_not_null()
    )
 
-# Define cohort entry date for this WP  
-# NTProBNP testing and using SNOMED codes for WP2(2).  
-
-first_nt = first_matching_event_clinical_snomed_in(NTpro_snomed,project_index_date, end_date)
-dataset.nt1_date = first_nt.date
-dataset.nt1_result = first_nt.numeric_value
-dataset.nt1_comparator = first_nt.comparator
-dataset.nt1_lower_bound = first_nt.lower_bound
-dataset.nt1_upper_bound = first_nt.upper_bound
 
 dataset.cohort_entry_date = dataset.nt1.date
 

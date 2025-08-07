@@ -18,34 +18,8 @@ dataset.configure_dummy_data(population_size=1000)
 project_index_date = '2017-01-01'
 study_end_date = '2025-01-01'
 
-#DEFINE POPULATION (inclusion/exclusion criteria)
-#note: this will be different for each WP
-
-#registered for at least 1 year
-#practice registration at minimum study end date - 1 year
-#exclude historic registrations that ended before project_index_date
-
-has_registration = practice_registrations.where(
-        practice_registrations.start_date.is_on_or_before(end_date - years(1))
-    ).except_where(
-        practice_registrations.end_date.is_on_or_before(project_index_date)
-    ).exists_for_patient()
-
-
-# Need to define age at cohort entry date
-dataset.define_population(
-    has_registration
-    & patients.sex.is_in(['male','female']) #known sex proxy for data quality
-    & patients.date_of_birth.is_not_null() #known dob proxy for data quality
-    & ~(patients.age_on(project_index_date) < 45) #remove pts < 45
-    #& ~(patients.age_on(project_index_date) >= 110) #remove pts age 110+
-    & (patients.is_alive_on(project_index_date)) #remove pts who died before start
-    #& ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_diagnosis_date > project_index_date))
-    & dataset.where(first_symptom_date.is_not_null()
- )  
-
-# Define cohort entry date for this WP 
-# date of first incidence of any of the three symptoms
+# Define population and cohort entry date for this WP 
+# date of first incidence of any of the three HF-related symptoms
 
 dataset.temp_breathless_date_primary=first_matching_event_clinical_snomed_in(
    breathlessness_snomed, project_index_date, end_date
@@ -79,6 +53,33 @@ dataset.np_near_symptom =clinical_events.where(
 ).where(
     clinical_events.date.is_on_or_between(dataset.first_hfsymptom.date-30, dataset.first_hfsymptom.dat+90)
 ).exists_for_patient()
+
+
+#DEFINE POPULATION (inclusion/exclusion criteria)
+#note: this will be different for each WP
+
+#registered for at least 1 year
+#practice registration at minimum study end date - 1 year
+#exclude historic registrations that ended before project_index_date
+
+has_registration = practice_registrations.where(
+        practice_registrations.start_date.is_on_or_before(end_date - years(1))
+    ).except_where(
+        practice_registrations.end_date.is_on_or_before(project_index_date)
+    ).exists_for_patient()
+
+
+# Need to define age at cohort entry date
+dataset.define_population(
+    has_registration
+    & patients.sex.is_in(['male','female']) #known sex proxy for data quality
+    & patients.date_of_birth.is_not_null() #known dob proxy for data quality
+    & ~(patients.age_on(project_index_date) < 45) #remove pts < 45
+    #& ~(patients.age_on(project_index_date) >= 110) #remove pts age 110+
+    & (patients.is_alive_on(project_index_date)) #remove pts who died before start
+    #& ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_diagnosis_date > project_index_date))
+    & dataset.where(first_hfsymptom_date.is_not_null()
+ )  
 
 dataset.cohort_entry_date = dataset.first_symptom.date  
 
