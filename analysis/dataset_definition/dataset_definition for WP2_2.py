@@ -18,6 +18,10 @@ dataset.configure_dummy_data(population_size=1000)
 project_index_date = '2017-01-01'
 end_date = '2025-01-01'
 
+# Define study index date for this WP
+dataset= add_ntpro_tests(dataset, project_index_date)
+dataset.study_index_date = dataset.nt1.date
+
 #ADD VARIABLES TO DATASET
 
 #will need to define this more thoroughly

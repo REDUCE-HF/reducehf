@@ -18,11 +18,12 @@ dataset.configure_dummy_data(population_size=1000)
 project_index_date = '2017-01-01'
 end_date = '2025-01-01'
 
+# Define study index date for this WP 
+dataset= add_hf_symptoms(dataset, project_index_date)
+dataset.study_index_date = dataset.first_symptom.date            
+
+
 #ADD VARIABLES TO DATASET
-
-# Deine study index date for this WP
-
-dataset= add_hf_symptoms(dataset, index_date)
 
 #will need to define this more thoroughly
 dataset = add_hf_diagnosis(dataset, project_index_date)
