@@ -325,11 +325,11 @@ def add_ntpro_tests(dataset, index_date):
     # NTProBNP testing and using SNOMED codes for WP2(2).  
 
     first_nt = first_matching_event_clinical_snomed_after(NTpro_snomed,index_date)
-    dataset.nt_date = first_nt.date
-    dataset.nt_result = first_nt.numeric_value
-    dataset.nt_comparator = first_nt.comparator
-    dataset.nt_lower_bound = first_nt.lower_bound
-    dataset.nt_upper_bound = first_nt.upper_bound
+    dataset.nt1_date = first_nt.date
+    dataset.nt1_result = first_nt.numeric_value
+    dataset.nt1_comparator = first_nt.comparator
+    dataset.nt1_lower_bound = first_nt.lower_bound
+    dataset.nt1_upper_bound = first_nt.upper_bound
   
     return dataset
 
