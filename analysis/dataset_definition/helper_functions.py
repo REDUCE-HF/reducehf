@@ -88,6 +88,7 @@ def last_matching_event_clinical_ranges_snomed_before(codelist, start_date, wher
         .last_for_patient()
     )
 
+
 def last_matching_med_dmd_before(codelist, start_date, where=True):
     return(
         medications.where(where)

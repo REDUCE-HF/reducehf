@@ -45,7 +45,6 @@ end_date='2025-01-01'
 
 def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
-
     '''
     core variables don't differ between WPs
     they depend on project_index_date only
@@ -56,8 +55,6 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     project_index_date: for our project, 01-01-2017
     end_date: project / follow-up end date
     '''
-
-
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
     
@@ -155,7 +152,6 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     return dataset
 
 
-
 def add_time_dependent_core(dataset, index_date):
 
     '''
@@ -169,6 +165,7 @@ def add_time_dependent_core(dataset, index_date):
     -  diastolic BP*
     -  total cholesterol*
     *(date of most recent test/reading prior to index date and value)
+
     '''
 # date of first incidence of any of the three HF-related symptoms
 
@@ -185,18 +182,17 @@ tmp_fatigue_date_primary=first_matching_event_clinical_snomed_in(
 ).date
 
 # combine to find the earliest date of any symptom
-dataset.first_hfsymptom.date = minimum_of(
+dataset.first_hfsymptom_date = minimum_of(
     tmp_breathless_date_primary,
     tmp_oedema_date_primary,
     tmp_fatigue_date_primary
 )
 
 # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
-
-dataset.np_near_symptom =clinical_events.where(
+dataset.np_near_symptom = clinical_events.where(
     clinical_events.snomedct_code.is_in(NP_snomed)
 ).where(
-    clinical_events.date.is_on_or_between(dataset.first_hfsymptom.date-30, dataset.first_hfsymptom.dat+90)
+    clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
 ).exists_for_patient()
 
 # echo referral or echo done near first hf-related symptoms
@@ -204,13 +200,13 @@ dataset.np_near_symptom =clinical_events.where(
 dataset.echo_ref_near_symptom =clinical_events.where(
     clinical_events.snomedct_code.is_in(echo_ref)
 ).where(
-    clinical_events.date.is_on_or_between(dataset.first_hfsymptom.date-30, dataset.first_hfsymptom.dat+90)
+    clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
 ).exists_for_patient()
 
 dataset.echo_done_near_symptom =clinical_events.where(
-    clinical_events.snomedct_code.is_in(echo_ref)
+    clinical_events.snomedct_code.is_in(echo_done)
 ).where(
-    clinical_events.date.is_on_or_between(dataset.first_hfsymptom.date-30, dataset.first_hfsymptom.dat+90)
+    clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
 ).exists_for_patient()
 
 dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(FALSE)
@@ -289,7 +285,6 @@ def add_underserved(dataset, index_date):
 
     return dataset
 
-
 def add_hf_diagnosis(dataset, index_date):
 
     '''
@@ -366,9 +361,6 @@ def add_comorbidities(dataset, index_date):
         ).exists_for_patient()
 
     return dataset
-
-
-
 
 
 

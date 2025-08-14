@@ -254,15 +254,12 @@ fatigue_snomed = codelist_from_csv(
 # NP testing 
 
 NP_snomed = codelist_from_csv(
-    "codelists/reducehf-np-testing2-01bf2d12.csv",
+    "codelists/reducehf-np-any-33175fed.csv",
     column="code"
 ) 
-NP_ctv3 = codelist_from_csv(
-    "codelists/reducehf-np-testing-read-678a6104.csv",
-    column="code"  
-) 
+
 NTpro_snomed = codelist_from_csv(
-    "codelists/reducehf-ntpro-testing-3690d372.csv",
+    "codelists/reducehf-ntpro-num_only-65364657.csv",
     column="code"
 
 #Echocardiography referral
