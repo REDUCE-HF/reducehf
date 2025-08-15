@@ -285,6 +285,16 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
 
+    asthma_review_ = last_matching_event_clinical_snomed_before(asthma_review, index_date)
+    dataset.asthma_review_date = asthma_review_.date
+    
+    copd_review_ = last_matching_event_clinical_snomed_before(copd_review, index_date)
+    dataset.copd_review_date = copd_review_.date
+
+    med_review_ = last_matching_event_clinical_snomed_before(med_review, index_date)
+    dataset.med_review_date = med_review_.date
+
+
     return dataset
 
 

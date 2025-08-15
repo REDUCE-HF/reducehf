@@ -67,4 +67,6 @@ reducehf/fatigue4all/7cddf662/
 reducehf/oedema4all/2efcdccd/
 reducehf/breathlessness4all/6d0c1be7/
 opensafely/systolic-blood-pressure-qof/3572b5fb/
-opensafely/systolic-blood-pressure-qof/3572b5fb/
+opensafely/asthma-annual-review-qof/33eeb7da/
+opensafely/chronic-obstructive-pulmonary-disease-copd-review-qof/01cfd170/
+opensafely/care-planning-medication-review-simple-reference-set-nhs-digital/61b13c39/

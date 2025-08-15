@@ -370,3 +370,20 @@ systolic_bp = codelist_from_csv(
     "codelists/opensafely-systolic-blood-pressure-qof.csv",
     column="code"
 )
+
+# Annual reviews
+
+asthma_review = codelist_from_csv(
+    "codelists/opensafely-asthma-annual-review-qof.csv",
+    column="code"
+)
+
+copd_review = codelist_from_csv(
+    "codelists/opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof.csv",
+    column="code"
+)
+
+med_review = codelist_from_csv(
+    "codelists/opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv",
+    column="code"
+)
