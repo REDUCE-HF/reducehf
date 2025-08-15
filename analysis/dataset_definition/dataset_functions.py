@@ -155,7 +155,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 def add_time_dependent_core(dataset, index_date):
 
     '''
-    add core variables that depend on index date
+     
     and therefore differ between WPs
     variables to be added:
     -  smoking status
@@ -167,6 +167,43 @@ def add_time_dependent_core(dataset, index_date):
     *(date of most recent test/reading prior to index date and value)
 
     '''
+
+    # Smoking status
+    tmp_most_recent_smoking_cat = (
+        last_matching_event_clinical_ctv3_before(smoking_clear, index_date)
+        .ctv3_code.to_category(smoking_clear)
+    )
+    tmp_ever_smoked = ever_matching_event_clinical_ctv3_before(
+        (filter_codes_by_category(smoking_clear, include=["S", "E"])), index_date
+        ).exists_for_patient()
+
+    dataset.smoking = case(
+        when(tmp_most_recent_smoking_cat == "S").then("S"),
+        when((tmp_most_recent_smoking_cat == "E") | ((tmp_most_recent_smoking_cat == "N") 
+            & (tmp_ever_smoked == True))).then("E"),
+        when((tmp_most_recent_smoking_cat == "N") & (tmp_ever_smoked == False)).then("N"),
+        otherwise="M"
+    )
+    
+    # BMI
+    bmi = last_matching_event_clinical_ranges_snomed_before(
+        bmi_cod, index_date
+        )
+    dataset.bim_date = bmi.date
+    dataset.bmi_value = bmi.numeric_value
+
+
+    #Cholesterol
+    cholesterol = last_matching_event_clinical_ranges_snomed_before(
+        cholesterol_snomed, index_date
+        )
+    dataset.last_cholesterol_date = cholesterol.date
+    dataset.last_cholesterol_value = cholesterol.numeric_value
+
+    return dataset
+
+# def add_np_related(dataset, index_date):
+ 
 # date of first incidence of any of the three HF-related symptoms
 
 tmp_breathless_date_primary=first_matching_event_clinical_snomed_in(
@@ -220,42 +257,7 @@ dataset.nt1_comparator = first_nt.comparator
 dataset.nt1_lower_bound = first_nt.lower_bound
 dataset.nt1_upper_bound = first_nt.upper_bound
 
-
-    # Smoking status
-    tmp_most_recent_smoking_cat = (
-        last_matching_event_clinical_ctv3_before(smoking_clear, index_date)
-        .ctv3_code.to_category(smoking_clear)
-    )
-    tmp_ever_smoked = ever_matching_event_clinical_ctv3_before(
-        (filter_codes_by_category(smoking_clear, include=["S", "E"])), index_date
-        ).exists_for_patient()
-
-    dataset.smoking = case(
-        when(tmp_most_recent_smoking_cat == "S").then("S"),
-        when((tmp_most_recent_smoking_cat == "E") | ((tmp_most_recent_smoking_cat == "N") 
-            & (tmp_ever_smoked == True))).then("E"),
-        when((tmp_most_recent_smoking_cat == "N") & (tmp_ever_smoked == False)).then("N"),
-        otherwise="M"
-    )
-
-    
-    # BMI
-    bmi = last_matching_event_clinical_ranges_snomed_before(
-        bmi_cod, index_date
-        )
-    dataset.bim_date = bmi.date
-    dataset.bmi_value = bmi.numeric_value
-
-
-    #Cholesterol
-    cholesterol = last_matching_event_clinical_ranges_snomed_before(
-        cholesterol_snomed, index_date
-        )
-    dataset.last_cholesterol_date = cholesterol.date
-    dataset.last_cholesterol_value = cholesterol.numeric_value
-
-    return dataset
-
+#return dataset
 
 def add_underserved(dataset, index_date):
 
