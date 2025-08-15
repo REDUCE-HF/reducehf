@@ -364,3 +364,9 @@ NP_ctv3 = codelist_from_csv(
     column="code"
 )
 
+#BP
+
+systolic_bp = codelist_from_csv(
+    "codelists/opensafely-systolic-blood-pressure-qof.csv",
+    column="code"
+)

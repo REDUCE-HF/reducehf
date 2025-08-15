@@ -131,7 +131,6 @@ def add_time_dependent_core(dataset, index_date):
     and therefore differ between WPs
     variables to be added:
     -  smoking status
-    -  household size
     -  BMI
     -  systolic BP*
     -  diastolic BP*
@@ -165,6 +164,12 @@ def add_time_dependent_core(dataset, index_date):
         otherwise="N"
     )
 
+    # systolic BP
+    bp = last_matching_event_clinical_ranges_snomed_before(
+        systolic_bp, index_date
+        )
+    dataset.bp_date = bp.date
+    dataset.bp_value = bp.numeric_value
 
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(

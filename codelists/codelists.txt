@@ -66,3 +66,5 @@ reducehf/np-testing-read/678a6104/
 reducehf/fatigue4all/7cddf662/
 reducehf/oedema4all/2efcdccd/
 reducehf/breathlessness4all/6d0c1be7/
+opensafely/systolic-blood-pressure-qof/3572b5fb/
+opensafely/systolic-blood-pressure-qof/3572b5fb/
