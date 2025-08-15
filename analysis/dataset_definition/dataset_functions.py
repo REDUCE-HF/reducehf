@@ -34,14 +34,13 @@ from helper_functions import (
     last_matching_event_clinical_ctv3_before,
     last_matching_event_apc_before,
     last_matching_med_dmd_before,
+    first_matching_event_clinical_ranges_snomed_in,
     filter_codes_by_category
 )
 
 from codelists import *
 
-#using this date for now
-project_index_date = '2017-01-01'
-end_date='2025-01-01'
+
 
 def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
@@ -155,7 +154,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 def add_time_dependent_core(dataset, index_date):
 
     '''
-     
+     and core variables that depend on index_date
     and therefore differ between WPs
     variables to be added:
     -  smoking status
@@ -202,62 +201,61 @@ def add_time_dependent_core(dataset, index_date):
 
     return dataset
 
-# def add_np_related(dataset, index_date):
+def add_np_vars(dataset, index_date, end_date):
  
-# date of first incidence of any of the three HF-related symptoms
+    #date of first incidence of any of the three HF-related symptoms
+    tmp_breathless_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    breathless_snomed, index_date, end_date
+    ).date
 
-tmp_breathless_date_primary=first_matching_event_clinical_snomed_in(
-   breathlessness_snomed, index_date, end_date
-).date
+    tmp_oedema_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    oedema_snomed, index_date, end_date
+    ).date
 
-tmp_oedema_date_primary=first_matching_event_clinical_snomed_in(
-   oedema_snomed,index_date, end_date
-).date
+    tmp_fatigue_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    fatigue_snomed, index_date, end_date
+    ).date
 
-tmp_fatigue_date_primary=first_matching_event_clinical_snomed_in(
-   fatigue_snomed, index_date, end_date
-).date
+    #combine to find the earliest date of any symptom
+    dataset.first_hfsymptom_date = minimum_of(
+        tmp_breathless_date_primary,
+        tmp_oedema_date_primary,
+        tmp_fatigue_date_primary
+    )
 
-# combine to find the earliest date of any symptom
-dataset.first_hfsymptom_date = minimum_of(
-    tmp_breathless_date_primary,
-    tmp_oedema_date_primary,
-    tmp_fatigue_date_primary
-)
+    # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
+    dataset.np_near_symptom = clinical_events.where(
+        clinical_events.snomedct_code.is_in(NP_snomed)
+    ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
+    ).exists_for_patient()
 
-# testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
-dataset.np_near_symptom = clinical_events.where(
-    clinical_events.snomedct_code.is_in(NP_snomed)
-).where(
-    clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
-).exists_for_patient()
+    #echo referral or echo done near first hf-related symptoms
 
-# echo referral or echo done near first hf-related symptoms
+    dataset.echo_ref_near_symptom =clinical_events.where(
+        clinical_events.snomedct_code.is_in(echo_ref)
+    ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
+    ).exists_for_patient()
 
-dataset.echo_ref_near_symptom =clinical_events.where(
-    clinical_events.snomedct_code.is_in(echo_ref)
-).where(
-    clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
-).exists_for_patient()
+    dataset.echo_done_near_symptom =clinical_events.where(
+        clinical_events.snomedct_code.is_in(echo_done)
+    ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
+    ).exists_for_patient()
 
-dataset.echo_done_near_symptom =clinical_events.where(
-    clinical_events.snomedct_code.is_in(echo_done)
-).where(
-    clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
-).exists_for_patient()
+    dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(FALSE)
 
-dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(FALSE)
+    #First NTProBNP test following index date and using SNOMED codes  
 
-# First NTProBNP test following index date and using SNOMED codes  
+    first_nt = first_matching_event_clinical_ranges_snomed_in(NTpro_snomed,index_date, end_date)
+    dataset.nt1_date = first_nt.date
+    dataset.nt1_result = first_nt.numeric_value
+    dataset.nt1_comparator = first_nt.comparator
+    dataset.nt1_lower_bound = first_nt.lower_bound
+    dataset.nt1_upper_bound = first_nt.upper_bound
 
-first_nt = first_matching_event_clinical_snomed_in(NTpro_snomed,index_date, end_date)
-dataset.nt1_date = first_nt.date
-dataset.nt1_result = first_nt.numeric_value
-dataset.nt1_comparator = first_nt.comparator
-dataset.nt1_lower_bound = first_nt.lower_bound
-dataset.nt1_upper_bound = first_nt.upper_bound
-
-#return dataset
+    return dataset
 
 def add_underserved(dataset, index_date):
 

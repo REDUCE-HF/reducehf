@@ -229,7 +229,7 @@ hrt_dmd = codelist_from_csv(
 
 # HF-related breathlessness
 
-breathlessness_snomed = codelist_from_csv(
+breathless_snomed = codelist_from_csv(
     "codelists/reducehf-breathnessness4all-6d0c1be7.csv",
     column="code"
 )   

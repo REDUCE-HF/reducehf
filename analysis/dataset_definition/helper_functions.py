@@ -108,11 +108,13 @@ def last_matching_event_apc_before(codelist, start_date, only_prim_diagnoses=Fal
         query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
     return query.sort_by(apcs.admission_date).last_for_patient()
 
-def first_matching_event_clinical_snomed_in(codelist, start_date, end_date, where=True):
+
+
+def first_matching_event_clinical_ranges_snomed_in(codelist, start_date, end_date, where=True):
     return(
         clinical_events_ranges.where(where)
         .where(clinical_events_ranges.snomedct_code.is_in(codelist))
-        .where(clinical_events.date.is_on_or_between(start_date, end_date))
+        .where(clinical_events_ranges.date.is_on_or_between(start_date, end_date))
         .sort_by(clinical_events_ranges.date)
         .first_for_patient()
     )
