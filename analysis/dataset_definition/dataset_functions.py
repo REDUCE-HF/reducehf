@@ -27,7 +27,7 @@ from helper_functions import *
 
 from codelists import *
 
-def add_core(dataset, project_index_date, end_date='2025-01-01'):
+def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
 
 
     '''
@@ -45,6 +45,10 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
     
+    # only need sex and dob for consort diagram    
+    if consort:
+        return dataset
+
     # Ethnicity in 6 categories
     ethnicity_snomed = (
         clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codes))

@@ -2,6 +2,21 @@ version: '4.0'
 
 actions:
 
+  # Extract population for consort diagram
+
+  generate_dataset_consort:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_consort.py --output output/dataset_consort.csv.gz
+    outputs:
+      highly_sensitive:
+        dataset: output/dataset_consort.csv.gz
+
+  consort_diagram:
+    run: python:v2 python analysis/preprocessing/consort_diagram.py
+    needs: [generate_dataset_consort]
+    outputs:
+      highly_sensitive:
+        dataset: output/consort_diagram_dta.csv
+
   # Extract population by WP
   
   #WP1
