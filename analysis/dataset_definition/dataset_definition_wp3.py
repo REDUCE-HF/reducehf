@@ -25,20 +25,12 @@ end_date = "2025-01-01"
 #hf diagnosis
 dataset = add_hf_diagnosis(dataset, start_date)
 
-#core variables derived based on start_date
-dataset = add_core(dataset, start_date)
-
 #quality assurance
 dataset = add_quality_assurance(dataset, start_date)
 
-dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
+#core variables derived based on start_date
+dataset = add_core(dataset, start_date)
 
-# date should be date of HF diagnosis
-dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
-
-
-#using date of HF diagnosis as reference -- may need adjusting
-dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -61,4 +53,16 @@ dataset.define_population(
     & ~(patients.age_on(start_date) >= 110) #remove pts age 110+
     & (patients.is_alive_on(start_date)) #remove pts who died before start
     & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_exclude.is_null())|(dataset.hf_diagnosis_date > start_date))
+  #  & ~((dataset.sex == 'male') & ((dataset.pregnancy.is_not_null())|(dataset.hrtcocp.is_not_null()))) #exclude males with pregnancy or hrt codes
+  #  & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #exclude females with prostate cancer
     )
+
+dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
+
+# date should be date of HF diagnosis
+dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
+
+
+#using date of HF diagnosis as reference -- may need adjusting
+dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
+
