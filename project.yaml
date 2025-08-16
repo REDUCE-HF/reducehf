@@ -4,26 +4,48 @@ actions:
 
   # Extract population by WP
   
+  #WP1
   generate_dataset_wp1:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1.py --output output/dataset_wp1.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1.py --output output/tmp_dataset_wp1.csv.gz
+    outputs:
+      highly_sensitive:
+        dataset: output/tmp_dataset_wp1.csv.gz
+
+
+  diabetes_algo_wp1:
+    run: diabetes-algo:v0.0.6 --output output/dataset_wp1.csv.gz
+    config:
+      df_input: tmp_dataset_wp1.csv.gz
+      birth_date: dob
+      ethnicity_cat: ethnicity_cat
+      df_output: dataset_wp1.csv.gz
+    needs:
+      - generate_dataset_wp1
     outputs:
       highly_sensitive:
         dataset: output/dataset_wp1.csv.gz
 
 
-  diabetes_algo_via_config:
-    run: diabetes-algo:v0.0.6
-    config:
-      df_input: dataset_wp1.csv.gz
-      birth_date: dob
-      ethnicity_cat: ethnicity_cat
-      df_output: data_processed.csv.gz
-    needs:
-      - generate_dataset_wp1
+
+  generate_dataset_wp3:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp3.py --output output/tmp_dataset_wp3.csv.gz
     outputs:
       highly_sensitive:
-        dataset: output/data_processed.csv.gz
+        dataset: output/tmp_dataset_wp3.csv.gz
 
+
+  diabetes_algo_wp3:
+    run: diabetes-algo:v0.0.6 --output output/dataset_wp3.csv.gz
+    config:
+      df_input: tmp_dataset_wp3.csv.gz
+      birth_date: dob
+      ethnicity_cat: ethnicity_cat
+      df_output: dataset_wp3.csv.gz
+    needs:
+      - generate_dataset_wp3
+    outputs:
+      highly_sensitive:
+        dataset: output/dataset_wp3.csv.gz
   
 # etc...
 
