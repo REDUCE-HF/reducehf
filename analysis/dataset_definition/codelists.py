@@ -245,12 +245,12 @@ fatigue_snomed = codelist_from_csv(
     "codelists/reducehf-fatigue4all-7cddf662.csv",
     column="code"
 ) 
-    '''
-    Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
-    -  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
-    -  oedema: not currently available - need to create
-    -  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
-    '''
+'''
+Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
+-  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
+-  oedema: not currently available - need to create
+-  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
+'''
 # NP testing 
 
 NP_snomed = codelist_from_csv(
@@ -261,13 +261,14 @@ NP_snomed = codelist_from_csv(
 NTpro_snomed = codelist_from_csv(
     "codelists/reducehf-ntpro-num_only-65364657.csv",
     column="code"
-
+)
 #Echocardiography referral
 echo_ref=codelist_from_csv(
     "codelists/reducehf-echocardiography-referral-35ca1fe3.csv",
     column="code"
-
+)
 #Echocardiography has been completed
 echo_done=codelist_from_csv(
     "codelists/reducehf-echocardiography-result-03ab3979.csv",
     column="code"
+)
