@@ -40,8 +40,6 @@ from helper_functions import (
 
 from codelists import *
 
-
-
 def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
     '''

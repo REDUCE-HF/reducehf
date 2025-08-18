@@ -230,45 +230,48 @@ hrt_dmd = codelist_from_csv(
 # HF-related breathlessness
 
 breathless_snomed = codelist_from_csv(
-    "codelists/reducehf-breathnessness4all-6d0c1be7.csv",
+    "codelists/reducehf-beathlessness4all.csv",
     column="code"
 )   
 # HF-related oedema
 
 oedema_snomed = codelist_from_csv(
-    "codelists/reducehf-oedema4all-2efcdccd.csv",
+    "codelists/reducehf-oedema4all.csv",
     column="code"
 ) 
 # HF-related fatigue
 
 fatigue_snomed = codelist_from_csv(
-    "codelists/reducehf-fatigue4all-7cddf662.csv",
+    "codelists/reducehf-fatigue4all.csv",
     column="code"
 ) 
+
+# NP testing 
+
+NTpro_snomed = codelist_from_csv(
+    "codelists/reducehf-ntpro-num_only.csv",
+    column="code"
+)
+
+NP_snomed = codelist_from_csv(
+    "codelists/reducehf-np-any.csv",
+    column="code"
+) 
+
+#Echocardiography referral
+echo_ref=codelist_from_csv(
+    "codelists/reducehf-echocardiography-referral.csv",
+    column="code"
+)
+#Echocardiography has been completed
+echo_done=codelist_from_csv(
+    "codelists/reducehf-echocardiography-result.csv",
+    column="code"
+)
+
 '''
 Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
 -  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
 -  oedema: not currently available - need to create
 -  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
 '''
-# NP testing 
-
-NP_snomed = codelist_from_csv(
-    "codelists/reducehf-np-any-33175fed.csv",
-    column="code"
-) 
-
-NTpro_snomed = codelist_from_csv(
-    "codelists/reducehf-ntpro-num_only-65364657.csv",
-    column="code"
-)
-#Echocardiography referral
-echo_ref=codelist_from_csv(
-    "codelists/reducehf-echocardiography-referral-35ca1fe3.csv",
-    column="code"
-)
-#Echocardiography has been completed
-echo_done=codelist_from_csv(
-    "codelists/reducehf-echocardiography-result-03ab3979.csv",
-    column="code"
-)
