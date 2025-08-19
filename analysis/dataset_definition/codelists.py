@@ -249,7 +249,7 @@ fatigue_snomed = codelist_from_csv(
 # NP testing 
 
 NTpro_snomed = codelist_from_csv(
-    "codelists/reducehf-ntpro-num_only.csv",
+    "codelists/reducehf-ntpro-num-only.csv",
     column="code"
 )
 
