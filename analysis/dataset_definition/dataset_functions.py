@@ -225,7 +225,7 @@ def add_np_vars(dataset, index_date, end_date):
     dataset.np_near_symptom = clinical_events.where(
         clinical_events.snomedct_code.is_in(NP_snomed)
     ).where(
-        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
     ).exists_for_patient()
 
     #echo referral or echo done near first hf-related symptoms
@@ -233,16 +233,16 @@ def add_np_vars(dataset, index_date, end_date):
     dataset.echo_ref_near_symptom =clinical_events.where(
         clinical_events.snomedct_code.is_in(echo_ref)
     ).where(
-        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
     ).exists_for_patient()
 
     dataset.echo_done_near_symptom =clinical_events.where(
         clinical_events.snomedct_code.is_in(echo_done)
     ).where(
-        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-30, dataset.first_hfsymptom_date+90)
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
     ).exists_for_patient()
 
-    dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(FALSE)
+    dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(False)
 
     #First NTProBNP test following index date and using SNOMED codes  
 

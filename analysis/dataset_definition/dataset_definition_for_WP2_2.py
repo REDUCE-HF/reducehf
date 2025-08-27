@@ -28,13 +28,13 @@ dataset = add_core(dataset, project_index_date)
 
 #variables based on eligibilty date (to be renamed patient_index_date)
 # patient_index is currently defined in add(core) 
-dataset = add_time_dependent_core(dataset, patient_index)
+dataset = add_time_dependent_core(dataset, dataset.patient_index)
 
 # will need to define this more thoroughly
 dataset = add_hf_diagnosis(dataset, project_index_date)
 
 # HF symptoms and tests at eligibility (patient_index) date
-dataset=add_np_vars(dataset,patient_index, end_date)
+dataset=add_np_vars(dataset,dataset.patient_index, end_date)
 
 # date should be date of HF diagnosis
 dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
@@ -65,11 +65,12 @@ dataset.define_population(
     has_registration
     & patients.sex.is_in(['male','female']) #known sex proxy for data quality
     & patients.date_of_birth.is_not_null() #known dob proxy for data quality
-    & ~(patients.age_on(patient_index) < 45) #remove pts < 45
-    & ~(patients.age_on(patient_index) >= 110) #remove pts age 110+
+    & ~(patients.age_on(dataset.patient_index) < 45) #remove pts < 45
+    & ~(patients.age_on(dataset.patient_index) >= 110) #remove pts age 110+
     & (patients.is_alive_on(project_index_date)) #remove pts who died before start
     & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_diagnosis_date > project_index_date))
-    & dataset.imd10.is_not.null() & dataset.rural_urban.is_not_null()
+    & dataset.imd10.is_not_null() 
+    & dataset.rural_urban.is_not_null()
      )
 
 
