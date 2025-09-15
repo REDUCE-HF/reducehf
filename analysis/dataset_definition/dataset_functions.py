@@ -261,24 +261,33 @@ def add_healthservice_use(dataset, index_date):
 
     '''
 
-    time_periods = {
-        '3m': days(90),
-        '6m': days(180),
-        '12m': days(360),
-        '24m': years(2)
-    }
+    post_periods = {
+    "0_3m": (index_date, index_date + days(90)),
+    "3_6m": (index_date + days(90), index_date + days(180)),
+    "6_9m": (index_date + days(180), index_date + days(270)),
+    "9_12m": (index_date + days(270), index_date + days(360)),
+}
 
-    for time_name, time in time_periods.items():
+    pre_periods = {
+    "0_3m": (index_date - days(90), index_date),
+    "3_6m": (index_date - days(180), index_date - days(90)),
+    "6_9m": (index_date - days(270), index_date - days(180)),
+    "9_12m": (index_date - days(360), index_date - days(270)),
+}
+   
+
+    for time_name, (start,end) in post_periods.items():
 
         #use in time period after index_date
-        dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
-        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
-        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
+        dataset.add_column('ed_attendances_'+time_name, ed_attendances(start, end))
+        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
+        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
 
+    for time_name, (start, end) in pre_periods.items():
         #use in time period before index_date
-        dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
-        dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
-        dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
+        dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(start,end))
+        dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(start,end))
+        dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(start,end))
 
     return dataset
 
