@@ -261,33 +261,24 @@ def add_healthservice_use(dataset, index_date):
 
     '''
 
-    post_periods = {
-    "0_3m": (index_date, index_date + days(90)),
-    "3_6m": (index_date + days(90), index_date + days(180)),
-    "6_9m": (index_date + days(180), index_date + days(270)),
-    "9_12m": (index_date + days(270), index_date + days(360)),
-}
-
-    pre_periods = {
-    "0_3m": (index_date - days(90), index_date),
-    "3_6m": (index_date - days(180), index_date - days(90)),
-    "6_9m": (index_date - days(270), index_date - days(180)),
-    "9_12m": (index_date - days(360), index_date - days(270)),
+    periods = {
+    "post_0_3m": (index_date, index_date + days(90)),
+    "post_3_6m": (index_date + days(90), index_date + days(180)),
+    "post_6_9m": (index_date + days(180), index_date + days(270)),
+    "post_9_12m": (index_date + days(270), index_date + days(360)),
+    "pre_0_3m": (index_date - days(90), index_date),
+    "pre_3_6m": (index_date - days(180), index_date - days(90)),
+    "pre_6_9m": (index_date - days(270), index_date - days(180)),
+    "pre_9_12m": (index_date - days(360), index_date - days(270)),
 }
    
 
-    for time_name, (start,end) in post_periods.items():
+    for time_name, (start,end) in periods.items():
 
         #use in time period after index_date
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(start, end))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
-
-    for time_name, (start, end) in pre_periods.items():
-        #use in time period before index_date
-        dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(start,end))
-        dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(start,end))
-        dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(start,end))
 
     return dataset
 
