@@ -1,8 +1,42 @@
 version: '4.0'
 
 actions:
-  generate_dataset:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output output/dataset.csv.gz
+
+
+  # Extract population by WP
+  
+  generate_dataset_wp1:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1.py --output output/dataset_wp1.csv.gz
     outputs:
       highly_sensitive:
-        dataset: output/dataset.csv.gz
+        dataset: output/dataset_wp1.csv.gz
+
+
+  diabetes_algo_via_config:
+    run: diabetes-algo:v0.0.6
+    config:
+      df_input: dataset_wp1.csv.gz
+      birth_date: dob
+      ethnicity_cat: ethnicity_cat
+      df_output: data_processed.csv.gz
+    needs:
+      - generate_dataset_wp1
+
+  generate_dataset:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output output/dataset.csv.gz
+
+    outputs:
+      highly_sensitive:
+        dataset: output/data_processed.csv.gz
+
+  
+# etc...
+
+# potential other actions to add:
+  # create flow_chart (inclusions / exclusions);
+  # quality assurance and other checks (e.g. checks for outliers, impossible values, weird distributions);
+  # data processing steps for each work package (e.g. data manipulation to create new variables);
+  # modelling;
+  # creating output tables / figures;
+  # etc.
+

@@ -19,24 +19,13 @@ from ehrql.tables.tpp import (
     apcs,
     household_memberships_2020,
     ons_deaths,
-    ethnicity_from_sus,
+    clinical_events_ranges,
+    ethnicity_from_sus
 )
 
-from helper_functions import (
-    ed_attendances,
-    primary_care_attendances,
-    hospital_admissions,
-    ever_matching_event_clinical_ctv3_before,
-    first_matching_event_clinical_ctv3_before,
-    first_matching_event_clinical_snomed_before,
-    last_matching_event_clinical_ranges_snomed_before,
-    last_matching_event_clinical_snomed_before,
-    last_matching_event_clinical_ctv3_before,
-    last_matching_event_apc_before,
-    last_matching_med_dmd_before,
-    first_matching_event_clinical_ranges_snomed_in,
-    filter_codes_by_category
-)
+
+
+from helper_functions import *
 
 from codelists import *
 
@@ -55,40 +44,24 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
     
-
-    ethnicity = (
-        clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_snomed))
-        .where(clinical_events.date.is_on_or_before(project_index_date))
+    # Ethnicity in 6 categories
+    ethnicity_snomed = (
+        clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codes))
         .sort_by(clinical_events.date)
         .last_for_patient()
-        .snomedct_code
-    )
-    
-    dataset.ethnicity = ethnicity.to_category(ethnicity_snomed)
+        .snomedct_code.to_category(ethnicity_codes)
+        )
 
-    sus_ethnicity = ethnicity_from_sus.code
+    ethnicity_sus = ethnicity_from_sus.code
 
-    sus_ethnicity_6 = case(
-        when(sus_ethnicity == 'A').then(1),#white
-        when(sus_ethnicity == 'B').then(1),#white
-        when(sus_ethnicity == 'C').then(1),#white
-        when(sus_ethnicity == 'D').then(2),#mixed
-        when(sus_ethnicity == 'E').then(2),#mixed
-        when(sus_ethnicity == 'F').then(2),#mixed
-        when(sus_ethnicity == 'G').then(2),#mixed
-        when(sus_ethnicity == 'H').then(3),#south asian
-        when(sus_ethnicity == 'J').then(3),#south asian
-        when(sus_ethnicity == 'K').then(3),#south asian
-        when(sus_ethnicity == 'L').then(3),#south asian
-        when(sus_ethnicity == 'M').then(4),#black
-        when(sus_ethnicity == 'N').then(4),#black
-        when(sus_ethnicity == 'P').then(4),#black
-        when(sus_ethnicity == 'R').then(5),#other
-        when(sus_ethnicity == 'S').then(5),#othe
-        otherwise=6 #unknown
-    )
-    
-    dataset.sus_ethnicity = sus_ethnicity_6
+    dataset.ethnicity_cat = case(
+        when((ethnicity_snomed == "1") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["A", "B", "C"])))).then("White"),
+        when((ethnicity_snomed == "2") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["D", "E", "F", "G"])))).then("Mixed"),
+        when((ethnicity_snomed == "3") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["H", "J", "K", "L"])))).then("Asian"),
+        when((ethnicity_snomed == "4") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["M", "N", "P"])))).then("Black"),
+        when((ethnicity_snomed == "5") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["R", "S"])))).then("Other"),
+        otherwise="Unknown", 
+        )
 
     #earliest practice registration
     first_practice = (
@@ -166,22 +139,31 @@ def add_time_dependent_core(dataset, index_date):
     '''
 
     # Smoking status
-    tmp_most_recent_smoking_cat = (
-        last_matching_event_clinical_ctv3_before(smoking_clear, index_date)
-        .ctv3_code.to_category(smoking_clear)
-    )
-    tmp_ever_smoked = ever_matching_event_clinical_ctv3_before(
-        (filter_codes_by_category(smoking_clear, include=["S", "E"])), index_date
-        ).exists_for_patient()
-
-    dataset.smoking = case(
-        when(tmp_most_recent_smoking_cat == "S").then("S"),
-        when((tmp_most_recent_smoking_cat == "E") | ((tmp_most_recent_smoking_cat == "N") 
-            & (tmp_ever_smoked == True))).then("E"),
-        when((tmp_most_recent_smoking_cat == "N") & (tmp_ever_smoked == False)).then("N"),
-        otherwise="M"
-    )
+    # THIS COULD PROBABLY BE WRITTEN MORE EFFICIENTLY!
+    last_smoking_former_date = (
+        last_matching_event_clinical_snomed_before(smoking_former, index_date)
+        ).date
     
+    last_smoking_current_date = (
+        last_matching_event_clinical_snomed_before(smoking_current, index_date)
+        ).date
+    
+    last_smoking_current = (
+        (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_not_null() & (last_smoking_current_date > last_smoking_former_date)) 
+        | (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_null())
+        ) 
+
+    last_smoking_former = (
+        (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_not_null() & (last_smoking_former_date > last_smoking_current_date)) 
+        | (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_null())
+        ) 
+    
+    dataset.smoking = case(
+        when(last_smoking_current == True).then("S"),
+        when(last_smoking_former == True).then("E"),
+        otherwise="N"
+    )
+
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
         bmi_cod, index_date
@@ -189,11 +171,11 @@ def add_time_dependent_core(dataset, index_date):
     dataset.bim_date = bmi.date
     dataset.bmi_value = bmi.numeric_value
 
-
     #Cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
         )
+
     dataset.last_cholesterol_date = cholesterol.date
     dataset.last_cholesterol_value = cholesterol.numeric_value
 
@@ -255,6 +237,21 @@ def add_np_vars(dataset, index_date, end_date):
 
     return dataset
 
+def add_tests(dataset, index_date):
+
+    np_tests= clinical_events_ranges.where(clinical_events.ranges.snomedct_code.is_in(NP_snomed))
+
+    first_np = np_tests.sort_by(clinical_events_ranges.date).first_for_patient()
+
+    dataset.np_date = first_np.date
+    dataset.np_result = first_np.numeric_value
+    dataset.np_comparator = first_np.comparator
+    dataset.np_lower_bound = first_np.lower_bound
+    dataset.np_upper_bound = first_np.upper_bound
+    
+    return dataset
+
+  
 def add_underserved(dataset, index_date):
 
     practice = practice_registrations.sort_by(
@@ -293,11 +290,19 @@ def add_hf_diagnosis(dataset, index_date):
     i.e. community or emergency-hospital
     ''' 
 
-    dataset.hf_diagnosis_date = first_matching_event_clinical_snomed_before(
-        hf_snomed, index_date
-        ).date
+    #any evidence of HF, not just diagnosis codes, before index date
+    dataset.hf_exclude = last_matching_event_clinical_snomed_before(hf_exclude, index_date).date
+
+    #primary care
+    dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
+
+    #secondary care - hospital admission (primary OR secondary), or A&E visit
+    dataset.hf_diagnosis_secondary_date = minimum_of(first_matching_event_apc_after(hf_icd10, index_date).admission_date, first_matching_event_ec_after(hf_ecds, index_date).arrival_date)
+    #either primary or secondary
+    dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
 
     return dataset
+
 
 def add_healthservice_use(dataset, index_date):
 
@@ -335,28 +340,200 @@ def add_comorbidities(dataset, index_date):
     '''
     add comorbidities. using index_date as a parameter
     means we can derive as binary variables rather than dates
+    - codelists to be changed
     '''
+    ### Diabetes 
 
-    dataset.copd = first_matching_event_clinical_ctv3_before(
+    
+    ## Type 1 Diabetes 
+    # First date from primary+secondary, but also primary care date separately for diabetes algo
+    dataset.tmp_t1dm_ctv3_date = first_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, index_date).date
+    dataset.t1dm_date = minimum_of(
+        (first_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, index_date).date),
+        (first_matching_event_apc_before(diabetes_type1_icd10, index_date).admission_date)
+    )
+    # Count codes (individually and together, for diabetes algo)
+    tmp_t1dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, index_date)
+    tmp_t1dm_hes_count = count_matching_event_apc_before(diabetes_type1_icd10, index_date)
+    dataset.tmp_t1dm_count_num = tmp_t1dm_ctv3_count + tmp_t1dm_hes_count
+
+    ## Type 2 Diabetes
+    # First date from primary+secondary, but also primary care date separately for diabetes algo)
+    dataset.tmp_t2dm_ctv3_date = first_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, index_date).date
+    dataset.t2dm_date = minimum_of(
+        (first_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, index_date).date),
+        (first_matching_event_apc_before(diabetes_type2_icd10, index_date).admission_date)
+        )
+    # Count codes (individually and together, for diabetes algo)
+    tmp_t2dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, index_date)
+    tmp_t2dm_hes_count = count_matching_event_apc_before(diabetes_type2_icd10, index_date)
+    dataset.tmp_t2dm_count_num = tmp_t2dm_ctv3_count + tmp_t2dm_hes_count
+
+    ## Diabetes unspecified/other
+    # First date
+    dataset.otherdm_date = first_matching_event_clinical_ctv3_before(diabetes_other_ctv3, index_date).date
+    # Count codes
+    dataset.tmp_otherdm_count_num = count_matching_event_clinical_ctv3_before(diabetes_other_ctv3, index_date)
+
+    ## Gestational diabetes
+    # First date from primary+secondary
+    dataset.gestationaldm_date = minimum_of(
+        (first_matching_event_clinical_ctv3_before(diabetes_gestational_ctv3, index_date).date),
+        (first_matching_event_apc_before(diabetes_gestational_icd10, index_date).admission_date)
+    )
+
+    ## Diabetes diagnostic codes
+    # First date
+    dataset.tmp_poccdm_date = first_matching_event_clinical_ctv3_before(diabetes_diagnostic_ctv3, index_date).date
+    # Count codes
+    dataset.tmp_poccdm_ctv3_count_num = count_matching_event_clinical_ctv3_before(diabetes_diagnostic_ctv3, index_date)
+
+    ### Other variables needed to define diabetes
+    ## HbA1c
+    # Maximum HbA1c measure (in the same period)
+    dataset.tmp_max_hba1c_mmol_mol_num = (
+        clinical_events.where(
+            clinical_events.snomedct_code.is_in(hba1c_snomed))
+        .where(clinical_events.date.is_on_or_before(index_date))
+        .numeric_value.maximum_for_patient()
+        )
+    
+    # Date of first maximum HbA1c measure
+    dataset.tmp_max_hba1c_date = ( 
+        clinical_events.where(
+            clinical_events.snomedct_code.is_in(hba1c_snomed))
+        .where(clinical_events.date.is_on_or_before(index_date)) # this line of code probably not needed again
+        .where(clinical_events.numeric_value == dataset.tmp_max_hba1c_mmol_mol_num)
+        .sort_by(clinical_events.date)
+        .first_for_patient() 
+        .date
+        )
+
+    ## Diabetes drugs
+    # First dates
+    dataset.tmp_insulin_dmd_date = first_matching_med_dmd_before(insulin_dmd, index_date).date
+    dataset.tmp_antidiabetic_drugs_dmd_date = first_matching_med_dmd_before(antidiabetic_drugs_dmd, index_date).date
+    dataset.tmp_nonmetform_drugs_dmd_date = first_matching_med_dmd_before(non_metformin_dmd, index_date).date
+
+    # Identify first date (in same period) that any diabetes medication was prescribed
+    dataset.tmp_diabetes_medication_date = minimum_of(dataset.tmp_insulin_dmd_date, dataset.tmp_antidiabetic_drugs_dmd_date)
+
+    # Identify first date (in same period) that any diabetes diagnosis codes were recorded
+    dataset.tmp_first_diabetes_diag_date = minimum_of(
+    dataset.t1dm_date, 
+    dataset.t2dm_date,
+    dataset.otherdm_date,
+    dataset.gestationaldm_date,
+    dataset.tmp_poccdm_date,
+    dataset.tmp_diabetes_medication_date,
+    dataset.tmp_nonmetform_drugs_dmd_date
+    )
+ 
+    ### Obesity 
+
+    dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
+        bmi_obesity_snomed, index_date - days(365), index_date
+        ).date
+        
+    dataset.obesity_sus_date = last_matching_event_apc_between(
+        bmi_obesity_icd10, index_date - days(365), index_date    
+        ).admission_date
+    
+
+    # weight 
+    # Do we need to check icd10 codes ? 
+
+    dataset.weight = last_matching_event_clinical_snomed_between(
+        weight_snomed, index_date - days(365), index_date
+        ).numeric_value
+    dataset.weight_date  = last_matching_event_clinical_snomed_between(
+        weight_snomed, index_date - days(365), index_date
+        ).date
+   
+
+    # height
+    # Do we need to check icd10 codes ? 
+    dataset.height = last_matching_event_clinical_snomed_before (
+        height_snomed, index_date
+        ).numeric_value
+
+    
+    
+    ### COPD
+    '''
+    Shall we just derive primary and sus dates ? 
+    or take the earliest and tag them as tmp to remove them from 
+    the dataset later ? 
+    ''' 
+    
+    dataset.tmp_copd_date_primary = first_matching_event_clinical_ctv3_before(
         copd_ctv3, index_date
-        ).exists_for_patient()
+        ).date
+    dataset.tmp_copd_date_sus = first_matching_event_apc_before(
+        copd_icd10, index_date
+        ).admission_date
+    # Combine to earliest date
+    dataset.first_copd_date = minimum_of(
+        dataset.tmp_copd_date_primary,
+        dataset.tmp_copd_date_sus
+        )
+    ### Hypertension
 
-    dataset.ckd = first_matching_event_clinical_snomed_before(
+    dataset.hypertension_date_primary = first_matching_event_clinical_snomed_before(
+            hypertension_snomed, index_date
+            ).date
+    dataset.hypertension_date_med = first_matching_med_dmd_before(
+            hypertension_drugs_dmd, index_date
+            ).date
+    dataset.hypertension_date_sus = first_matching_event_apc_before(
+            hypertension_icd10, index_date
+            ).admission_date
+    #systolic BP* diastolic BP* will be defined in time dependent variables
+
+    ### Atrial fibrillation
+    dataset.af_date_primary = first_matching_event_clinical_snomed_before(
+           af_snomed, index_date
+        ).date
+
+    dataset.af_date_sus = first_matching_event_apc_before(
+           af_icd10, index_date
+        ).admission_date
+
+    ### Ischeamic heart disease
+     
+     #Are we sure we need to remove binary vars ? 
+    # Keep just primary and sus dates or derive earliest date ? 
+    
+    # dataset.ihd_bin = (
+    #     (first_matching_event_clinical_snomed_before(
+    #        ihd_snomed, index_date
+    #     ).exists_for_patient()) |
+    #     (first_matching_event_apc_before(
+    #        ihd_icd10, index_date
+    #     ).exists_for_patient())
+    # )
+    dataset.ihd_date_primary = first_matching_event_clinical_snomed_before(
+        ihd_snomed, index_date
+        ).date
+    dataset.ih_date_sus = first_matching_event_apc_before(
+        ihd_icd10, index_date
+        ).admission_date
+
+    ### Chronic kidney disease (CKD)
+    # dataset.ckd_bin = (
+    #     frist_matching_event_clinical_snomed_before(
+    #         ckd_snomed, index_date
+    #     ).exists_for_patient()) |
+    #     (first_matching_event_apc_before(
+    #         ckd_icd10, index_date
+    #     ).exists_for_patient())
+    dataset.ckd_date_primary = first_matching_event_clinical_snomed_before(
         ckd_snomed, index_date
-        ).exists_for_patient()
+        ).date
+    dataset.ckd_date_sus = first_matching_event_apc_before(
+        ckd_icd10, index_date
+        ).admission_date
 
-    dataset.diabetes = first_matching_event_clinical_snomed_before(
-        diabetes_snomed, index_date
-        ).exists_for_patient()
-
-    #using latest date for obesity, hypertension, and total cholesterol
-    dataset.obesity = last_matching_event_clinical_snomed_before(
-        bmi_obesity_snomed, index_date
-        ).exists_for_patient()
-
-    dataset.hypertension = last_matching_event_clinical_snomed_before(
-        hypertension_snomed, index_date
-        ).exists_for_patient()
 
     return dataset
 
@@ -403,17 +580,18 @@ def add_quality_assurance(dataset, index_date):
         (last_matching_event_apc_before(
             prostate_cancer_icd10, index_date
         ).exists_for_patient())
-    )
+        )
 
     # Pregnancy
     dataset.pregnancy = last_matching_event_clinical_snomed_before(
         pregnancy_snomed, index_date
-    ).exists_for_patient()
+        ).exists_for_patient()
 
 
     # COCP or HRT medication
     dataset.hrtcocp = last_matching_med_dmd_before(
         cocp_dmd + hrt_dmd, index_date
-    ).exists_for_patient()
+        ).exists_for_patient()
 
     return dataset
+
