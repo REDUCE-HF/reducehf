@@ -61,8 +61,12 @@ user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3/
 user/elsie_horne/cocp_dmd/1666a7a3/
 user/elsie_horne/hrt_dmd/19196799/
 user/RochelleKnight/prostate_cancer_snomed/0437497e/
-reducehf/np-testing-4all/63ce832d/
-reducehf/np-testing-read/678a6104/
-reducehf/fatigue4all/7cddf662/
+
 reducehf/oedema4all/2efcdccd/
-reducehf/breathlessness4all/6d0c1be7/
+reducehf/fatigue4all/7cddf662/
+reducehf/beathlessness4all/2a386c7c/
+reducehf/ntpro-num-only/65364657/
+reducehf/np-any/33175fed/
+reducehf/echocardiography-referral/35ca1fe3/
+reducehf/echocardiography-result/03ab3979/
+

@@ -2,6 +2,7 @@ version: '4.0'
 
 actions:
 
+
   # Extract population by WP
   
   generate_dataset_wp1:
@@ -20,6 +21,10 @@ actions:
       df_output: data_processed.csv.gz
     needs:
       - generate_dataset_wp1
+
+  generate_dataset:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output output/dataset.csv.gz
+
     outputs:
       highly_sensitive:
         dataset: output/data_processed.csv.gz
