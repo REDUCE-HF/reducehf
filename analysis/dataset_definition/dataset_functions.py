@@ -342,7 +342,7 @@ def add_comorbidities(dataset, index_date):
     means we can derive as binary variables rather than dates
     - codelists to be changed
     '''
-    '''
+    
     ### Diabetes 
 
     
@@ -429,7 +429,7 @@ def add_comorbidities(dataset, index_date):
     dataset.tmp_diabetes_medication_date,
     dataset.tmp_nonmetform_drugs_dmd_date
     )
-    '''
+    
     ### Obesity 
 
     dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
