@@ -27,7 +27,7 @@ end_date = '2025-01-01'
 dataset = add_core(dataset, project_index_date)
 
 #variables based on eligibilty date (to be renamed patient_index_date)
-# patient_index is currently defined in add(core) 
+# patient_index is currently defined in add_core() 
 dataset = add_time_dependent_core(dataset, dataset.patient_index)
 
 # will need to define this more thoroughly
