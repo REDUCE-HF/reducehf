@@ -17,6 +17,7 @@ actions:
       highly_sensitive:
         dataset: output/consort_diagram_dta.csv
 
+
   # Extract population by WP
   
   #WP1
@@ -36,6 +37,10 @@ actions:
       df_output: dataset_wp1.csv.gz
     needs:
       - generate_dataset_wp1
+
+  generate_dataset:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output output/dataset.csv.gz
+
     outputs:
       highly_sensitive:
         dataset: output/dataset_wp1.csv.gz

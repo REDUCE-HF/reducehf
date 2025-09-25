@@ -1,5 +1,6 @@
 #this script contains functions to add variables to dataset
-#variables are grouped by type, and whether they are WP specific
+#variables 
+# re grouped by type, and whether they are WP specific
 
 from ehrql import (
     case,
@@ -23,12 +24,12 @@ from ehrql.tables.tpp import (
 )
 
 
+
 from helper_functions import *
 
 from codelists import *
 
 def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
-
 
     '''
     core variables don't differ between WPs
@@ -40,8 +41,6 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
     project_index_date: for our project, 01-01-2017
     end_date: project / follow-up end date
     '''
-
-
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
     
@@ -127,11 +126,10 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
     return dataset
 
 
-
 def add_time_dependent_core(dataset, index_date):
 
     '''
-    add core variables that depend on index date
+     and core variables that depend on index_date
     and therefore differ between WPs
     variables to be added:
     -  smoking status
@@ -140,6 +138,7 @@ def add_time_dependent_core(dataset, index_date):
     -  diastolic BP*
     -  total cholesterol*
     *(date of most recent test/reading prior to index date and value)
+
     '''
 
     # Smoking status
@@ -168,12 +167,14 @@ def add_time_dependent_core(dataset, index_date):
         otherwise="N"
     )
 
+
     # systolic BP
     bp = last_matching_event_clinical_ranges_snomed_before(
         systolic_bp, index_date
         )
     dataset.bp_date = bp.date
     dataset.bp_value = bp.numeric_value
+
 
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
@@ -192,6 +193,61 @@ def add_time_dependent_core(dataset, index_date):
 
     return dataset
 
+def add_np_vars(dataset, index_date, end_date):
+ 
+    #date of first incidence of any of the three HF-related symptoms
+    tmp_breathless_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    breathless_snomed, index_date, end_date
+    ).date
+
+    tmp_oedema_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    oedema_snomed, index_date, end_date
+    ).date
+
+    tmp_fatigue_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    fatigue_snomed, index_date, end_date
+    ).date
+
+    #combine to find the earliest date of any symptom
+    dataset.first_hfsymptom_date = minimum_of(
+        tmp_breathless_date_primary,
+        tmp_oedema_date_primary,
+        tmp_fatigue_date_primary
+    )
+
+    # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
+    dataset.np_near_symptom = clinical_events.where(
+        clinical_events.snomedct_code.is_in(NP_snomed)
+    ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
+    ).exists_for_patient()
+
+    #echo referral or echo done near first hf-related symptoms
+
+    dataset.echo_ref_near_symptom =clinical_events.where(
+        clinical_events.snomedct_code.is_in(echo_ref)
+    ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
+    ).exists_for_patient()
+
+    dataset.echo_done_near_symptom =clinical_events.where(
+        clinical_events.snomedct_code.is_in(echo_done)
+    ).where(
+        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
+    ).exists_for_patient()
+
+    dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(False)
+
+    #First NTProBNP test following index date and using SNOMED codes  
+
+    first_nt = first_matching_event_clinical_ranges_snomed_in(NTpro_snomed,index_date, end_date)
+    dataset.nt1_date = first_nt.date
+    dataset.nt1_result = first_nt.numeric_value
+    dataset.nt1_comparator = first_nt.comparator
+    dataset.nt1_lower_bound = first_nt.lower_bound
+    dataset.nt1_upper_bound = first_nt.upper_bound
+
+    return dataset
 
 def add_tests(dataset, index_date):
 
@@ -236,7 +292,6 @@ def add_underserved(dataset, index_date):
 
     return dataset
 
-
 def add_hf_diagnosis(dataset, index_date):
 
     '''
@@ -270,24 +325,24 @@ def add_healthservice_use(dataset, index_date):
 
     '''
 
-    time_periods = {
-        '3m': days(90),
-        '6m': days(180),
-        '12m': days(360),
-        '24m': years(2)
-    }
+    periods = {
+    "post_0_3m": (index_date, index_date + days(90)),
+    "post_3_6m": (index_date + days(90), index_date + days(180)),
+    "post_6_9m": (index_date + days(180), index_date + days(270)),
+    "post_9_12m": (index_date + days(270), index_date + days(360)),
+    "pre_0_3m": (index_date - days(90), index_date),
+    "pre_3_6m": (index_date - days(180), index_date - days(90)),
+    "pre_6_9m": (index_date - days(270), index_date - days(180)),
+    "pre_9_12m": (index_date - days(360), index_date - days(270)),
+}
+   
 
-    for time_name, time in time_periods.items():
+    for time_name, (start,end) in periods.items():
 
         #use in time period after index_date
-        dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
-        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
-        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
-
-        #use in time period before index_date
-        dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
-        dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
-        dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
+        dataset.add_column('ed_attendances_'+time_name, ed_attendances(start, end))
+        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
+        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
 
     asthma_review_ = last_matching_event_clinical_snomed_before(asthma_review, index_date)
     dataset.asthma_review_date = asthma_review_.date
@@ -505,45 +560,6 @@ def add_comorbidities(dataset, index_date):
     return dataset
 
 
-def add_tests(dataset, index_date):
-    # NP testing (BNP or NTProBNP) and using SNOMED codes for WP2(1). Will need to split for WP2(2)
-
-    np_tests= clinical_events.where(
-        clinical_events.snomedct_code.is_in(NP_snomed)
-    )
-
-    first_np = np_tests.sort_by(clinical_events.date).first_for_patient()
-    dataset.np_date = first_np.date
-    dataset.np_result = first_np.numeric_value    
-
-    return dataset
-
-
-def add_symptoms(dataset, index_date):
-   # want first incidence of any of the three symptoms
-
-   dataset.temp_breathless_data_primary=first_matching_event_clinical_snomed_before(
-       breathlessness_snomed, index_date
-   ).date
-
-   dataset.temp_oedema_data_primary=first_matching_event_clinical_snomed_before(
-       oedema_snomed, index_date
-   ).date
-
-   dataset.temp_fatigue_data_primary=first_matching_event_clinical_snomed_before(
-       fatigue_snomed, index_date
-   ).date
-
-   # combine to find the earliest date of any symptom
-   dataset.first_symptom.date = minimum_of(
-       dataset.temp_breathless_data_primary,
-       dataset.temp_oedema_data_primary,
-       dataset.temp_fatigue_data_primary
-       )
-   
-   
-   return dataset
-
 
 def add_copd_severity(dataset, index_date):
 
@@ -575,15 +591,6 @@ def add_medications(dataset, start_date, end_date):
     return dataset
 
 
-def add_referrals(dataset, index_date):
-
-    '''
-    add functions to count referrals
-    for XX (WP2) prior to index_date
-    *maybe also need start_date?
-    '''
-
-    return dataset
 
 def add_quality_assurance(dataset, index_date):
 
