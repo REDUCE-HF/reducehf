@@ -34,7 +34,9 @@ dataset = add_time_dependent_core(dataset, dataset.patient_index)
 dataset = add_hf_diagnosis(dataset, project_index_date)
 
 # HF symptoms and tests at eligibility (patient_index) date
-dataset=add_np_vars(dataset,dataset.patient_index, end_date)
+dataset=add_np_vars(dataset, dataset.patient_index, end_date)
+
+dataset=add_tests(dataset, dataset.patient_index, end_date)
 
 # date should be date of HF diagnosis
 dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
