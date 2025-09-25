@@ -325,16 +325,37 @@ def add_healthservice_use(dataset, index_date):
 
     '''
 
+    # for objective  3.1
+    time_periods = {
+        '3m': days(90),
+        '6m': days(180),
+        '12m': days(360),
+        '24m': years(2)
+    }
+
+    for time_name, time in time_periods.items():
+
+        #use in time period after index_date
+        dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
+        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
+        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
+
+        #use in time period before index_date
+        dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
+        dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
+        dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
+
+    # for objective 3.2
     periods = {
-    "post_0_3m": (index_date, index_date + days(90)),
-    "post_3_6m": (index_date + days(90), index_date + days(180)),
-    "post_6_9m": (index_date + days(180), index_date + days(270)),
-    "post_9_12m": (index_date + days(270), index_date + days(360)),
-    "pre_0_3m": (index_date - days(90), index_date),
-    "pre_3_6m": (index_date - days(180), index_date - days(90)),
-    "pre_6_9m": (index_date - days(270), index_date - days(180)),
-    "pre_9_12m": (index_date - days(360), index_date - days(270)),
-}
+        "post_0_3m": (index_date, index_date + days(90)),
+        "post_3_6m": (index_date + days(90), index_date + days(180)),
+        "post_6_9m": (index_date + days(180), index_date + days(270)),
+        "post_9_12m": (index_date + days(270), index_date + days(360)),
+        "pre_0_3m": (index_date - days(90), index_date),
+        "pre_3_6m": (index_date - days(180), index_date - days(90)),
+        "pre_6_9m": (index_date - days(270), index_date - days(180)),
+        "pre_9_12m": (index_date - days(360), index_date - days(270)),
+    }
    
 
     for time_name, (start,end) in periods.items():
@@ -344,6 +365,8 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
 
+
+    # annual reviews
     asthma_review_ = last_matching_event_clinical_snomed_before(asthma_review, index_date)
     dataset.asthma_review_date = asthma_review_.date
     
