@@ -29,7 +29,7 @@ from helper_functions import *
 
 from codelists import *
 
-def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
+def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
 
     '''
     core variables don't differ between WPs
@@ -38,7 +38,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
     parameters:
 
     dataset: dataset object initialised using create_dataset()
-    project_index_date: for our project, 01-01-2017
+    start_date: for our project, 01-01-2017
     end_date: project / follow-up end date
     '''
     dataset.sex = patients.sex
@@ -69,7 +69,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
 
     #earliest practice registration
     first_practice = (
-        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        practice_registrations.where(practice_registrations.end_date.is_after(start_date))
         .sort_by(
             practice_registrations.start_date,
             practice_registrations.end_date,
@@ -82,13 +82,13 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
     # - practice registration - 1 year (to allow for coding of variables)
     # - 45th birthday
 
-    dataset.patient_index = maximum_of(project_index_date,
+    dataset.patient_index_date = maximum_of(start_date,
         first_practice.start_date + years(1),
         dataset.dob + years(45))
 
     # practice registration on patient_index_date
     practice = (
-        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index))
+        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index_date))
         .sort_by(practice_registrations.start_date)
         .last_for_patient()
     )
@@ -103,7 +103,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
 
     # add practice deregistration / end of follow-up in tpp
     last_practice = (
-        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        practice_registrations.where(practice_registrations.end_date.is_after(start_date))
         .sort_by(
             practice_registrations.start_date,
             practice_registrations.end_date,
@@ -113,7 +113,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01', consort=False):
     dataset.practice_deregistration_date = last_practice.end_date
 
     #add location details at patient_index
-    location = addresses.for_patient_on(dataset.patient_index)
+    location = addresses.for_patient_on(dataset.patient_index_date)
     dataset.imd10 = location.imd_decile
     dataset.rural_urban = location.rural_urban_classification
 
