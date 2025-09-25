@@ -184,23 +184,23 @@ def add_time_dependent_core(dataset, index_date):
 def add_np_vars(dataset, index_date, end_date):
  
     #date of first incidence of any of the three HF-related symptoms
-    tmp_breathless_date_primary = first_matching_event_clinical_snomed_between(
+    dataset.first_breathless_date_primary = first_matching_event_clinical_snomed_between(
     breathless_snomed, index_date, end_date
     ).date
 
-    tmp_oedema_date_primary = first_matching_event_clinical_snomed_between(
+    dataset.first_oedema_date_primary = first_matching_event_clinical_snomed_between(
     oedema_snomed, index_date, end_date
     ).date
 
-    tmp_fatigue_date_primary = first_matching_event_clinical_snomed_between(
+    dataset.first_fatigue_date_primary = first_matching_event_clinical_snomed_between(
     fatigue_snomed, index_date, end_date
     ).date
 
     #combine to find the earliest date of any symptom
     dataset.first_hfsymptom_date = minimum_of(
-        tmp_breathless_date_primary,
-        tmp_oedema_date_primary,
-        tmp_fatigue_date_primary
+        dataset.first_breathless_date_primary,
+        dataset.first_oedema_date_primary,
+        dataset.first_fatigue_date_primary
     )
 
     # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
