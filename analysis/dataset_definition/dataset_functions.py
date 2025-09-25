@@ -595,18 +595,18 @@ def add_quality_assurance(dataset, index_date):
         last_matching_event_apc_before(
             prostate_cancer_icd10, index_date
         ).admission_date
-        )
+        ).exists_for_patient()
 
     # Pregnancy
     dataset.pregnancy = last_matching_event_clinical_snomed_before(
         pregnancy_snomed, index_date
-        ).date
+        ).exists_for_patient()
 
 
     # COCP or HRT medication
     dataset.hrtcocp = last_matching_med_dmd_before(
         cocp_dmd + hrt_dmd, index_date
-        ).date
+        ).exists_for_patient()
 
     return dataset
 

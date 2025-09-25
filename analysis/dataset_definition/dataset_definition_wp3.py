@@ -53,8 +53,6 @@ dataset.define_population(
     & ~(patients.age_on(start_date) >= 110) #remove pts age 110+
     & (patients.is_alive_on(start_date)) #remove pts who died before start
     & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_exclude.is_null())|(dataset.hf_diagnosis_date > start_date))
-  #  & ~((dataset.sex == 'male') & ((dataset.pregnancy.is_not_null())|(dataset.hrtcocp.is_not_null()))) #exclude males with pregnancy or hrt codes
-  #  & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #exclude females with prostate cancer
     )
 
 dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
