@@ -37,7 +37,7 @@ dataset = add_core(dataset, start_date)
 
 #registered for at least 1 year
 #practice registration at minimum study end date - 1 year
-#exclude historic registrations that ended before project_index_date
+#exclude historic registrations that ended before start_date
 
 has_registration = practice_registrations.where(
         practice_registrations.start_date.is_on_or_before(end_date - years(1))
@@ -53,6 +53,8 @@ dataset.define_population(
     & ~(patients.age_on(start_date) >= 110) #remove pts age 110+
     & (patients.is_alive_on(start_date)) #remove pts who died before start
     & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_exclude.is_null())|(dataset.hf_diagnosis_date > start_date))
+    & dataset.imd10.is_not_null()
+    & dataset.rural_urban.is_not_null()
     )
 
 dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
