@@ -44,7 +44,7 @@ dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
 
 #quality assurance
 
-dataset = add_quality_assurance(dataset, dataset.start_date)
+dataset = add_quality_assurance(dataset, start_date)
 
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
