@@ -45,7 +45,7 @@ exclusion_steps['over_110'] = [df.shape[0]]
 
 # Male and pregnant/hrt
 
-df = df.loc[~((df.sex=='male') & ~(df.pregnancy.isna()|df.hrtcocp.isna()))]
+df = df.loc[~((df.sex=='male') & (~df.pregnancy.isna()|~df.hrtcocp.isna()))]
 
 exclusion_steps['male_pregnant_hrt'] = [df.shape[0]]
 
