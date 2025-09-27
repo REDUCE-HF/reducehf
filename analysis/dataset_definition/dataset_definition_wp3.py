@@ -32,7 +32,8 @@ dataset = add_quality_assurance(dataset, start_date)
 dataset = add_core(dataset, start_date)
 
 
-#DEFINE POPULATION (general inclusion/exclusion criteria)
+#DEFINE POPULATION (inclusion/exclusion criteria)
+#note: this will be different for each WP
 
 #registered for at least 1 year
 #practice registration at minimum study end date - 1 year
@@ -56,6 +57,12 @@ dataset.define_population(
     & dataset.rural_urban.is_not_null()
     )
 
-#add wp specific covariates / exposures here
+dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
 
+# date should be date of HF diagnosis
+dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
+
+
+#using date of HF diagnosis as reference -- may need adjusting
+dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date)
 

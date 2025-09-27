@@ -29,7 +29,7 @@ from helper_functions import *
 
 from codelists import *
 
-def add_core(dataset, project_index_date, end_date='2025-01-01'):
+def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
 
     '''
     core variables don't differ between WPs
@@ -38,12 +38,16 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     parameters:
 
     dataset: dataset object initialised using create_dataset()
-    project_index_date: for our project, 01-01-2017
+    start_date: for our project, 01-01-2017
     end_date: project / follow-up end date
     '''
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
     
+    # only need sex and dob for consort diagram    
+    if consort:
+        return dataset
+
     # Ethnicity in 6 categories
     ethnicity_snomed = (
         clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codes))
@@ -65,7 +69,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
     #earliest practice registration
     first_practice = (
-        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        practice_registrations.where(practice_registrations.end_date.is_after(start_date))
         .sort_by(
             practice_registrations.start_date,
             practice_registrations.end_date,
@@ -78,13 +82,13 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     # - practice registration - 1 year (to allow for coding of variables)
     # - 45th birthday
 
-    dataset.patient_index = maximum_of(project_index_date,
+    dataset.patient_index_date = maximum_of(start_date,
         first_practice.start_date + years(1),
         dataset.dob + years(45))
 
     # practice registration on patient_index_date
     practice = (
-        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index))
+        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index_date))
         .sort_by(practice_registrations.start_date)
         .last_for_patient()
     )
@@ -99,7 +103,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
 
     # add practice deregistration / end of follow-up in tpp
     last_practice = (
-        practice_registrations.where(practice_registrations.end_date.is_after(project_index_date))
+        practice_registrations.where(practice_registrations.end_date.is_after(start_date))
         .sort_by(
             practice_registrations.start_date,
             practice_registrations.end_date,
@@ -109,7 +113,7 @@ def add_core(dataset, project_index_date, end_date='2025-01-01'):
     dataset.practice_deregistration_date = last_practice.end_date
 
     #add location details at patient_index
-    location = addresses.for_patient_on(dataset.patient_index)
+    location = addresses.for_patient_on(dataset.patient_index_date)
     dataset.imd10 = location.imd_decile
     dataset.rural_urban = location.rural_urban_classification
 
@@ -129,7 +133,6 @@ def add_time_dependent_core(dataset, index_date):
     and therefore differ between WPs
     variables to be added:
     -  smoking status
-    -  household size
     -  BMI
     -  systolic BP*
     -  diastolic BP*
@@ -163,6 +166,15 @@ def add_time_dependent_core(dataset, index_date):
         when(last_smoking_former == True).then("E"),
         otherwise="N"
     )
+
+
+    # systolic BP
+    bp = last_matching_event_clinical_ranges_snomed_before(
+        systolic_bp, index_date
+        )
+    dataset.bp_date = bp.date
+    dataset.bp_value = bp.numeric_value
+
 
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
@@ -313,16 +325,37 @@ def add_healthservice_use(dataset, index_date):
 
     '''
 
+    # for objective  3.1
+    time_periods = {
+        '3m': days(90),
+        '6m': days(180),
+        '12m': days(360),
+        '24m': years(2)
+    }
+
+    for time_name, time in time_periods.items():
+
+        #use in time period after index_date
+        dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
+        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
+        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
+
+        #use in time period before index_date
+        dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
+        dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
+        dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
+
+    # for objective 3.2
     periods = {
-    "post_0_3m": (index_date, index_date + days(90)),
-    "post_3_6m": (index_date + days(90), index_date + days(180)),
-    "post_6_9m": (index_date + days(180), index_date + days(270)),
-    "post_9_12m": (index_date + days(270), index_date + days(360)),
-    "pre_0_3m": (index_date - days(90), index_date),
-    "pre_3_6m": (index_date - days(180), index_date - days(90)),
-    "pre_6_9m": (index_date - days(270), index_date - days(180)),
-    "pre_9_12m": (index_date - days(360), index_date - days(270)),
-}
+        "post_0_3m": (index_date, index_date + days(90)),
+        "post_3_6m": (index_date + days(90), index_date + days(180)),
+        "post_6_9m": (index_date + days(180), index_date + days(270)),
+        "post_9_12m": (index_date + days(270), index_date + days(360)),
+        "pre_0_3m": (index_date - days(90), index_date),
+        "pre_3_6m": (index_date - days(180), index_date - days(90)),
+        "pre_6_9m": (index_date - days(270), index_date - days(180)),
+        "pre_9_12m": (index_date - days(360), index_date - days(270)),
+    }
    
 
     for time_name, (start,end) in periods.items():
@@ -331,6 +364,18 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(start, end))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
+
+
+    # annual reviews
+    asthma_review_ = last_matching_event_clinical_snomed_before(asthma_review, index_date)
+    dataset.asthma_review_date = asthma_review_.date
+    
+    copd_review_ = last_matching_event_clinical_snomed_before(copd_review, index_date)
+    dataset.copd_review_date = copd_review_.date
+
+    med_review_ = last_matching_event_clinical_snomed_before(med_review, index_date)
+    dataset.med_review_date = med_review_.date
+
 
     return dataset
 
@@ -573,25 +618,25 @@ def add_medications(dataset, start_date, end_date):
 def add_quality_assurance(dataset, index_date):
 
     # Prostate cancer
-    dataset.prostate_cancer = (
-        (last_matching_event_clinical_snomed_before(
+    dataset.prostate_cancer = minimum_of(
+        last_matching_event_clinical_snomed_before(
             prostate_cancer_snomed, index_date
-        ).exists_for_patient()) |
-        (last_matching_event_apc_before(
+        ).date ,
+        last_matching_event_apc_before(
             prostate_cancer_icd10, index_date
-        ).exists_for_patient())
+        ).admission_date
         )
 
     # Pregnancy
     dataset.pregnancy = last_matching_event_clinical_snomed_before(
         pregnancy_snomed, index_date
-        ).exists_for_patient()
+        ).date
 
 
     # COCP or HRT medication
     dataset.hrtcocp = last_matching_med_dmd_before(
         cocp_dmd + hrt_dmd, index_date
-        ).exists_for_patient()
+        ).date
 
     return dataset
 

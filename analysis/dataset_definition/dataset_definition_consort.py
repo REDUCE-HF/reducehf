@@ -28,15 +28,16 @@ dataset = add_hf_diagnosis(dataset, start_date)
 #quality assurance
 dataset = add_quality_assurance(dataset, start_date)
 
-#core variables derived based on start_date
-dataset = add_core(dataset, start_date)
+#core variables (sex and dob only)
+dataset = add_core(dataset, start_date, consort=True)
 
 
-#DEFINE POPULATION (general inclusion/exclusion criteria)
+#DEFINE POPULATION (inclusion/exclusion criteria)
+#note: this will be different for each WP
 
 #registered for at least 1 year
 #practice registration at minimum study end date - 1 year
-#exclude historic registrations that ended before start_date
+#exclude historic registrations that ended before project_index_date
 
 has_registration = practice_registrations.where(
         practice_registrations.start_date.is_on_or_before(end_date - years(1))
@@ -46,16 +47,7 @@ has_registration = practice_registrations.where(
 
 dataset.define_population(
     has_registration
-    & patients.sex.is_in(['male','female']) #known sex proxy for data quality
-    & patients.date_of_birth.is_not_null() #known dob proxy for data quality
-    & ~(patients.age_on(end_date) < 45) #remove pts < 45
-    & ~(patients.age_on(start_date) >= 110) #remove pts age 110+
     & (patients.is_alive_on(start_date)) #remove pts who died before start
     & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_exclude.is_null())|(dataset.hf_diagnosis_date > start_date))
-    & dataset.imd10.is_not_null()
-    & dataset.rural_urban.is_not_null()
     )
-
-#add wp specific covariates / exposures here
-
 
