@@ -1,7 +1,6 @@
 # Test_wp2.R
 rm(v)
-df <- read.csv("/workspaces/reducehf/output/dataset_wp2.csv.gz", header=TRUE)
-table(df$sex)
+df <- read.csv("/workspaces/reducehf/test/dataset_wp2.csv.gz", header=TRUE)
 
 # Patient index date is the earliest of date of age 45 years, study start date and registration date minus 1 year.
 
@@ -19,6 +18,17 @@ df$first_hfsymptom_date[df$first_hfsymptom_date==""] <- NA
 df$first_oedema_date_primary[df$first_oedema_date_primary==""] <- NA
 df$first_fatigue_date_primary[df$first_fatigue_date_primary==""] <- NA
 df$first_breathless_date_primary[df$first_breathless_date_primary==""] <- NA
+
+df$dob[df$dob==""] <- NA
+df$patient_index[df$patient_index==""] <- NA
+
+
+# Create date variables
+df$diag_date <- as.Date(df$hf_diagnosis_date, format="%Y-%m-%d")
+df$symp_date <- as.Date(df$first_hfsymptom_date, format="%Y-%m-%d")
+df$dob_date <- as.Date(df$dob, format="%Y-%m-%d")
+df$patient_index_date <- as.Date(df$patient_index, format="%Y-%m-%d")
+
 
 
 # Create binary variables to indicate missing or present symptom and HF diagnosis dates
@@ -39,8 +49,9 @@ table(df$diag)
 table(df$symp)
 table(df$diag, df$symp) 
 
-df$diag_date <- as.Date(df$hf_diagnosis_date, format="%Y-%m-%d")
-df$symp_date <- as.Date(df$first_hfsymptom_date, format="%Y-%m-%d")
+
+
+# Compare dates of HF-related symptoms and HF diagnosis
 sum(df$symp_date<df$diag_date, na.rm=TRUE)
 sum(df$symp_date==df$diag_date, na.rm=TRUE)
 sum(df$symp_date>df$diag_date, na.rm=TRUE)
@@ -60,4 +71,12 @@ df$np_date[df$np_date==""] <- NA
 
 table(df$echo_ref_near_symptom)
 table(df$echo_done_near_symptom)
+table(df$np_near_symptom)
 
+
+# Check ranges
+summary(df$nt1_result)
+summary(df$np_result)
+summary(df$age)
+
+# 
