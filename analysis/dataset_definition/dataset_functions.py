@@ -196,23 +196,23 @@ def add_time_dependent_core(dataset, index_date):
 def add_np_vars(dataset, index_date, end_date):
  
     #date of first incidence of any of the three HF-related symptoms
-    tmp_breathless_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    dataset.first_breathless_date_primary = first_matching_event_clinical_snomed_between(
     breathless_snomed, index_date, end_date
     ).date
 
-    tmp_oedema_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    dataset.first_oedema_date_primary = first_matching_event_clinical_snomed_between(
     oedema_snomed, index_date, end_date
     ).date
 
-    tmp_fatigue_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    dataset.first_fatigue_date_primary = first_matching_event_clinical_snomed_between(
     fatigue_snomed, index_date, end_date
     ).date
 
     #combine to find the earliest date of any symptom
     dataset.first_hfsymptom_date = minimum_of(
-        tmp_breathless_date_primary,
-        tmp_oedema_date_primary,
-        tmp_fatigue_date_primary
+        dataset.first_breathless_date_primary,
+        dataset.first_oedema_date_primary,
+        dataset.first_fatigue_date_primary
     )
 
     # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
@@ -240,7 +240,7 @@ def add_np_vars(dataset, index_date, end_date):
 
     #First NTProBNP test following index date and using SNOMED codes  
 
-    first_nt = first_matching_event_clinical_ranges_snomed_in(NTpro_snomed,index_date, end_date)
+    first_nt = first_matching_event_clinical_ranges_snomed_between(NTpro_snomed,index_date, end_date)
     dataset.nt1_date = first_nt.date
     dataset.nt1_result = first_nt.numeric_value
     dataset.nt1_comparator = first_nt.comparator
@@ -249,12 +249,9 @@ def add_np_vars(dataset, index_date, end_date):
 
     return dataset
 
-def add_tests(dataset, index_date):
+def add_tests(dataset, index_date, end_date):
 
-    np_tests= clinical_events_ranges.where(clinical_events.ranges.snomedct_code.is_in(NP_snomed))
-
-    first_np = np_tests.sort_by(clinical_events_ranges.date).first_for_patient()
-
+    first_np= first_matching_event_clinical_ranges_snomed_between(NP_snomed, index_date, end_date)
     dataset.np_date = first_np.date
     dataset.np_result = first_np.numeric_value
     dataset.np_comparator = first_np.comparator
@@ -387,6 +384,7 @@ def add_comorbidities(dataset, index_date):
     means we can derive as binary variables rather than dates
     - codelists to be changed
     '''
+    
     ### Diabetes 
 
     
@@ -473,7 +471,7 @@ def add_comorbidities(dataset, index_date):
     dataset.tmp_diabetes_medication_date,
     dataset.tmp_nonmetform_drugs_dmd_date
     )
- 
+    
     ### Obesity 
 
     dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
