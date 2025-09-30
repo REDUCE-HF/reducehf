@@ -49,13 +49,10 @@ table(df$diag)
 table(df$symp)
 table(df$diag, df$symp) 
 
-
-
 # Compare dates of HF-related symptoms and HF diagnosis
 sum(df$symp_date<df$diag_date, na.rm=TRUE)
 sum(df$symp_date==df$diag_date, na.rm=TRUE)
 sum(df$symp_date>df$diag_date, na.rm=TRUE)
-
 
 # QUERY - only have one symptom. Is that expected or are the data scrambled so can't tell?
 
@@ -79,4 +76,4 @@ summary(df$nt1_result)
 summary(df$np_result)
 summary(df$age)
 
-# 
+
