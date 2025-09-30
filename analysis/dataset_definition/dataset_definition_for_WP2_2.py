@@ -65,12 +65,10 @@ dataset.define_population(
     has_registration
     & patients.sex.is_in(['male','female']) #known sex proxy for data quality
     & patients.date_of_birth.is_not_null() #known dob proxy for data quality
-    & ~(patients.age_on(dataset.end_date < 45) #remove pts < 45
+    & ~(patients.age_on(dataset.end_date) < 45) #remove pts < 45
     & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
     & (patients.is_alive_on(start_date)) #remove pts who died before start
     & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_exclude.is_null())|(dataset.hf_diagnosis_date > start_date))
     & dataset.imd10.is_not_null() 
     & dataset.rural_urban.is_not_null()
      )
-
-

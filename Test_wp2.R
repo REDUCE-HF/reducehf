@@ -77,3 +77,43 @@ summary(df$np_result)
 summary(df$age)
 
 
+# Check ranges
+
+# List variables
+ls()
+custom_glimpse <- function(df) {
+  data.frame(
+    col_name = colnames(df),
+    col_index = 1:ncol(df),
+    col_class = sapply(df, class),
+    row.names = NULL
+  )
+}
+
+custom_glimpse(df)
+
+
+check <- subset(df, select=c("age", "nt1_result","np_result","bmi_value","weight","height","last_cholesterol_value"))
+tab <- t(sapply(check, function(x) c(Minimum=min(x, na.rm=TRUE), Maximum=max(x, na.rm=TRUE))))
+
+print(tab)
+
+summary(df$weight)
+df$wt <- as.numeric(df$weight)
+summary(df$wt)
+
+# library(dplyr)
+# library(tidyr)
+# 
+# vars <- c("age","nt1_result", "bmi_value")
+# df %>%
+#   summarise(across(any_of(vars), list(min = ~min(.x, na.rm = TRUE))))
+# 
+# df %>%
+#   summarise(across(any_of(vars), list(max = ~max(.x, na.rm = TRUE))))
+
+
+df %>%
+  summarise(across(any_of(vars), list(min = ~min(.x, na.rm = TRUE),
+                                      max = ~max(.x, na.rm = TRUE))))
+
