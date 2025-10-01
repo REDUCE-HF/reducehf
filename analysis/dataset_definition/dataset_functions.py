@@ -341,6 +341,7 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
+        dataset.add_column('prescriptions_pre' + time_name, prescriptions_count(index_date-time, index_date))
 
     # for objective 3.2
     periods = {
@@ -361,6 +362,8 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(start, end))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
+        dataset.add_column('prescriptions_' + time_name, prescriptions_count(start, end))
+
 
 
     # annual reviews
@@ -376,6 +379,7 @@ def add_healthservice_use(dataset, index_date):
 
     return dataset
 
+    
 
 def add_comorbidities(dataset, index_date):
 

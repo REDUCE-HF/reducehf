@@ -208,6 +208,11 @@ copd_icd10 = codelist_from_csv(
     column="code"
 )
 
+copd_medications = codelist_from_csv(
+  "codelists/opensafely-copd-medications-new-dmd.csv",
+  column = "dmd_id"
+)
+
 #ischaemic heart diseae (ihd)
 ihd_snomed = codelist_from_csv(
     "codelists/bristol-ischaemic-heart-disease-snomed.csv",
