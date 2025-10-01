@@ -183,7 +183,7 @@ def add_time_dependent_core(dataset, index_date):
     dataset.bim_date = bmi.date
     dataset.bmi_value = bmi.numeric_value
 
-    #Cholesterol
+    #Total cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
         )
@@ -191,6 +191,12 @@ def add_time_dependent_core(dataset, index_date):
     dataset.last_cholesterol_date = cholesterol.date
     dataset.last_cholesterol_value = cholesterol.numeric_value
 
+    # HDL cholesterol
+    hdl_cholesterol = last_matching_event_clinical_ranges_snomed_before(
+        hdl_cholesterol_snomed, index_date
+        )
+     dataset.last_hdl_cholesterol_date = hdl_cholesterol.date
+    dataset.last_hdl_cholesterol_value = hdl_cholesterol.numeric_value
     return dataset
 
 def add_np_vars(dataset, index_date, end_date):
