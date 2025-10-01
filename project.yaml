@@ -41,7 +41,7 @@ actions:
       highly_sensitive:
         dataset: output/dataset_wp1.csv.gz
 
-  #WP2
+  #WP2_2
   generate_dataset_wp2_2:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output output/tmp_dataset_wp2_2.csv.gz
     outputs:
@@ -62,26 +62,26 @@ actions:
       highly_sensitive:
         dataset: output/dataset_wp2_2.csv.gz
 
-#WP2 with test
+#WP2_2 with test
   generate_dataset_wp2_2t:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output test/tmp_dataset_wp2_2.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_WP2_2.py --output test/tmp_dataset_wp2_2t.csv.gz
     outputs:
       highly_sensitive:
-        dataset: test/tmp_dataset_wp2_2.csv.gz
+        dataset: test/tmp_dataset_wp2_2t.csv.gz
 
 
   diabetes_algo_wp2_2t:
-    run: diabetes-algo:v0.0.6 --output test/dataset_wp2_2.csv.gz
+    run: diabetes-algo:v0.0.6 --output test/dataset_wp2_2t.csv.gz
     config:
-      df_input: tmp_dataset_wp2_2.csv.gz
+      df_input: tmp_dataset_wp2_2t.csv.gz
       birth_date: dob
       ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp2_2.csv.gz
+      df_output: test/dataset_wp2_2t.csv.gz
     needs:
       - generate_dataset_wp2_2t
     outputs:
       highly_sensitive:
-        dataset: test/dataset_wp2_2.csv.gz
+        dataset: test/dataset_wp2_2t.csv.gz
 
 
   #WP3
