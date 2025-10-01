@@ -38,8 +38,13 @@ def hospital_admissions(start_date, end_date, where=True):
 
 def prescriptions_count (start_date, end_date, where= True): 
     return(
+<<<<<<< Updated upstream
         medications.where(where)
         .where(medications.date.is_on_or_between(start_date, end_date))
+=======
+        prescriptions.where(where)
+        .where(prescriptions.date.is_on_or_between(start_date, end_date))
+>>>>>>> Stashed changes
         .count_for_patient()
     )
 ## In Primary care From diabetes algo reusable action 

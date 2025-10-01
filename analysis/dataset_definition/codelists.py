@@ -210,7 +210,11 @@ copd_icd10 = codelist_from_csv(
 
 copd_medications = codelist_from_csv(
   "codelists/opensafely-copd-medications-new-dmd.csv",
+<<<<<<< Updated upstream
   column = "dmd_id"
+=======
+  column = "dmd_id",
+>>>>>>> Stashed changes
 )
 
 #ischaemic heart diseae (ihd)

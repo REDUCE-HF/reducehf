@@ -370,6 +370,7 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
         dataset.add_column('prescriptions_' + time_name, prescriptions_count(start, end))
 
+<<<<<<< Updated upstream
 
 
     # annual reviews
@@ -382,6 +383,8 @@ def add_healthservice_use(dataset, index_date):
     med_review_ = last_matching_event_clinical_snomed_before(med_review, index_date)
     dataset.med_review_date = med_review_.date
 
+=======
+>>>>>>> Stashed changes
 
     return dataset
 
