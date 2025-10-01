@@ -31,32 +31,31 @@ df$patient_index_date <- as.Date(df$patient_index, format="%Y-%m-%d")
 df$age<- as.numeric(difftime(df$patient_index_date,df$dob_date, units="days"))/365.25
 df$npdate <- as.Date(df$np_date,format="%Y-%m-%d")
 df$nt1date <- as.Date(df$nt1_date,format="%Y-%m-%d")
-
+df$oedema1 <- as.Date(df$first_oedema_date_primary,format="%Y-%m-%d")
+df$fatigue1 <- as.Date(first_fatigue_date_primary,format="%Y-%m-%d")
+df$breathless1 <- as.Date(df$first_breathless_date_primary,format="%Y-%m-%d")
 
 
 # Create binary variables to indicate missing or present symptom and HF diagnosis dates
 
-df$diag <- ifelse(is.na(df$hf_diagnosis_date),0,1)
-df$symp <- ifelse(is.na(df$first_hfsymptom_date),0,1)
+df$diag <- ifelse(is.na(df$diag_date),0,1)
+df$symp <- ifelse(is.na(df$symp_date),0,1)
 table(df$diag)
 table(df$symp)
 
 df$had_np <-ifelse(is.na(df$npdate),0,1)
 table(df$had_np)
 
-df$symp1 <- ifelse(is.na(df$first_oedema_date_primary),0,1)
-df$symp2 <- ifelse(is.na(df$first_fatigue_date_primary),0,1)
-df$symp3 <- ifelse(is.na(df$first_breathless_date_primary),0,1)
+df$symp1 <- ifelse(is.na(df$oedema1),0,1)
+df$symp2 <- ifelse(is.na(df$fatigue1),0,1)
+df$symp3 <- ifelse(is.na(df$breathless1),0,1)
 table(df$symp1)
-
+table(df$symp2)
+table(df$symp3)
 
 df$nosymp <- df$symp1+df$symp2+df$symp3
-#d2 <-subset(df, select=c("symp1", "symp2", "symp3", "nosymp") )
-
-test <- subset(df, select=c("np_result", "np_date"))
-
+d2 <-subset(df, select=c("symp1", "symp2", "symp3", "nosymp") )
 table(df$nosymp)
-
 table(df$diag)
 table(df$symp)
 table(df$diag, df$symp) 
