@@ -22,11 +22,9 @@ end_date = "2025-01-01"
 
 #ADD VARIABLES TO DATASET
 
-
-#core variables derived based on start_date
+#core variables derived based on start_date - although some are based on patient_index_date (defined within)
 dataset = add_core(dataset, start_date)
 
-#variables based on eligibilty date (to be renamed patient_index_date)
 #patient_index_date is currently defined in add(core) 
 dataset = add_time_dependent_core(dataset, dataset.patient_index_date)
 
@@ -60,7 +58,8 @@ has_registration = practice_registrations.where(
         practice_registrations.end_date.is_on_or_before(start_date)
     ).exists_for_patient()
 
-# Need to define age at cohort entry date 
+# Need to define age at cohort entry date (date of first np pro test) - Need a dataset_functions.py, add_core() for WP2_2 as patient_index_date is set there
+# and imd10 and rural urban are defined by patient_index_date (eligibility date) and should also be defined at the cohort entry date!!!
 dataset.define_population(
     has_registration
     & patients.sex.is_in(['male','female']) #known sex proxy for data quality
