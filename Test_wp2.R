@@ -28,7 +28,7 @@ df$diag_date <- as.Date(df$hf_diagnosis_date, format="%Y-%m-%d")
 df$symp_date <- as.Date(df$first_hfsymptom_date, format="%Y-%m-%d")
 df$dob_date <- as.Date(df$dob, format="%Y-%m-%d")
 df$patient_index_date <- as.Date(df$patient_index, format="%Y-%m-%d")
-
+df$age<- as.numeric(difftime(df$patient_index_date,df$dob_date, units="days"))/365.25
 
 
 # Create binary variables to indicate missing or present symptom and HF diagnosis dates
@@ -93,14 +93,30 @@ custom_glimpse <- function(df) {
 custom_glimpse(df)
 
 
-check <- subset(df, select=c("age", "nt1_result","np_result","bmi_value","weight","height","last_cholesterol_value"))
-tab <- t(sapply(check, function(x) c(Minimum=min(x, na.rm=TRUE), Maximum=max(x, na.rm=TRUE))))
+check <- subset(df, select=c("age", "nt1_result","np_result","bmi_value","weight", "height","last_cholesterol_value"))
+
+tab <- sapply(check, function(x) sum(is.na(x)))
+print(tab)
+# QUERY - lots of missing data
+check2 <- subset(df, select=c("age", "nt1_result","np_result","bmi_value","height","last_cholesterol_value"))
+
+tab <- t(sapply(check2, function(x) c(Minimum=min(x, na.rm=TRUE), Maximum=max(x, na.rm=TRUE,sum(is.na(x))))))
 
 print(tab)
 
 summary(df$weight)
 df$wt <- as.numeric(df$weight)
 summary(df$wt)
+# QUERY - all missing weight
+
+hist(df$age, breaks=15, freq=TRUE)
+hist(df$nt1_result, breaks=15, freq=TRUE)
+hist(df$bmi_value, breaks=15, freq=TRUE)
+hist(df$np_result, breaks=15, freq=TRUE)
+hist(df$height, breaks=15, freq=TRUE)
+hist(df$last_cholesterol_value, breaks=15, freq=TRUE)
+
+
 
 # library(dplyr)
 # library(tidyr)
