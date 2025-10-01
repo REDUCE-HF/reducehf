@@ -1,6 +1,9 @@
 # Test_wp2.R
 rm(v)
-df <- read.csv("/workspaces/reducehf/test/dataset_wp2.csv.gz", header=TRUE)
+#df <- read.csv("/workspaces/reducehf/test/dataset_wp2.csv.gz", header=TRUE)
+df <- read.csv("/workspaces/reducehf/test/tmp_dataset_wp2.csv.gz", header=TRUE)
+
+
 
 # Patient index date is the earliest of date of age 45 years, study start date and registration date minus 1 year.
 

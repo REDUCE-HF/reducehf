@@ -180,7 +180,7 @@ def add_time_dependent_core(dataset, index_date):
     bmi = last_matching_event_clinical_ranges_snomed_before(
         bmi_cod, index_date
         )
-    dataset.bim_date = bmi.date
+    dataset.bmi_date = bmi.date
     dataset.bmi_value = bmi.numeric_value
 
     #Cholesterol
@@ -251,7 +251,7 @@ def add_np_vars(dataset, index_date, end_date):
 
     first_np= first_matching_event_clinical_ranges_snomed_between(NP_snomed, index_date, end_date)
     dataset.np_date = first_np.date
-    dataset.np_result = first_np.result
+    dataset.np_result = first_np.numeric_value
 
     return dataset
 
