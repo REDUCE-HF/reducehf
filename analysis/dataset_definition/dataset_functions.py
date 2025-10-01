@@ -247,11 +247,12 @@ def add_np_vars(dataset, index_date, end_date):
     dataset.nt1_lower_bound = first_nt.lower_bound
     dataset.nt1_upper_bound = first_nt.upper_bound
 
-    #First NP test following index date and using SNOMED codes
+    #First NP test following index date and using SNOMED codes - need result to calc binary variable as missing date
 
     first_np= first_matching_event_clinical_ranges_snomed_between(NP_snomed, index_date, end_date)
     dataset.np_date = first_np.date
-        
+    dataset.np_result = first_np.result
+
     return dataset
 
   

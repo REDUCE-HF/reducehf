@@ -29,19 +29,31 @@ df$symp_date <- as.Date(df$first_hfsymptom_date, format="%Y-%m-%d")
 df$dob_date <- as.Date(df$dob, format="%Y-%m-%d")
 df$patient_index_date <- as.Date(df$patient_index, format="%Y-%m-%d")
 df$age<- as.numeric(difftime(df$patient_index_date,df$dob_date, units="days"))/365.25
+df$npdate <- as.Date(df$np_date,format="%Y-%m-%d")
+df$nt1date <- as.Date(df$nt1_date,format="%Y-%m-%d")
+
 
 
 # Create binary variables to indicate missing or present symptom and HF diagnosis dates
 
 df$diag <- ifelse(is.na(df$hf_diagnosis_date),0,1)
 df$symp <- ifelse(is.na(df$first_hfsymptom_date),0,1)
+table(df$diag)
+table(df$symp)
+
+df$had_np <-ifelse(is.na(df$npdate),0,1)
+table(df$had_np)
 
 df$symp1 <- ifelse(is.na(df$first_oedema_date_primary),0,1)
 df$symp2 <- ifelse(is.na(df$first_fatigue_date_primary),0,1)
 df$symp3 <- ifelse(is.na(df$first_breathless_date_primary),0,1)
+table(df$symp1)
+
 
 df$nosymp <- df$symp1+df$symp2+df$symp3
 #d2 <-subset(df, select=c("symp1", "symp2", "symp3", "nosymp") )
+
+test <- subset(df, select=c("np_result", "np_date"))
 
 table(df$nosymp)
 
@@ -93,12 +105,12 @@ custom_glimpse <- function(df) {
 custom_glimpse(df)
 
 
-check <- subset(df, select=c("age", "nt1_result","np_result","bmi_value","weight", "height","last_cholesterol_value"))
+check <- subset(df, select=c("age", "nt1_result","bmi_value","weight", "height","last_cholesterol_value"))
 
 tab <- sapply(check, function(x) sum(is.na(x)))
 print(tab)
 # QUERY - lots of missing data
-check2 <- subset(df, select=c("age", "nt1_result","np_result","bmi_value","height","last_cholesterol_value"))
+check2 <- subset(df, select=c("age", "nt1_result","bmi_value","height","last_cholesterol_value"))
 
 tab <- t(sapply(check2, function(x) c(Minimum=min(x, na.rm=TRUE), Maximum=max(x, na.rm=TRUE,sum(is.na(x))))))
 
@@ -112,7 +124,6 @@ summary(df$wt)
 hist(df$age, breaks=15, freq=TRUE)
 hist(df$nt1_result, breaks=15, freq=TRUE)
 hist(df$bmi_value, breaks=15, freq=TRUE)
-hist(df$np_result, breaks=15, freq=TRUE)
 hist(df$height, breaks=15, freq=TRUE)
 hist(df$last_cholesterol_value, breaks=15, freq=TRUE)
 
