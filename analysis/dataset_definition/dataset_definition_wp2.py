@@ -64,8 +64,8 @@ has_registration = practice_registrations.where(
     ).exists_for_patient()
 
 # QUERIES
-# Assuming this is the eligible population so variables should be defined at the eligibility date (patient_index_date) and currently true 
-# for imd10 and rural_urban), why remove those who died before start_date and not died before the patient_index _date?
+# Assuming this is the eligible population, so variables should be defined at the eligibility date (patient_index_date) and currently true 
+# for imd10 and rural_urban, why remove those who died before start_date and not died before the patient_index _date?
 # 
 # Shouldn't exclusions in consort diagram match those in the population? Currently don't (but work in progress)
 #

@@ -43,7 +43,7 @@ actions:
 
   #WP2
   generate_dataset_wp2:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_wp2.py --output output/tmp_dataset_wp2.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp2.py --output output/tmp_dataset_wp2.csv.gz
     outputs:
       highly_sensitive:
         dataset: output/tmp_dataset_wp2.csv.gz
@@ -65,7 +65,7 @@ actions:
 #WP2 with test directory 
 # QUERY - not working now and can't see why 
   generate_dataset_wp2t:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_for_wp2.py --output test/tmp_dataset_wp2t.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp2.py --output test/tmp_dataset_wp2t.csv.gz
     outputs:
       highly_sensitive:
         dataset: test/tmp_dataset_wp2t.csv.gz
