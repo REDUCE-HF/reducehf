@@ -183,6 +183,14 @@ def add_time_dependent_core(dataset, index_date):
     dataset.bim_date = bmi.date
     dataset.bmi_value = bmi.numeric_value
 
+ # HDL cholesterol 
+    hdl_cholesterol = last_matching_event_clinical_ranges_snomed_before(
+        hdl_cholesterol_snomed, index_date 
+        )
+    
+    dataset.last_hdl_cholesterol_date = hdl_cholesterol.date
+    dataset.last_hdl_cholesterol_value = hdl_cholesterol.numeric_value
+    
     #Total cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
@@ -190,13 +198,32 @@ def add_time_dependent_core(dataset, index_date):
 
     dataset.last_cholesterol_date = cholesterol.date
     dataset.last_cholesterol_value = cholesterol.numeric_value
+    
+    # Hba1c latest for pcp-hf
+    dataset.last_hba1c_value= last_matching_event_clinical_ranges_snomed_before(
+        hba1c_snomed, index_date - years(1)
+        ).numeric_value
+    dataset.last_hba1c_date = last_matching_event_clinical_ranges_snomed_before(
+        hba1c_snomed, index_date - years(1)
+        ).date
+    
+   
+    # latest hypertension medications date for pcp-hf
+    dataset.last_hypertension_date_med = last_matching_med_dmd_before(
+            hypertension_drugs_dmd, index_date - years(1)
+            ).date
+    
+    # latest diabetes medications date for pcp-hf 
+    dataset.last_insulin_dmd_date = last_matching_med_dmd_before(insulin_dmd, index_date - years(1)
+                                                                 ).date
+    dataset.last_antidiabetic_drugs_dmd_date = last_matching_med_dmd_before(antidiabetic_drugs_dmd, index_date - years(1)
+                                                                            ).date
+    dataset.last_nonmetform_drugs_dmd_date = last_matching_med_dmd_before(non_metformin_dmd, index_date - years(1)
+                                                                          ).date
 
-    # HDL cholesterol
-    hdl_cholesterol = last_matching_event_clinical_ranges_snomed_before(
-        hdl_cholesterol_snomed, index_date
-        )
-    dataset.last_hdl_cholesterol_date = hdl_cholesterol.date
-    dataset.last_hdl_cholesterol_value = hdl_cholesterol.numeric_value
+    # Identify last date  that any diabetes medication was prescribed
+    dataset.last_diabetes_medication_date = maximum_of(dataset.last_insulin_dmd_date, dataset.last_antidiabetic_drugs_dmd_date)
+    
     return dataset
 
 def add_np_vars(dataset, index_date, end_date):
