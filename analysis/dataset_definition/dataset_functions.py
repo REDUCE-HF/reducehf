@@ -180,7 +180,7 @@ def add_time_dependent_core(dataset, index_date):
     bmi = last_matching_event_clinical_ranges_snomed_before(
         bmi_cod, index_date
         )
-    dataset.bim_date = bmi.date
+    dataset.bmi_date = bmi.date
     dataset.bmi_value = bmi.numeric_value
 
     #Cholesterol
@@ -251,6 +251,8 @@ def add_np_vars(dataset, index_date, end_date):
 
 def add_tests(dataset, index_date):
 
+
+    #CHECK -- do we want NP tests after index date only??
     np_tests= clinical_events_ranges.where(clinical_events.ranges.snomedct_code.is_in(NP_snomed))
 
     first_np = np_tests.sort_by(clinical_events_ranges.date).first_for_patient()
@@ -264,7 +266,7 @@ def add_tests(dataset, index_date):
     return dataset
 
   
-def add_underserved(dataset, index_date):
+def add_underserved(dataset, index_date, end_date):
 
     practice = practice_registrations.sort_by(
         practice_registrations.start_date,
@@ -273,7 +275,7 @@ def add_underserved(dataset, index_date):
     
     #Care home status
 
-    location = addresses.for_patient_on(dataset.patient_index)
+    location = addresses.for_patient_on(dataset.patient_index_date)
     
     #was address at patient index date a care home
     dataset.carehome_at_start = (
@@ -380,7 +382,7 @@ def add_healthservice_use(dataset, index_date):
     return dataset
 
 
-def add_comorbidities(dataset, index_date):
+def add_comorbidities(dataset, index_date, end_date):
 
     '''
     add comorbidities. using index_date as a parameter
@@ -392,46 +394,46 @@ def add_comorbidities(dataset, index_date):
     
     ## Type 1 Diabetes 
     # First date from primary+secondary, but also primary care date separately for diabetes algo
-    dataset.tmp_t1dm_ctv3_date = first_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, index_date).date
+    dataset.tmp_t1dm_ctv3_date = first_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, end_date).date
     dataset.t1dm_date = minimum_of(
-        (first_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, index_date).date),
-        (first_matching_event_apc_before(diabetes_type1_icd10, index_date).admission_date)
+        (first_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, end_date).date),
+        (first_matching_event_apc_before(diabetes_type1_icd10, end_date).admission_date)
     )
     # Count codes (individually and together, for diabetes algo)
-    tmp_t1dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, index_date)
-    tmp_t1dm_hes_count = count_matching_event_apc_before(diabetes_type1_icd10, index_date)
+    tmp_t1dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, end_date)
+    tmp_t1dm_hes_count = count_matching_event_apc_before(diabetes_type1_icd10, end_date)
     dataset.tmp_t1dm_count_num = tmp_t1dm_ctv3_count + tmp_t1dm_hes_count
 
     ## Type 2 Diabetes
     # First date from primary+secondary, but also primary care date separately for diabetes algo)
-    dataset.tmp_t2dm_ctv3_date = first_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, index_date).date
+    dataset.tmp_t2dm_ctv3_date = first_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, end_date).date
     dataset.t2dm_date = minimum_of(
-        (first_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, index_date).date),
-        (first_matching_event_apc_before(diabetes_type2_icd10, index_date).admission_date)
+        (first_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, end_date).date),
+        (first_matching_event_apc_before(diabetes_type2_icd10, end_date).admission_date)
         )
     # Count codes (individually and together, for diabetes algo)
-    tmp_t2dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, index_date)
-    tmp_t2dm_hes_count = count_matching_event_apc_before(diabetes_type2_icd10, index_date)
+    tmp_t2dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, end_date)
+    tmp_t2dm_hes_count = count_matching_event_apc_before(diabetes_type2_icd10, end_date)
     dataset.tmp_t2dm_count_num = tmp_t2dm_ctv3_count + tmp_t2dm_hes_count
 
     ## Diabetes unspecified/other
     # First date
-    dataset.otherdm_date = first_matching_event_clinical_ctv3_before(diabetes_other_ctv3, index_date).date
+    dataset.otherdm_date = first_matching_event_clinical_ctv3_before(diabetes_other_ctv3, end_date).date
     # Count codes
-    dataset.tmp_otherdm_count_num = count_matching_event_clinical_ctv3_before(diabetes_other_ctv3, index_date)
+    dataset.tmp_otherdm_count_num = count_matching_event_clinical_ctv3_before(diabetes_other_ctv3, end_date)
 
     ## Gestational diabetes
     # First date from primary+secondary
     dataset.gestationaldm_date = minimum_of(
-        (first_matching_event_clinical_ctv3_before(diabetes_gestational_ctv3, index_date).date),
-        (first_matching_event_apc_before(diabetes_gestational_icd10, index_date).admission_date)
+        (first_matching_event_clinical_ctv3_before(diabetes_gestational_ctv3, end_date).date),
+        (first_matching_event_apc_before(diabetes_gestational_icd10, end_date).admission_date)
     )
 
     ## Diabetes diagnostic codes
     # First date
-    dataset.tmp_poccdm_date = first_matching_event_clinical_ctv3_before(diabetes_diagnostic_ctv3, index_date).date
+    dataset.tmp_poccdm_date = first_matching_event_clinical_ctv3_before(diabetes_diagnostic_ctv3, end_date).date
     # Count codes
-    dataset.tmp_poccdm_ctv3_count_num = count_matching_event_clinical_ctv3_before(diabetes_diagnostic_ctv3, index_date)
+    dataset.tmp_poccdm_ctv3_count_num = count_matching_event_clinical_ctv3_before(diabetes_diagnostic_ctv3, end_date)
 
     ### Other variables needed to define diabetes
     ## HbA1c
@@ -439,7 +441,7 @@ def add_comorbidities(dataset, index_date):
     dataset.tmp_max_hba1c_mmol_mol_num = (
         clinical_events.where(
             clinical_events.snomedct_code.is_in(hba1c_snomed))
-        .where(clinical_events.date.is_on_or_before(index_date))
+        .where(clinical_events.date.is_on_or_before(end_date))
         .numeric_value.maximum_for_patient()
         )
     
@@ -447,7 +449,7 @@ def add_comorbidities(dataset, index_date):
     dataset.tmp_max_hba1c_date = ( 
         clinical_events.where(
             clinical_events.snomedct_code.is_in(hba1c_snomed))
-        .where(clinical_events.date.is_on_or_before(index_date)) # this line of code probably not needed again
+        .where(clinical_events.date.is_on_or_before(end_date)) # this line of code probably not needed again
         .where(clinical_events.numeric_value == dataset.tmp_max_hba1c_mmol_mol_num)
         .sort_by(clinical_events.date)
         .first_for_patient() 
@@ -456,9 +458,9 @@ def add_comorbidities(dataset, index_date):
 
     ## Diabetes drugs
     # First dates
-    dataset.tmp_insulin_dmd_date = first_matching_med_dmd_before(insulin_dmd, index_date).date
-    dataset.tmp_antidiabetic_drugs_dmd_date = first_matching_med_dmd_before(antidiabetic_drugs_dmd, index_date).date
-    dataset.tmp_nonmetform_drugs_dmd_date = first_matching_med_dmd_before(non_metformin_dmd, index_date).date
+    dataset.tmp_insulin_dmd_date = first_matching_med_dmd_before(insulin_dmd, end_date).date
+    dataset.tmp_antidiabetic_drugs_dmd_date = first_matching_med_dmd_before(antidiabetic_drugs_dmd, end_date).date
+    dataset.tmp_nonmetform_drugs_dmd_date = first_matching_med_dmd_before(non_metformin_dmd, end_date).date
 
     # Identify first date (in same period) that any diabetes medication was prescribed
     dataset.tmp_diabetes_medication_date = minimum_of(dataset.tmp_insulin_dmd_date, dataset.tmp_antidiabetic_drugs_dmd_date)
@@ -512,10 +514,10 @@ def add_comorbidities(dataset, index_date):
     ''' 
     
     dataset.tmp_copd_date_primary = first_matching_event_clinical_ctv3_before(
-        copd_ctv3, index_date
+        copd_ctv3, end_date
         ).date
     dataset.tmp_copd_date_sus = first_matching_event_apc_before(
-        copd_icd10, index_date
+        copd_icd10, end_date
         ).admission_date
     # Combine to earliest date
     dataset.first_copd_date = minimum_of(
@@ -525,23 +527,23 @@ def add_comorbidities(dataset, index_date):
     ### Hypertension
 
     dataset.hypertension_date_primary = first_matching_event_clinical_snomed_before(
-            hypertension_snomed, index_date
+            hypertension_snomed, end_date
             ).date
     dataset.hypertension_date_med = first_matching_med_dmd_before(
-            hypertension_drugs_dmd, index_date
+            hypertension_drugs_dmd, end_date
             ).date
     dataset.hypertension_date_sus = first_matching_event_apc_before(
-            hypertension_icd10, index_date
+            hypertension_icd10, end_date
             ).admission_date
     #systolic BP* diastolic BP* will be defined in time dependent variables
 
     ### Atrial fibrillation
     dataset.af_date_primary = first_matching_event_clinical_snomed_before(
-           af_snomed, index_date
+           af_snomed, end_date
         ).date
 
     dataset.af_date_sus = first_matching_event_apc_before(
-           af_icd10, index_date
+           af_icd10, end_date
         ).admission_date
 
     ### Ischeamic heart disease
@@ -558,10 +560,10 @@ def add_comorbidities(dataset, index_date):
     #     ).exists_for_patient())
     # )
     dataset.ihd_date_primary = first_matching_event_clinical_snomed_before(
-        ihd_snomed, index_date
+        ihd_snomed, end_date
         ).date
     dataset.ih_date_sus = first_matching_event_apc_before(
-        ihd_icd10, index_date
+        ihd_icd10, end_date
         ).admission_date
 
     ### Chronic kidney disease (CKD)
@@ -573,10 +575,10 @@ def add_comorbidities(dataset, index_date):
     #         ckd_icd10, index_date
     #     ).exists_for_patient())
     dataset.ckd_date_primary = first_matching_event_clinical_snomed_before(
-        ckd_snomed, index_date
+        ckd_snomed, end_date
         ).date
     dataset.ckd_date_sus = first_matching_event_apc_before(
-        ckd_icd10, index_date
+        ckd_icd10, end_date
         ).admission_date
 
 

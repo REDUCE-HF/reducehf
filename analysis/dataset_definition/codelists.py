@@ -180,21 +180,6 @@ hypertension_snomed = codelist_from_csv(
     column="code"
 )
 
-# Diabetes
-diabetes_icd10 = codelist_from_csv(
-    "codelists/user-elsie_horne-diabetes_icd10.csv",
-    column="code"
-)
-
-diabetes_drugs_dmd = codelist_from_csv(
-    "codelists/user-elsie_horne-diabetes_drugs_dmd.csv",
-    column="dmd_id"
-)
-
-diabetes_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-diabetes_snomed.csv",
-    column="code"
-)   
 
 # COPD
 
