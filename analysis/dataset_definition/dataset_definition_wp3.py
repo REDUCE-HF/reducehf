@@ -31,6 +31,8 @@ dataset = add_quality_assurance(dataset, dataset.patient_index_date)
 #hf diagnosis
 dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
 
+
+
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
 
@@ -78,14 +80,14 @@ dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
 # date should be date of HF diagnosis for WP3
 dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
 
-
 #using date of HF diagnosis as reference for WP3 only
 dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date, end_date)
 
+dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
+
 # Check all other functions working
 
-dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
+#dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
 
 #dataset = add_tests(dataset, dataset.patient_index_date)
 
-dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
