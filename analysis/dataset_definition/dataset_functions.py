@@ -247,23 +247,19 @@ def add_np_vars(dataset, index_date, end_date):
     dataset.nt1_lower_bound = first_nt.lower_bound
     dataset.nt1_upper_bound = first_nt.upper_bound
 
-    return dataset
-
-def add_tests(dataset, index_date):
-
-
     #CHECK -- do we want NP tests after index date only??
-    np_tests= clinical_events_ranges.where(clinical_events.ranges.snomedct_code.is_in(NP_snomed))
-
-    first_np = np_tests.sort_by(clinical_events_ranges.date).first_for_patient()
-
+    first_np = first_matching_event_clinical_ranges_snomed_in(NP_snomed,index_date, end_date)
     dataset.np_date = first_np.date
     dataset.np_result = first_np.numeric_value
     dataset.np_comparator = first_np.comparator
     dataset.np_lower_bound = first_np.lower_bound
     dataset.np_upper_bound = first_np.upper_bound
-    
+
+
+    #### add NP exclude variable?? ######
+
     return dataset
+
 
   
 def add_underserved(dataset, index_date, end_date):
