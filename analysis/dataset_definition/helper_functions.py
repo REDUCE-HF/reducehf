@@ -215,21 +215,12 @@ def first_matching_event_ec_after(codelist, start_date, where=True):
 
 
 
-def first_matching_event_clinical_ranges_snomed_between(codelist, start_date, end_date, where=True):
+def first_matching_event_clinical_ranges_snomed_in(codelist, start_date, end_date, where=True):
     return(
         clinical_events_ranges.where(where)
         .where(clinical_events_ranges.snomedct_code.is_in(codelist))
         .where(clinical_events_ranges.date.is_on_or_between(start_date, end_date))
         .sort_by(clinical_events_ranges.date)
-        .first_for_patient()
-    )
-
-def first_matching_event_clinical_snomed_between(codelist, start_date, end_date, where=True):
-    return(
-        clinical_events.where(where)
-        .where(clinical_events.snomedct_code.is_in(codelist))
-        .where(clinical_events.date.is_on_or_between(start_date, end_date))
-        .sort_by(clinical_events.date)
         .first_for_patient()
     )
 
