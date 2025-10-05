@@ -368,7 +368,7 @@ def add_healthservice_use(dataset, index_date):
     }
 
     for time_name, time in time_periods.items():
-
+        # Shouldn't the reason for the attendance/admission be copd exacerbation? as per the sap ? 
         #use in time period after index_date
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
