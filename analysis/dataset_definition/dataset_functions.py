@@ -222,7 +222,11 @@ def add_time_dependent_core(dataset, index_date):
                                                                           ).date
 
     # Identify last date  that any diabetes medication was prescribed
-    dataset.last_diabetes_medication_date = maximum_of(dataset.last_insulin_dmd_date, dataset.last_antidiabetic_drugs_dmd_date)
+    dataset.last_diabetes_medication_date = maximum_of(
+        dataset.last_insulin_dmd_date,
+          dataset.last_antidiabetic_drugs_dmd_date,
+            dataset.last_nonmetform_drugs_dmd_date
+            )
     
     return dataset
 
@@ -369,12 +373,18 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
-
+        dataset.add_column('copd_prescriptions_' + time_name,
+                            prescriptions_count( index_date,index_date+time, where=medications.dmd_code.is_in(copd_medications))
+                            )
         #use in time period before index_date
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
-        dataset.add_column('prescriptions_pre' + time_name, prescriptions_count(index_date-time, index_date))
+        dataset.add_column('copd_prescriptions_pre' + time_name,
+                            prescriptions_count(index_date-time, index_date,where=medications.dmd_code.is_in(copd_medications))
+                            )
+        
+
 
     # for objective 3.2
     periods = {
