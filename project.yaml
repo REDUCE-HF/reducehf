@@ -83,6 +83,15 @@ actions:
     outputs:
       highly_sensitive:
         dataset: output/dataset_wp3.csv.gz
+
+
+  #WP3&4
+  generate_dataset_wp3_4:
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp3_4.py --output output/tmp_dataset_wp3_4.csv.gz
+    outputs:
+      highly_sensitive:
+        dataset: output/tmp_dataset_wp3_4.csv.gz
+
   
 # etc...
 

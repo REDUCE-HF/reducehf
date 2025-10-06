@@ -31,6 +31,8 @@ dataset = add_quality_assurance(dataset, dataset.patient_index_date)
 #hf diagnosis
 dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
 
+
+
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
 
@@ -43,6 +45,7 @@ has_registration = practice_registrations.where(
     ).except_where(
         practice_registrations.end_date.is_on_or_before(start_date)
     ).exists_for_patient()
+
 
 dataset.define_population(
     (has_registration)
@@ -66,30 +69,22 @@ dataset.define_population(
 ##################
 # WP SPECIFIC CRITERIA
 ##################
-# WP1 has no extra criteria
+#    & dataset.hf_diagnosis_date.is_not_null()  	#for WP3 only want people with HF diagnisis
 )
 
+dataset.index_date = case(when(dataset.hf_diagnosis_date.is_not_null()).then(dataset.hf_diagnosis_date),
+    otherwise = end_date - years(2)
+    )
 
-# ADD VARIABLES NEEDED FOR WP1
-# WP1 needs cohorts with different start dates
+# ADD VARIABLES NEEDED FOR WP3
 
-cohort_dict = {
-    '2017-01-01': '_2017',
-    '2018-01-01': '_2018',
-    '2019-01-01': '_2019',
-    '2020-01-01': '_2020',
-    '2021-01-01': '_2021',
-    '2022-01-01': '_2022',
-    '2023-01-01': '_2023',
-    '2024-01-01': '_2024',
-    '2025-01-01': '_2025'
-    }
+dataset = add_time_dependent_core(dataset, dataset.index_date)
 
-for cohort_index_date, suffix in cohort_dict.items():
+# date should be date of HF diagnosis for WP3
+dataset = add_healthservice_use(dataset, dataset.index_date)
 
-    dataset = add_time_dependent_core(dataset, cohort_index_date, suffix=suffix)
-
+#using date of HF diagnosis as reference for WP3 only
 dataset = add_comorbidities(dataset, end_date)
 
-# function still being developed
+# function in progress
 #dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
