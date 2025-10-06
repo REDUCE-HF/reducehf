@@ -215,13 +215,12 @@ copd_medications = codelist_from_csv(
 
 # COPD Exacerbations
 copd_exacerbations_snomed = codelist_from_csv(
-    "codelsits/bristol-copd-exacerbations-snomed.csv",
+    "codelists/bristol-copd-exacerbations-snomed.csv",
     column = "code"
 )
 
 copd_exacerbations_icd10 = codelist_from_csv(
-    "codelsits/opensafely-copd-exacerbations-snomed.csv",
-    column = "code"
+    "codelsits/opensafely-copd-exacerbation-icd10.csv",
 )
 
 #ischaemic heart diseae (ihd)
