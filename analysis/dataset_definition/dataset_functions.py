@@ -89,10 +89,13 @@ def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
 
     # practice registration on patient_index_date
     practice = (
-        practice_registrations.where(practice_registrations.start_date.is_on_or_before(dataset.patient_index_date))
-        .sort_by(practice_registrations.start_date)
+        practice_registrations.where(
+            practice_registrations.start_date.is_on_or_before(
+                dataset.patient_index_date
+            )
+        ).sort_by(practice_registrations.start_date)
         .last_for_patient()
-    )
+        )
 
     # add practice ID and registration date at patient_index
     dataset.practice_id = practice.practice_pseudo_id
@@ -127,7 +130,7 @@ def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
     return dataset
 
 
-def add_time_dependent_core(dataset, index_date, suffix=''):
+def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
 
     '''
      and core variables that depend on index_date
@@ -154,7 +157,7 @@ def add_time_dependent_core(dataset, index_date, suffix=''):
     
     last_smoking_current = (
         (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_not_null() & (last_smoking_current_date > last_smoking_former_date)) 
-        | (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_null())
+         | (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_null())
         ) 
 
     last_smoking_former = (
@@ -190,8 +193,8 @@ def add_time_dependent_core(dataset, index_date, suffix=''):
         hdl_cholesterol_snomed, index_date 
         )
     
-    dataset.last_hdl_cholesterol_date = hdl_cholesterol.date
-    dataset.last_hdl_cholesterol_value = hdl_cholesterol.numeric_value
+    dataset.add_column('last_hdl_cholesterol_date' + suffix, hdl_cholesterol.date)
+    dataset.add_column('last_hdl_cholesterol_value' + suffix, hdl_cholesterol.numeric_value)
     
     #Total cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
@@ -234,33 +237,38 @@ def add_time_dependent_core(dataset, index_date, suffix=''):
     dataset.add_column('weight_date' + suffix, weight_date)
     dataset.add_column('height' + suffix, height)
 
-    
-    # Hba1c latest for pcp-hf
-    dataset.last_hba1c_value= last_matching_event_clinical_ranges_snomed_before(
-        hba1c_snomed, index_date - years(1)
-        ).numeric_value
-    dataset.last_hba1c_date = last_matching_event_clinical_ranges_snomed_before(
-        hba1c_snomed, index_date - years(1)
-        ).date
+    # only needed for WP4 (?) -- CHECK
+    if wp==4:
+
+        # Hba1c latest for pcp-hf
+        dataset.last_hba1c_value= last_matching_event_clinical_ranges_snomed_before(
+            hba1c_snomed, index_date - years(1)
+            ).numeric_value
+        dataset.last_hba1c_date = last_matching_event_clinical_ranges_snomed_before(
+            hba1c_snomed, index_date - years(1)
+            ).date
     
    
-    # latest hypertension medications date for pcp-hf
-    dataset.last_hypertension_date_med = last_matching_med_dmd_before(
+        # latest hypertension medications date for pcp-hf
+        dataset.last_hypertension_date_med = last_matching_med_dmd_before(
             hypertension_drugs_dmd, index_date - years(1)
             ).date
     
-    # latest diabetes medications date for pcp-hf 
-    dataset.last_insulin_dmd_date = last_matching_med_dmd_before(insulin_dmd, index_date - years(1)
-                                                                 ).date
-    dataset.last_antidiabetic_drugs_dmd_date = last_matching_med_dmd_before(antidiabetic_drugs_dmd, index_date - years(1)
-                                                                            ).date
-    dataset.last_nonmetform_drugs_dmd_date = last_matching_med_dmd_before(non_metformin_dmd, index_date - years(1)
-                                                                          ).date
+        # latest diabetes medications date for pcp-hf 
+        dataset.last_insulin_dmd_date = last_matching_med_dmd_before(
+            insulin_dmd, index_date - years(1)
+            ).date
+        dataset.last_antidiabetic_drugs_dmd_date = last_matching_med_dmd_before(
+            antidiabetic_drugs_dmd, index_date - years(1)
+            ).date
+        dataset.last_nonmetform_drugs_dmd_date = last_matching_med_dmd_before(
+            non_metformin_dmd, index_date - years(1)
+            ).date
 
-    # Identify last date  that any diabetes medication was prescribed
-    dataset.last_diabetes_medication_date = maximum_of(
-        dataset.last_insulin_dmd_date,
-          dataset.last_antidiabetic_drugs_dmd_date,
+        # Identify last date  that any diabetes medication was prescribed
+        dataset.last_diabetes_medication_date = maximum_of(
+            dataset.last_insulin_dmd_date,
+            dataset.last_antidiabetic_drugs_dmd_date,
             dataset.last_nonmetform_drugs_dmd_date
             )
     
@@ -270,48 +278,54 @@ def add_wp2_exclusion(dataset, index_date, end_date):
 
     #date of first incidence of any of the three HF-related symptoms prior to index date
     tmp_breathless_date_primary = first_matching_event_clinical_snomed_before(
-    breathless_snomed, index_date
-    ).date
+        breathless_snomed, index_date
+        ).date
 
     tmp_oedema_date_primary = first_matching_event_clinical_snomed_before(
-    oedema_snomed, index_date
-    ).date
+        oedema_snomed, index_date
+        ).date
 
     tmp_fatigue_date_primary = first_matching_event_clinical_snomed_before(
-    fatigue_snomed, index_date
-    ).date
+        fatigue_snomed, index_date
+        ).date
 
     #add indicator which is true is any symptom reported before index date
     dataset.symptom_pre_index = (
-        tmp_breathless_date_primary.is_not_null() | tmp_oedema_date_primary.is_not_null() | tmp_fatigue_date_primary.is_not_null()
-    )
+        tmp_breathless_date_primary.is_not_null() | 
+        tmp_oedema_date_primary.is_not_null() | 
+        tmp_fatigue_date_primary.is_not_null()
+        )
 
     #evidence of NP test prior to index date
-    np_pre = first_matching_event_clinical_snomed_before(NP_snomed,index_date).exists_for_patient()
+    np_pre = first_matching_event_clinical_snomed_before(
+        NP_snomed,index_date
+        ).exists_for_patient()
 
     dataset.np_pre_index = np_pre
 
     #date of first incidence of any of the three HF-related symptoms
     tmp_breathless_date_primary = first_matching_event_clinical_snomed_between(
-    breathless_snomed, index_date, end_date,
-    ).date
+        breathless_snomed, index_date, end_date,
+        ).date
 
     tmp_oedema_date_primary = first_matching_event_clinical_snomed_between(
-    oedema_snomed, index_date, end_date
-    ).date
+        oedema_snomed, index_date, end_date
+        ).date
 
     tmp_fatigue_date_primary = first_matching_event_clinical_snomed_between(
-    fatigue_snomed, index_date, end_date
-    ).date
+        fatigue_snomed, index_date, end_date
+        ).date
 
     #combine to find the earliest date of any symptom
     dataset.first_hfsymptom_date = minimum_of(
         tmp_breathless_date_primary,
         tmp_oedema_date_primary,
         tmp_fatigue_date_primary
-    )
+        )
 
-    first_np = first_matching_event_clinical_snomed_between(NP_snomed,index_date, end_date)
+    first_np = first_matching_event_clinical_snomed_between(
+        NP_snomed,index_date, end_date
+        )
     
     dataset.np_date = first_np.date
 
@@ -321,28 +335,40 @@ def add_wp2_exclusion(dataset, index_date, end_date):
 def add_np_vars(dataset, index_date, end_date):
  
 
-    # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
+    # testing if np test date (BNP or NT-proBNP) closely preceded
+    # or followed first hf-related symptoms (near symptoms)
     dataset.np_near_symptom = clinical_events.where(
         clinical_events.snomedct_code.is_in(NP_snomed)
-    ).where(
-        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
-    ).exists_for_patient()
+        ).where(
+            clinical_events.date.is_on_or_between(
+                dataset.first_hfsymptom_date-days(30),
+                dataset.first_hfsymptom_date+days(90)
+            )
+        ).exists_for_patient()
 
     #echo referral or echo done near first hf-related symptoms
 
     dataset.echo_ref_near_symptom =clinical_events.where(
         clinical_events.snomedct_code.is_in(echo_ref)
-    ).where(
-        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
-    ).exists_for_patient()
+        ).where(
+            clinical_events.date.is_on_or_between(
+                dataset.first_hfsymptom_date-days(30), 
+                dataset.first_hfsymptom_date+days(90)
+            )
+        ).exists_for_patient()
 
     dataset.echo_done_near_symptom =clinical_events.where(
         clinical_events.snomedct_code.is_in(echo_done)
-    ).where(
-        clinical_events.date.is_on_or_between(dataset.first_hfsymptom_date-days(30), dataset.first_hfsymptom_date+days(90))
-    ).exists_for_patient()
+        ).where(
+            clinical_events.date.is_on_or_between(
+                dataset.first_hfsymptom_date-days(30),
+                dataset.first_hfsymptom_date+days(90)
+           )
+        ).exists_for_patient()
 
-    dataset.has_echo = (dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom).when_null_then(False)
+    dataset.has_echo = (
+        dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom
+        ).when_null_then(False)
 
     #First NTProBNP test following index date and using SNOMED codes  
 
@@ -392,7 +418,12 @@ def add_underserved(dataset, index_date, end_date):
     )
 
     #was address at deregistration or study end date a care home
-    location = addresses.for_patient_on(maximum_of(dataset.practice_deregistration_date, end_date))
+    location = addresses.for_patient_on(
+        maximum_of(
+            dataset.practice_deregistration_date, 
+            end_date
+            )
+        )
     dataset.carehome_at_end = (
         location.care_home_is_potential_match |
         location.care_home_requires_nursing |
@@ -412,15 +443,32 @@ def add_hf_diagnosis(dataset, index_date):
     ''' 
 
     #any evidence of HF, not just diagnosis codes, before index date
-    dataset.hf_exclude = last_matching_event_clinical_snomed_before(hf_exclude, index_date).date
+    dataset.hf_exclude = last_matching_event_clinical_snomed_before(
+        hf_exclude, index_date
+        ).date
 
     #primary care
-    dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
+    dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(
+        hf_snomed, index_date
+        ).date
 
     #secondary care - hospital admission (primary OR secondary), or A&E visit
-    dataset.hf_diagnosis_secondary_date = minimum_of(first_matching_event_apc_after(hf_icd10, index_date).admission_date, first_matching_event_ec_after(hf_ecds, index_date).arrival_date)
+    dataset.hf_diagnosis_secondary_date = minimum_of(
+        first_matching_event_apc_after(
+            hf_icd10, 
+            index_date
+            ).admission_date, 
+        first_matching_event_ec_after(
+            hf_ecds, 
+            index_date
+            ).arrival_date
+        )
+
     #either primary or secondary
-    dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
+    dataset.hf_diagnosis_date = minimum_of(
+        dataset.hf_diagnosis_primary_date, 
+        dataset.hf_diagnosis_secondary_date
+        )
 
     return dataset
 
