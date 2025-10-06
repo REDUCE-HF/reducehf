@@ -60,23 +60,34 @@ def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
     ethnicity_sus = ethnicity_from_sus.code
 
     dataset.ethnicity_cat = case(
-        when((ethnicity_snomed == "1") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["A", "B", "C"])))).then("White"),
-        when((ethnicity_snomed == "2") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["D", "E", "F", "G"])))).then("Mixed"),
-        when((ethnicity_snomed == "3") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["H", "J", "K", "L"])))).then("Asian"),
-        when((ethnicity_snomed == "4") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["M", "N", "P"])))).then("Black"),
-        when((ethnicity_snomed == "5") | ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["R", "S"])))).then("Other"),
+        when((ethnicity_snomed == "1") | 
+            ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["A", "B", "C"])))
+            ).then("White"),
+        when((ethnicity_snomed == "2") | 
+            ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["D", "E", "F", "G"])))
+            ).then("Mixed"),
+        when((ethnicity_snomed == "3") | 
+            ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["H", "J", "K", "L"])))
+            ).then("Asian"),
+        when((ethnicity_snomed == "4") | 
+            ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["M", "N", "P"])))
+            ).then("Black"),
+        when((ethnicity_snomed == "5") | 
+            ((ethnicity_snomed.is_null()) & (ethnicity_sus.is_in(["R", "S"])))
+            ).then("Other"),
         otherwise="Unknown", 
         )
 
     #earliest practice registration
     first_practice = (
-        practice_registrations.where(practice_registrations.end_date.is_after(start_date))
+        practice_registrations.where(
+            practice_registrations.end_date.is_after(start_date))
         .sort_by(
             practice_registrations.start_date,
             practice_registrations.end_date,
             practice_registrations.practice_pseudo_id)
         .first_for_patient()
-    )
+        )
 
     #patient index date latest of:
     # - project start
@@ -92,8 +103,8 @@ def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
         practice_registrations.where(
             practice_registrations.start_date.is_on_or_before(
                 dataset.patient_index_date
-            )
-        ).sort_by(practice_registrations.start_date)
+                )
+            ).sort_by(practice_registrations.start_date)
         .last_for_patient()
         )
 
@@ -107,7 +118,8 @@ def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
 
     # add practice deregistration / end of follow-up in tpp
     last_practice = (
-        practice_registrations.where(practice_registrations.end_date.is_after(start_date))
+        practice_registrations.where(
+            practice_registrations.end_date.is_after(start_date))
         .sort_by(
             practice_registrations.start_date,
             practice_registrations.end_date,
@@ -156,14 +168,24 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
         ).date
     
     last_smoking_current = (
-        (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_not_null() & (last_smoking_current_date > last_smoking_former_date)) 
-         | (last_smoking_current_date.is_not_null() & last_smoking_former_date.is_null())
-        ) 
+        (last_smoking_current_date.is_not_null() 
+            & last_smoking_former_date.is_not_null() 
+            & (last_smoking_current_date > last_smoking_former_date)
+            ) |
+        (last_smoking_current_date.is_not_null() 
+            & last_smoking_former_date.is_null()
+            )
+        )
 
     last_smoking_former = (
-        (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_not_null() & (last_smoking_former_date > last_smoking_current_date)) 
-        | (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_null())
-        ) 
+        (last_smoking_former_date.is_not_null() 
+            & last_smoking_current_date.is_not_null() 
+            & (last_smoking_former_date > last_smoking_current_date)
+            ) | 
+        (last_smoking_former_date.is_not_null() 
+            & last_smoking_current_date.is_null()
+            )
+        )
     
     dataset.add_column('smoking' + suffix, case(
             when(last_smoking_current == True).then("S"),
@@ -193,8 +215,12 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
         hdl_cholesterol_snomed, index_date 
         )
     
-    dataset.add_column('last_hdl_cholesterol_date' + suffix, hdl_cholesterol.date)
-    dataset.add_column('last_hdl_cholesterol_value' + suffix, hdl_cholesterol.numeric_value)
+    dataset.add_column('last_hdl_cholesterol_date' + suffix, 
+        hdl_cholesterol.date
+        )
+    dataset.add_column('last_hdl_cholesterol_value' + suffix,
+         hdl_cholesterol.numeric_value
+        )
     
     #Total cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
@@ -204,8 +230,7 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
     dataset.add_column('last_cholesterol_date' + suffix, cholesterol.date)
     dataset.add_column('last_cholesterol_value' + suffix, cholesterol.numeric_value)
 
-    ### Obesity
-
+    # Obesity
     obesity_primary_date = last_matching_event_clinical_snomed_between(
         bmi_obesity_snomed, index_date - days(365), index_date
         ).date
