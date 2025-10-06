@@ -126,7 +126,7 @@ def add_core(dataset, start_date, end_date='2025-01-01', consort=False):
     return dataset
 
 
-def add_time_dependent_core(dataset, index_date):
+def add_time_dependent_core(dataset, index_date, suffix=''):
 
     '''
      and core variables that depend on index_date
@@ -161,50 +161,108 @@ def add_time_dependent_core(dataset, index_date):
         | (last_smoking_former_date.is_not_null() & last_smoking_current_date.is_null())
         ) 
     
-    dataset.smoking = case(
-        when(last_smoking_current == True).then("S"),
-        when(last_smoking_former == True).then("E"),
-        otherwise="N"
-    )
+    dataset.add_column('smoking' + suffix, case(
+            when(last_smoking_current == True).then("S"),
+            when(last_smoking_former == True).then("E"),
+            otherwise="N"
+            )
+        )
 
 
     # systolic BP
     bp = last_matching_event_clinical_ranges_snomed_before(
         systolic_bp, index_date
         )
-    dataset.bp_date = bp.date
-    dataset.bp_value = bp.numeric_value
+    dataset.add_column('bp_date' + suffix, bp.date)
+    dataset.add_column('bp_value' + suffix, bp.numeric_value)
 
 
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
         bmi_cod, index_date
         )
-    dataset.bmi_date = bmi.date
-    dataset.bmi_value = bmi.numeric_value
+    dataset.add_column('bmi_date' + suffix, bmi.date)
+    dataset.add_column('bmi_value' + suffix, bmi.numeric_value)
 
     #Cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
         )
 
-    dataset.last_cholesterol_date = cholesterol.date
-    dataset.last_cholesterol_value = cholesterol.numeric_value
+    dataset.add_column('last_cholesterol_date' + suffix, cholesterol.date)
+    dataset.add_column('last_cholesterol_value' + suffix, cholesterol.numeric_value)
+
+    ### Obesity
+
+    obesity_primary_date = last_matching_event_clinical_snomed_between(
+        bmi_obesity_snomed, index_date - days(365), index_date
+        ).date
+
+    dataset.add_column('obesity_primary_date' + suffix, obesity_primary_date)
+
+    obesity_sus_date = last_matching_event_apc_between(
+        bmi_obesity_icd10, index_date - days(365), index_date
+        ).admission_date
+
+    dataset.add_column('obesity_sus_date' + suffix, obesity_sus_date)   
+
+    # weight
+    # Do we need to check icd10 codes ?
+    weight = last_matching_event_clinical_snomed_between(
+        weight_snomed, index_date - days(365), index_date
+        ).numeric_value
+    weight_date  = last_matching_event_clinical_snomed_between(
+        weight_snomed, index_date - days(365), index_date
+        ).date
+  
+    # height
+    # Do we need to check icd10 codes ?
+    height = last_matching_event_clinical_snomed_before (
+        height_snomed, index_date
+        ).numeric_value
+
+    dataset.add_column('weight' + suffix, weight)
+    dataset.add_column('weight_date' + suffix, weight_date)
+    dataset.add_column('height' + suffix, height)
+
 
     return dataset
 
-def add_np_vars(dataset, index_date, end_date):
- 
-    #date of first incidence of any of the three HF-related symptoms
-    tmp_breathless_date_primary = first_matching_event_clinical_ranges_snomed_in(
-    breathless_snomed, index_date, end_date
+def add_wp2_exclusion(dataset, index_date, end_date):
+
+    #date of first incidence of any of the three HF-related symptoms prior to index date
+    tmp_breathless_date_primary = first_matching_event_clinical_snomed_before(
+    breathless_snomed, index_date
     ).date
 
-    tmp_oedema_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    tmp_oedema_date_primary = first_matching_event_clinical_snomed_before(
+    oedema_snomed, index_date
+    ).date
+
+    tmp_fatigue_date_primary = first_matching_event_clinical_snomed_before(
+    fatigue_snomed, index_date
+    ).date
+
+    #add indicator which is true is any symptom reported before index date
+    dataset.symptom_pre_index = (
+        tmp_breathless_date_primary.is_not_null() | tmp_oedema_date_primary.is_not_null() | tmp_fatigue_date_primary.is_not_null()
+    )
+
+    #evidence of NP test prior to index date
+    np_pre = first_matching_event_clinical_snomed_before(NP_snomed,index_date).exists_for_patient()
+
+    dataset.np_pre_index = np_pre
+
+    #date of first incidence of any of the three HF-related symptoms
+    tmp_breathless_date_primary = first_matching_event_clinical_snomed_between(
+    breathless_snomed, index_date, end_date,
+    ).date
+
+    tmp_oedema_date_primary = first_matching_event_clinical_snomed_between(
     oedema_snomed, index_date, end_date
     ).date
 
-    tmp_fatigue_date_primary = first_matching_event_clinical_ranges_snomed_in(
+    tmp_fatigue_date_primary = first_matching_event_clinical_snomed_between(
     fatigue_snomed, index_date, end_date
     ).date
 
@@ -214,6 +272,16 @@ def add_np_vars(dataset, index_date, end_date):
         tmp_oedema_date_primary,
         tmp_fatigue_date_primary
     )
+
+    first_np = first_matching_event_clinical_snomed_between(NP_snomed,index_date, end_date)
+    
+    dataset.np_date = first_np.date
+
+    return dataset
+
+
+def add_np_vars(dataset, index_date, end_date):
+ 
 
     # testing if np test date (BNP or NT-proBNP) closely preceded or followed first hf-related symptoms (near symptoms)
     dataset.np_near_symptom = clinical_events.where(
@@ -247,16 +315,17 @@ def add_np_vars(dataset, index_date, end_date):
     dataset.nt1_lower_bound = first_nt.lower_bound
     dataset.nt1_upper_bound = first_nt.upper_bound
 
+    #First NP test following index date and using SNOMED codes
     #CHECK -- do we want NP tests after index date only??
+    
     first_np = first_matching_event_clinical_ranges_snomed_in(NP_snomed,index_date, end_date)
-    dataset.np_date = first_np.date
+    dataset.np_date_ranges = first_np.date
     dataset.np_result = first_np.numeric_value
     dataset.np_comparator = first_np.comparator
     dataset.np_lower_bound = first_np.lower_bound
     dataset.np_upper_bound = first_np.upper_bound
 
 
-    #### add NP exclude variable?? ######
 
     return dataset
 
@@ -281,7 +350,7 @@ def add_underserved(dataset, index_date, end_date):
     )
 
     #was address at deregistration or study end date a care home
-    location = addresses.for_patient_on(maximum_of(practice.end_date, end_date))
+    location = addresses.for_patient_on(maximum_of(dataset.practice_deregistration_date, end_date))
     dataset.carehome_at_end = (
         location.care_home_is_potential_match |
         location.care_home_requires_nursing |
@@ -378,12 +447,12 @@ def add_healthservice_use(dataset, index_date):
     return dataset
 
 
-def add_comorbidities(dataset, index_date, end_date):
+def add_comorbidities(dataset, end_date):
 
     '''
-    add comorbidities. using index_date as a parameter
-    means we can derive as binary variables rather than dates
-    - codelists to be changed
+    add comorbidities. 
+    all variables derived as date of first event before end_date
+    each WP needs to derived binary variables relative to index dates
     '''
     ### Diabetes 
 
@@ -472,33 +541,33 @@ def add_comorbidities(dataset, index_date, end_date):
     dataset.tmp_nonmetform_drugs_dmd_date
     )
  
-    ### Obesity 
+#    ### Obesity 
 
-    dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
-        bmi_obesity_snomed, index_date - days(365), index_date
-        ).date
+#    dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
+#        bmi_obesity_snomed, index_date - days(365), index_date
+#        ).date
         
-    dataset.obesity_sus_date = last_matching_event_apc_between(
-        bmi_obesity_icd10, index_date - days(365), index_date    
-        ).admission_date
+#    dataset.obesity_sus_date = last_matching_event_apc_between(
+#        bmi_obesity_icd10, index_date - days(365), index_date    
+#        ).admission_date
     
 
     # weight 
     # Do we need to check icd10 codes ? 
 
-    dataset.weight = last_matching_event_clinical_snomed_between(
-        weight_snomed, index_date - days(365), index_date
-        ).numeric_value
-    dataset.weight_date  = last_matching_event_clinical_snomed_between(
-        weight_snomed, index_date - days(365), index_date
-        ).date
+#    dataset.weight = last_matching_event_clinical_snomed_between(
+#        weight_snomed, index_date - days(365), index_date
+#        ).numeric_value
+#    dataset.weight_date  = last_matching_event_clinical_snomed_between(
+#        weight_snomed, index_date - days(365), index_date
+#        ).date
    
 
     # height
     # Do we need to check icd10 codes ? 
-    dataset.height = last_matching_event_clinical_snomed_before (
-        height_snomed, index_date
-        ).numeric_value
+#    dataset.height = last_matching_event_clinical_snomed_before (
+#        height_snomed, index_date
+#        ).numeric_value
 
     
     

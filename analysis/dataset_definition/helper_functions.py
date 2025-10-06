@@ -211,7 +211,14 @@ def first_matching_event_ec_after(codelist, start_date, where=True):
         .first_for_patient()
     )
 
-
+def first_matching_event_clinical_snomed_between(codelist, start_date, end_date, where=True):
+    return(
+        clinical_events.where(where)
+        .where(clinical_events.snomedct_code.is_in(codelist))
+        .where(clinical_events.date.is_on_or_between(start_date, end_date))
+        .sort_by(clinical_events.date)
+        .first_for_patient()
+    )
 
 
 
