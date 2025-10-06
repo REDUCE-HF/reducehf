@@ -21,6 +21,7 @@ from ehrql.tables.tpp import (
     ons_deaths,
     clinical_events_ranges,
     ethnicity_from_sus
+    
 )
 
 
@@ -372,7 +373,7 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_'+time_name,
                             ed_attendances(index_date,
                                             index_date + time,
-                                            where=eca.diagnosis_01.is_in(copd_exacerbations_icd10)))
+                                              where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)))
         dataset.add_column('primary_care_attendances_'+time_name,
                             primary_care_attendances(index_date,
                             index_date + time,
@@ -390,7 +391,7 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_pre_'+time_name,
                             ed_attendances(index_date - time,
                                             index_date,
-                                             where=eca.diagnosis_01.is_in(copd_exacerbations_icd10)))
+                                             where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)))
         dataset.add_column('primary_care_attendances_pre_'+time_name,
                             primary_care_attendances(index_date - time,
                                                       index_date,

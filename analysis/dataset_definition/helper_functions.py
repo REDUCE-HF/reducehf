@@ -13,9 +13,9 @@ from ehrql.tables.tpp import (
 
 def ed_attendances(start_date, end_date, where=True):
     return (
-        ec.where(where)
-        .where(ec.arrival_date.is_on_or_between(start_date, end_date))
-        .ec_ident        
+        eca.where(where)
+        .where(eca.arrival_date.is_on_or_between(start_date, end_date))
+        .id       
         .count_distinct_for_patient()
     )
 
