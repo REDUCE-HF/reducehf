@@ -13,9 +13,9 @@ from ehrql.tables.tpp import (
 
 def ed_attendances(start_date, end_date, where=True):
     return (
-        ec.where(where)
-        .where(ec.arrival_date.is_on_or_between(start_date, end_date))
-        .ec_ident        
+        eca.where(where)
+        .where(eca.arrival_date.is_on_or_between(start_date, end_date))
+        .id       
         .count_distinct_for_patient()
     )
 
@@ -36,6 +36,12 @@ def hospital_admissions(start_date, end_date, where=True):
         .count_distinct_for_patient()
     )
 
+def prescriptions_count (start_date, end_date, where= True): 
+    return(
+        medications.where(where)
+        .where(medications.date.is_on_or_between(start_date, end_date))
+        .count_for_patient()
+    )
 ## In Primary care From diabetes algo reusable action 
 
 def count_matching_event_clinical_ctv3_before(codelist, index_date, where=True):
