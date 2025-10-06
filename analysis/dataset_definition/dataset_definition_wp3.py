@@ -68,7 +68,7 @@ dataset.define_population(
 ##################
 # WP SPECIFIC CRITERIA
 ##################
-    & dataset.hf_diagnosis_date.is_not_null()
+    & dataset.hf_diagnosis_date.is_not_null()  	#for WP3 only want people with HF diagnisis
 )
 
 
@@ -84,10 +84,3 @@ dataset = add_healthservice_use(dataset, dataset.hf_diagnosis_date)
 dataset = add_comorbidities(dataset, dataset.hf_diagnosis_date, end_date)
 
 dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
-
-# Check all other functions working
-
-#dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
-
-#dataset = add_tests(dataset, dataset.patient_index_date)
-
