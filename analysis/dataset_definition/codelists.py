@@ -220,7 +220,7 @@ copd_exacerbations_snomed = codelist_from_csv(
 )
 
 copd_exacerbations_icd10 = codelist_from_csv(
-    "codelsits/opensafely-copd-exacerbation-icd10.csv",
+    "codelists/opensafely-copd-exacerbation-icd10.csv",
 )
 
 #ischaemic heart diseae (ihd)
