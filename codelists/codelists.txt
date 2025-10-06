@@ -73,4 +73,5 @@ reducehf/np-any/33175fed/
 reducehf/echocardiography-referral/35ca1fe3/
 reducehf/echocardiography-result/03ab3979/
 opensafely/copd-medications-new-dmd/20b7de09/
-
+bristol/copd-exacerbations/2896912f/
+opensafely/copd-exacerbation/6858db5b/
