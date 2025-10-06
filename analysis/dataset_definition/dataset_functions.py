@@ -371,28 +371,35 @@ def add_healthservice_use(dataset, index_date):
     for time_name, time in time_periods.items():
 
         #use in time period after index_date - COPD specific
-        dataset.add_column('ed_attendances_'+time_name,
-                            ed_attendances(index_date,
-                                            index_date + time,
-                                              where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)))
-        dataset.add_column('primary_care_attendances_'+time_name,
-                            primary_care_attendances(index_date,
-                            index_date + time,
-                            where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)))
-        dataset.add_column('hospital_admissions_'+time_name,
-                            hospital_admissions(index_date,
-                                                index_date + time,
-                                                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)))
-        dataset.add_column('copd_prescriptions_' + time_name,
-                            prescriptions_count( index_date,
-                                                index_date+time,
-                                                  where=medications.dmd_code.is_in(copd_medications))
-                            )
+        dataset.add_column('copd_ed_attendances_post_'+time_name,
+            ed_attendances(index_date,
+                index_date + time,
+                where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_primary_care_attendances_post_'+time_name,
+            primary_care_attendances(index_date,
+                index_date + time,
+                where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_hospital_admissions_post_'+time_name,
+            hospital_admissions(index_date,
+                index_date + time,
+                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
+                )
+            )
+        dataset.add_column('copd_prescriptions_post_' + time_name,
+            prescriptions_count(index_date,
+                index_date+time,
+                where=medications.dmd_code.is_in(copd_medications)
+                )
+            )
 
         #use in time period after index_date - general
-        dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
-        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
-        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
+        dataset.add_column('ed_attendances_post_'+time_name, ed_attendances(index_date, index_date + time))
+        dataset.add_column('primary_care_attendances_post_'+time_name, primary_care_attendances(index_date, index_date + time))
+        dataset.add_column('hospital_admissions_post_'+time_name, hospital_admissions(index_date, index_date + time))
 
         #use in time period before index_date - general
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
@@ -401,23 +408,30 @@ def add_healthservice_use(dataset, index_date):
 
 
         #use in time period before index_date = COPD specific
-        dataset.add_column('ed_attendances_pre_'+time_name,
-                            ed_attendances(index_date - time,
-                                            index_date,
-                                             where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)))
-        dataset.add_column('primary_care_attendances_pre_'+time_name,
-                            primary_care_attendances(index_date - time,
-                                                      index_date,
-                                                      where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)))
-        dataset.add_column('hospital_admissions_pre_'+time_name,
-                            hospital_admissions(index_date-time,
-                                                 index_date,
-                                                 where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)))
+        dataset.add_column('copd_ed_attendances_pre_'+time_name,
+            ed_attendances(index_date - time,
+                index_date,
+                where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_primary_care_attendances_pre_'+time_name,
+            primary_care_attendances(index_date - time,
+                index_date,
+                where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_hospital_admissions_pre_'+time_name,
+            hospital_admissions(index_date-time,
+                index_date,
+                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
+                )
+            )
         dataset.add_column('copd_prescriptions_pre' + time_name,
-                            prescriptions_count(index_date-time,
-                                                 index_date,
-                                                 where=medications.dmd_code.is_in(copd_medications))
-                            )
+            prescriptions_count(index_date-time,
+                index_date,
+                where=medications.dmd_code.is_in(copd_medications)
+                )
+            )
         
 
 
