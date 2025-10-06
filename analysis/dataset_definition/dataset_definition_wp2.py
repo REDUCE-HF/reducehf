@@ -55,7 +55,7 @@ dataset.define_population(
     & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
     & ~(patients.age_on(end_date) < 45) #remove pts < 45
     & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
-    & (dataset.patient_index_date < dataset.death_date) #remove pts who died before start
+    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
 #####################
 # If we include quality assurance conditions  when generating dummy data, no data generated
 # Assuming because the data is such low fidelity
