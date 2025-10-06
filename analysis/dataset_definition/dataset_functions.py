@@ -21,6 +21,7 @@ from ehrql.tables.tpp import (
     ons_deaths,
     clinical_events_ranges,
     ethnicity_from_sus
+    
 )
 
 
@@ -184,7 +185,15 @@ def add_time_dependent_core(dataset, index_date, suffix=''):
     dataset.add_column('bmi_date' + suffix, bmi.date)
     dataset.add_column('bmi_value' + suffix, bmi.numeric_value)
 
-    #Cholesterol
+    # HDL cholesterol 
+    hdl_cholesterol = last_matching_event_clinical_ranges_snomed_before(
+        hdl_cholesterol_snomed, index_date 
+        )
+    
+    dataset.last_hdl_cholesterol_date = hdl_cholesterol.date
+    dataset.last_hdl_cholesterol_value = hdl_cholesterol.numeric_value
+    
+    #Total cholesterol
     cholesterol = last_matching_event_clinical_ranges_snomed_before(
         cholesterol_snomed, index_date
         )
@@ -225,7 +234,36 @@ def add_time_dependent_core(dataset, index_date, suffix=''):
     dataset.add_column('weight_date' + suffix, weight_date)
     dataset.add_column('height' + suffix, height)
 
+    
+    # Hba1c latest for pcp-hf
+    dataset.last_hba1c_value= last_matching_event_clinical_ranges_snomed_before(
+        hba1c_snomed, index_date - years(1)
+        ).numeric_value
+    dataset.last_hba1c_date = last_matching_event_clinical_ranges_snomed_before(
+        hba1c_snomed, index_date - years(1)
+        ).date
+    
+   
+    # latest hypertension medications date for pcp-hf
+    dataset.last_hypertension_date_med = last_matching_med_dmd_before(
+            hypertension_drugs_dmd, index_date - years(1)
+            ).date
+    
+    # latest diabetes medications date for pcp-hf 
+    dataset.last_insulin_dmd_date = last_matching_med_dmd_before(insulin_dmd, index_date - years(1)
+                                                                 ).date
+    dataset.last_antidiabetic_drugs_dmd_date = last_matching_med_dmd_before(antidiabetic_drugs_dmd, index_date - years(1)
+                                                                            ).date
+    dataset.last_nonmetform_drugs_dmd_date = last_matching_med_dmd_before(non_metformin_dmd, index_date - years(1)
+                                                                          ).date
 
+    # Identify last date  that any diabetes medication was prescribed
+    dataset.last_diabetes_medication_date = maximum_of(
+        dataset.last_insulin_dmd_date,
+          dataset.last_antidiabetic_drugs_dmd_date,
+            dataset.last_nonmetform_drugs_dmd_date
+            )
+    
     return dataset
 
 def add_wp2_exclusion(dataset, index_date, end_date):
@@ -406,15 +444,70 @@ def add_healthservice_use(dataset, index_date):
 
     for time_name, time in time_periods.items():
 
-        #use in time period after index_date
-        dataset.add_column('ed_attendances_'+time_name, ed_attendances(index_date, index_date + time))
-        dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(index_date, index_date + time))
-        dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(index_date, index_date + time))
+        #use in time period after index_date - COPD specific
+        dataset.add_column('copd_ed_attendances_post_'+time_name,
+            ed_attendances(index_date,
+                index_date + time,
+                where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_primary_care_attendances_post_'+time_name,
+            primary_care_attendances(index_date,
+                index_date + time,
+                where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_hospital_admissions_post_'+time_name,
+            hospital_admissions(index_date,
+                index_date + time,
+                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
+                )
+            )
+        dataset.add_column('copd_prescriptions_post_' + time_name,
+            prescriptions_count(index_date,
+                index_date+time,
+                where=medications.dmd_code.is_in(copd_medications)
+                )
+            )
 
-        #use in time period before index_date
+        #use in time period after index_date - general
+        dataset.add_column('ed_attendances_post_'+time_name, ed_attendances(index_date, index_date + time))
+        dataset.add_column('primary_care_attendances_post_'+time_name, primary_care_attendances(index_date, index_date + time))
+        dataset.add_column('hospital_admissions_post_'+time_name, hospital_admissions(index_date, index_date + time))
+
+        #use in time period before index_date - general
         dataset.add_column('ed_attendances_pre_'+time_name, ed_attendances(index_date - time, index_date))
         dataset.add_column('primary_care_attendances_pre_'+time_name, primary_care_attendances(index_date - time, index_date))
         dataset.add_column('hospital_admissions_pre_'+time_name, hospital_admissions(index_date-time, index_date))
+
+
+        #use in time period before index_date = COPD specific
+        dataset.add_column('copd_ed_attendances_pre_'+time_name,
+            ed_attendances(index_date - time,
+                index_date,
+                where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_primary_care_attendances_pre_'+time_name,
+            primary_care_attendances(index_date - time,
+                index_date,
+                where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
+                )
+            )
+        dataset.add_column('copd_hospital_admissions_pre_'+time_name,
+            hospital_admissions(index_date-time,
+                index_date,
+                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
+                )
+            )
+        dataset.add_column('copd_prescriptions_pre' + time_name,
+            prescriptions_count(index_date-time,
+                index_date,
+                where=medications.dmd_code.is_in(copd_medications)
+                )
+            )
+        
+
 
     # for objective 3.2
     periods = {
@@ -435,6 +528,8 @@ def add_healthservice_use(dataset, index_date):
         dataset.add_column('ed_attendances_'+time_name, ed_attendances(start, end))
         dataset.add_column('primary_care_attendances_'+time_name, primary_care_attendances(start,end))
         dataset.add_column('hospital_admissions_'+time_name, hospital_admissions(start,end))
+        dataset.add_column('prescriptions_' + time_name, prescriptions_count(start, end))
+
 
 
     # annual reviews
@@ -450,6 +545,7 @@ def add_healthservice_use(dataset, index_date):
 
     return dataset
 
+    
 
 def add_comorbidities(dataset, end_date):
 
