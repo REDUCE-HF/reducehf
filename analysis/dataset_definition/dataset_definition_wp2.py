@@ -74,7 +74,6 @@ dataset.define_population(
 )
 
 # ADD VARIABLES NEEDED FOR WP2
-#using date of first HF symptom as reference for WP2 only
 
 dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
 

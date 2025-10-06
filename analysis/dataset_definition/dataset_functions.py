@@ -308,7 +308,9 @@ def add_np_vars(dataset, index_date, end_date):
 
     #First NTProBNP test following index date and using SNOMED codes  
 
-    first_nt = first_matching_event_clinical_ranges_snomed_in(NTpro_snomed,index_date, end_date)
+    first_nt = first_matching_event_clinical_ranges_snomed_in(
+        NTpro_snomed,index_date, end_date,
+        )
     dataset.nt1_date = first_nt.date
     dataset.nt1_result = first_nt.numeric_value
     dataset.nt1_comparator = first_nt.comparator
@@ -318,7 +320,9 @@ def add_np_vars(dataset, index_date, end_date):
     #First NP test following index date and using SNOMED codes
     #CHECK -- do we want NP tests after index date only??
     
-    first_np = first_matching_event_clinical_ranges_snomed_in(NP_snomed,index_date, end_date)
+    first_np = first_matching_event_clinical_ranges_snomed_in(
+        NP_snomed,index_date, end_date,
+        )
     dataset.np_date_ranges = first_np.date
     dataset.np_result = first_np.numeric_value
     dataset.np_comparator = first_np.comparator
@@ -541,35 +545,7 @@ def add_comorbidities(dataset, end_date):
     dataset.tmp_nonmetform_drugs_dmd_date
     )
  
-#    ### Obesity 
 
-#    dataset.obesity_primary_date = last_matching_event_clinical_snomed_between(
-#        bmi_obesity_snomed, index_date - days(365), index_date
-#        ).date
-        
-#    dataset.obesity_sus_date = last_matching_event_apc_between(
-#        bmi_obesity_icd10, index_date - days(365), index_date    
-#        ).admission_date
-    
-
-    # weight 
-    # Do we need to check icd10 codes ? 
-
-#    dataset.weight = last_matching_event_clinical_snomed_between(
-#        weight_snomed, index_date - days(365), index_date
-#        ).numeric_value
-#    dataset.weight_date  = last_matching_event_clinical_snomed_between(
-#        weight_snomed, index_date - days(365), index_date
-#        ).date
-   
-
-    # height
-    # Do we need to check icd10 codes ? 
-#    dataset.height = last_matching_event_clinical_snomed_before (
-#        height_snomed, index_date
-#        ).numeric_value
-
-    
     
     ### COPD
     '''
@@ -603,6 +579,7 @@ def add_comorbidities(dataset, end_date):
     #systolic BP* diastolic BP* will be defined in time dependent variables
 
     ### Atrial fibrillation
+
     dataset.af_date_primary = first_matching_event_clinical_snomed_before(
            af_snomed, end_date
         ).date
