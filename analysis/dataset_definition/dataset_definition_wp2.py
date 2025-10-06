@@ -13,11 +13,13 @@ from dataset_functions import *
 
 dataset = create_dataset()
 
-dataset.configure_dummy_data(population_size=100000)
-
 #placeholder dates for now
 start_date = "2017-01-01"
 end_date = "2025-01-01"
+
+#NOTE: when running from terminal, increase the memory allocation (-m flag)
+#or decrease population_size. Default memory is 4G.
+dataset.configure_dummy_data(population_size=1000000, timeout=500)
 
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
@@ -48,12 +50,12 @@ has_registration = practice_registrations.where(
     ).exists_for_patient()
 
 dataset.define_population(
-    has_registration
-    & patients.sex.is_in(['male','female']) #known sex proxy for data quality
-    & patients.date_of_birth.is_not_null() #known dob proxy for data quality
+    (has_registration)
+    & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
+    & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
     & ~(patients.age_on(end_date) < 45) #remove pts < 45
     & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
-    & (patients.is_alive_on(dataset.patient_index_date)) #remove pts who died before start
+    & (dataset.patient_index_date < dataset.death_date) #remove pts who died before start
 #####################
 # If we include quality assurance conditions  when generating dummy data, no data generated
 # Assuming because the data is such low fidelity
@@ -70,7 +72,7 @@ dataset.define_population(
 # WP SPECIFIC CRITERIA
 ##################
 # exclude people with no HF symptoms after patient_index_date AND no NP test after patient_index_date
-    & ~(dataset.first_hfsymptom_date.is_null() & dataset.np_date.is_null()) 
+    & ~((dataset.first_hfsymptom_date.is_null()) & (dataset.np_date.is_null())) 
 )
 
 # ADD VARIABLES NEEDED FOR WP2
@@ -82,4 +84,5 @@ dataset = add_comorbidities(dataset, end_date)
 dataset = add_time_dependent_core(dataset, dataset.first_hfsymptom_date, suffix = '_wp2_1')
 dataset = add_time_dependent_core(dataset, dataset.np_date, suffix = '_wp2_2')
 
-dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
+# add_underserved() function still in progress
+#dataset = add_underserved(dataset, dataset.patient_index_date, end_date)

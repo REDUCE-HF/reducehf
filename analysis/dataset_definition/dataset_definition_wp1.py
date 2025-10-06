@@ -45,12 +45,12 @@ has_registration = practice_registrations.where(
     ).exists_for_patient()
 
 dataset.define_population(
-    has_registration
-    & patients.sex.is_in(['male','female']) #known sex proxy for data quality
-    & patients.date_of_birth.is_not_null() #known dob proxy for data quality
+    (has_registration)
+    & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
+    & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
     & ~(patients.age_on(end_date) < 45) #remove pts < 45
     & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
-    & (patients.is_alive_on(dataset.patient_index_date)) #remove pts who died before start
+    & (dataset.patient_index_date < dataset.death_date) #remove pts who died before start
 #####################
 # If we include quality assurance conditions  when generating dummy data, no data generated
 # Assuming because the data is such low fidelity
@@ -71,10 +71,25 @@ dataset.define_population(
 
 
 # ADD VARIABLES NEEDED FOR WP1
-# Using patient_index_date as reference
+# WP1 needs cohorts with different start dates
 
-dataset = add_time_dependent_core(dataset, dataset.patient_index_date)
+cohort_dict = {
+    '2017-01-01': '2017',
+    '2018-01-01': '2018',
+    '2019-01-01': '2019',
+    '2020-01-01': '2020',
+    '2021-01-01': '2021',
+    '2022-01-01': '2022',
+    '2023-01-01': '2023',
+    '2024-01-01': '2024',
+    '2025-01-01': '2025'
+    }
 
-dataset = add_comorbidities(dataset, dataset.patient_index_date, end_date)
+for cohort_index_date, suffix in cohort_dict.items():
 
-dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
+    dataset = add_time_dependent_core(dataset, cohort_index_date, suffix=suffix)
+
+dataset = add_comorbidities(dataset, end_date)
+
+# function still being developed
+#dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
