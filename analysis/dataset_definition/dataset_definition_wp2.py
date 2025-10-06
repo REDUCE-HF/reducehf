@@ -18,8 +18,8 @@ start_date = "2017-01-01"
 end_date = "2025-01-01"
 
 #NOTE: when running from terminal, increase the memory allocation (-m flag)
-#or decrease population_size. Default memory is 4G.
-dataset.configure_dummy_data(population_size=1000000, timeout=500)
+#or decrease population_size. Default memory is 4G. This will run with 8G.
+dataset.configure_dummy_data(population_size=500000, timeout=500)
 
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
