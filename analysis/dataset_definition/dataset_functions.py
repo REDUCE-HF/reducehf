@@ -261,12 +261,11 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
     if wp==4:
 
         # Hba1c latest for pcp-hf
-        dataset.last_hba1c_value= last_matching_event_clinical_ranges_snomed_before(
+        last_hba1c = last_matching_event_clinical_ranges_snomed_before(
             hba1c_snomed, index_date - years(1)
-            ).numeric_value
-        dataset.last_hba1c_date = last_matching_event_clinical_ranges_snomed_before(
-            hba1c_snomed, index_date - years(1)
-            ).date
+            )
+        dataset.last_hba1c_value = last_hba1c.numeric_value
+        dataset.last_hba1c_date = last_hba1c.date
     
    
         # latest hypertension medications date for pcp-hf
@@ -275,21 +274,21 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
             ).date
     
         # latest diabetes medications date for pcp-hf 
-        dataset.last_insulin_dmd_date = last_matching_med_dmd_before(
+        last_insulin_dmd_date = last_matching_med_dmd_before(
             insulin_dmd, index_date - years(1)
             ).date
-        dataset.last_antidiabetic_drugs_dmd_date = last_matching_med_dmd_before(
+        last_antidiabetic_drugs_dmd_date = last_matching_med_dmd_before(
             antidiabetic_drugs_dmd, index_date - years(1)
             ).date
-        dataset.last_nonmetform_drugs_dmd_date = last_matching_med_dmd_before(
+        last_nonmetform_drugs_dmd_date = last_matching_med_dmd_before(
             non_metformin_dmd, index_date - years(1)
             ).date
 
         # Identify last date  that any diabetes medication was prescribed
         dataset.last_diabetes_medication_date = maximum_of(
-            dataset.last_insulin_dmd_date,
-            dataset.last_antidiabetic_drugs_dmd_date,
-            dataset.last_nonmetform_drugs_dmd_date
+            last_insulin_dmd_date,
+            last_antidiabetic_drugs_dmd_date,
+            last_nonmetform_drugs_dmd_date
             )
     
     return dataset
@@ -678,8 +677,14 @@ def add_comorbidities(dataset, end_date):
         )
 
     # Count codes (individually and together, for diabetes algo)
-    tmp_t1dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type1_ctv3, end_date)
-    tmp_t1dm_hes_count = count_matching_event_apc_before(diabetes_type1_icd10, end_date)
+    tmp_t1dm_ctv3_count = count_matching_event_clinical_ctv3_before(
+        diabetes_type1_ctv3, 
+        end_date
+        )
+    tmp_t1dm_hes_count = count_matching_event_apc_before(
+        diabetes_type1_icd10, 
+        end_date
+        )
     
     dataset.tmp_t1dm_count_num = tmp_t1dm_ctv3_count + tmp_t1dm_hes_count
 
@@ -697,36 +702,54 @@ def add_comorbidities(dataset, end_date):
             .admission_date)
         )
     # Count codes (individually and together, for diabetes algo)
-    tmp_t2dm_ctv3_count = count_matching_event_clinical_ctv3_before(diabetes_type2_ctv3, end_date)
-    tmp_t2dm_hes_count = count_matching_event_apc_before(diabetes_type2_icd10, end_date)
+    tmp_t2dm_ctv3_count = count_matching_event_clinical_ctv3_before(
+        diabetes_type2_ctv3, 
+        end_date
+        )
+    tmp_t2dm_hes_count = count_matching_event_apc_before(
+        diabetes_type2_icd10, 
+        end_date
+        )
     
     dataset.tmp_t2dm_count_num = tmp_t2dm_ctv3_count + tmp_t2dm_hes_count
 
     ## Diabetes unspecified/other
     # First date
     dataset.otherdm_date = first_matching_event_clinical_ctv3_before(
-        diabetes_other_ctv3, end_date
+        diabetes_other_ctv3, 
+        end_date
         ).date
     # Count codes
     dataset.tmp_otherdm_count_num = count_matching_event_clinical_ctv3_before(
-        diabetes_other_ctv3, end_date
+        diabetes_other_ctv3, 
+        end_date
         )
 
     ## Gestational diabetes
     # First date from primary+secondary
     dataset.gestationaldm_date = minimum_of(
-        (first_matching_event_clinical_ctv3_before(diabetes_gestational_ctv3, end_date).date),
-        (first_matching_event_apc_before(diabetes_gestational_icd10, end_date).admission_date)
-    )
+        (first_matching_event_clinical_ctv3_before(
+                diabetes_gestational_ctv3, 
+                end_date
+                ).date
+            ),
+        (first_matching_event_apc_before(
+                diabetes_gestational_icd10,
+                end_date
+                ).admission_date
+            )
+        )
 
     ## Diabetes diagnostic codes
     # First date
     dataset.tmp_poccdm_date = first_matching_event_clinical_ctv3_before(
-        diabetes_diagnostic_ctv3, end_date
+        diabetes_diagnostic_ctv3, 
+        end_date
         ).date
     # Count codes
     dataset.tmp_poccdm_ctv3_count_num = count_matching_event_clinical_ctv3_before(
-        diabetes_diagnostic_ctv3, end_date
+        diabetes_diagnostic_ctv3, 
+        end_date
         )
 
     ### Other variables needed to define diabetes
@@ -802,14 +825,14 @@ def add_comorbidities(dataset, end_date):
     ### Hypertension
 
     dataset.hypertension_date_primary = first_matching_event_clinical_snomed_before(
-            hypertension_snomed, end_date
-            ).date
+        hypertension_snomed, end_date
+        ).date
     dataset.hypertension_date_med = first_matching_med_dmd_before(
-            hypertension_drugs_dmd, end_date
-            ).date
+        hypertension_drugs_dmd, end_date
+        ).date
     dataset.hypertension_date_sus = first_matching_event_apc_before(
-            hypertension_icd10, end_date
-            ).admission_date
+        hypertension_icd10, end_date
+        ).admission_date
     #systolic BP* diastolic BP* will be defined in time dependent variables
 
     ### Atrial fibrillation
@@ -882,10 +905,10 @@ def add_quality_assurance(dataset, index_date):
     dataset.prostate_cancer = minimum_of(
         last_matching_event_clinical_snomed_before(
             prostate_cancer_snomed, index_date
-        ).date ,
+            ).date ,
         last_matching_event_apc_before(
             prostate_cancer_icd10, index_date
-        ).admission_date
+            ).admission_date
         )
 
     # Pregnancy
