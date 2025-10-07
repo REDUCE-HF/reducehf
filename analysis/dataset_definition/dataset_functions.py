@@ -28,6 +28,11 @@ from helper_functions import *
 
 from codelists import *
 
+###########################
+# Core variables:
+# independent of index date
+##########################
+
 def add_core(dataset, start_date, end_date='2025-01-01'):
 
     '''
@@ -136,6 +141,10 @@ def add_core(dataset, start_date, end_date='2025-01-01'):
 
     return dataset
 
+######################
+# Core variables:
+# depend on index date
+######################
 
 def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
 
@@ -293,6 +302,10 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
     
     return dataset
 
+##########################
+# WP2 - exclusion criteria
+##########################
+
 def add_wp2_exclusion(dataset, index_date, end_date):
 
     #date of first incidence of any of the three HF-related symptoms prior to index date
@@ -350,6 +363,9 @@ def add_wp2_exclusion(dataset, index_date, end_date):
 
     return dataset
 
+###################
+# WP2 -- NP testing
+###################
 
 def add_np_vars(dataset, index_date, end_date):
  
@@ -416,8 +432,10 @@ def add_np_vars(dataset, index_date, end_date):
 
     return dataset
 
+####################
+# Underserved groups
+####################
 
-  
 def add_underserved(dataset, index_date, end_date):
 
     practice = practice_registrations.sort_by(
@@ -491,9 +509,11 @@ def add_hf_diagnosis(dataset, index_date):
 
     return dataset
 
+####################
+# Health Service Use
+####################
 
 def add_healthservice_use(dataset, index_date):
-
 
     '''
     add variables measuring health service use
@@ -501,7 +521,7 @@ def add_healthservice_use(dataset, index_date):
 
     '''
 
-    # for objective  3.1
+    ## Objective  3.1
     time_periods = {
         '3m': days(90),
         '6m': days(180),
@@ -571,7 +591,6 @@ def add_healthservice_use(dataset, index_date):
                 )
             )
 
-
         #use in time period before index_date - COPD specific
         dataset.add_column('copd_ed_attendances_pre_'+time_name,
             ed_attendances(index_date - time,
@@ -598,9 +617,7 @@ def add_healthservice_use(dataset, index_date):
                 )
             )
         
-
-
-    # for objective 3.2
+    ## Objective 3.2
     periods = {
         "post_0_3m": (index_date, index_date + days(90)),
         "post_3_6m": (index_date + days(90), index_date + days(180)),
@@ -629,19 +646,20 @@ def add_healthservice_use(dataset, index_date):
             prescriptions_count(start, end)
             )
 
-
-
-    # annual reviews
+    ## annual reviews
+    # Asthma
     asthma_review_ = last_matching_event_clinical_snomed_before(
         asthma_review, index_date
         )
     dataset.asthma_review_date = asthma_review_.date
     
+    # COPD
     copd_review_ = last_matching_event_clinical_snomed_before(
         copd_review, index_date
         )
     dataset.copd_review_date = copd_review_.date
 
+    # Medications (any)
     med_review_ = last_matching_event_clinical_snomed_before(
         med_review, index_date
         )
@@ -650,7 +668,10 @@ def add_healthservice_use(dataset, index_date):
 
     return dataset
 
-    
+
+###############
+# Comorbidities
+###############
 
 def add_comorbidities(dataset, end_date):
 
@@ -659,9 +680,8 @@ def add_comorbidities(dataset, end_date):
     all variables derived as date of first event before end_date
     each WP needs to derived binary variables relative to index dates
     '''
-    ### Diabetes 
 
-    
+    ### Diabetes
     ## Type 1 Diabetes 
     # First date from primary+secondary, but also primary care date separately for diabetes algo
     dataset.tmp_t1dm_ctv3_date = first_matching_event_clinical_ctv3_before(
@@ -811,16 +831,13 @@ def add_comorbidities(dataset, end_date):
         dataset.tmp_diabetes_medication_date,
         dataset.tmp_nonmetform_drugs_dmd_date
         )
- 
-
     
     ### COPD
     '''
     Shall we just derive primary and sus dates ? 
     or take the earliest and tag them as tmp to remove them from 
     the dataset later ? 
-    ''' 
-    
+    '''     
     dataset.tmp_copd_date_primary = first_matching_event_clinical_ctv3_before(
         copd_ctv3, end_date
         ).date
@@ -832,8 +849,8 @@ def add_comorbidities(dataset, end_date):
         dataset.tmp_copd_date_primary,
         dataset.tmp_copd_date_sus
         )
-    ### Hypertension
 
+    ### Hypertension
     dataset.hypertension_date_primary = first_matching_event_clinical_snomed_before(
         hypertension_snomed, end_date
         ).date
@@ -846,7 +863,6 @@ def add_comorbidities(dataset, end_date):
     #systolic BP* diastolic BP* will be defined in time dependent variables
 
     ### Atrial fibrillation
-
     dataset.af_date_primary = first_matching_event_clinical_snomed_before(
         af_snomed, end_date
         ).date
@@ -856,7 +872,6 @@ def add_comorbidities(dataset, end_date):
         ).admission_date
 
     ### Ischeamic heart disease
-     
     dataset.ihd_date_primary = first_matching_event_clinical_snomed_before(
         ihd_snomed, end_date
         ).date
@@ -865,7 +880,6 @@ def add_comorbidities(dataset, end_date):
         ).admission_date
 
     ### CKD
-    
     dataset.ckd_date_primary = first_matching_event_clinical_snomed_before(
         ckd_snomed, end_date
         ).date
@@ -873,41 +887,12 @@ def add_comorbidities(dataset, end_date):
         ckd_icd10, end_date
         ).admission_date
 
-
     return dataset
 
 
-
-def add_copd_severity(dataset, index_date):
-
-
-    '''
-    add date of most recent copd annual review
-    prior to index_date and values for:
-    -  MRC breathlessness score
-    -  Number of exacerbations
-    
-    need to add following codelists:
-    -  COPD reviews: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/copdrvw_cod/20241205/
-    -  number of exacerbations: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/copdexacb_cod/20241205/
-    -  MRC breathlessness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/mrc_cod/20241205/
-    '''
-
-    return dataset
-
-
-def add_medications(dataset, start_date, end_date):
-
-    '''
-    add functions to count number of prescriptions
-    for a medication between start_date and end_date
-    will need codelists for medications
-    can use helper functions from post-covid-events
-    '''
-
-    return dataset
-
-
+###################
+# Quality assurance
+###################
 
 def add_quality_assurance(dataset, index_date):
 
