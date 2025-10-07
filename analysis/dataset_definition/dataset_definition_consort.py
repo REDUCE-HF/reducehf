@@ -16,20 +16,21 @@ dataset = create_dataset()
 dataset.configure_dummy_data(population_size=100000)
 
 #placeholder dates for now
-start_date = "2020-01-01"
+start_date = "2017-01-01"
 end_date = "2025-01-01"
 
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
+
+#core variables 
+dataset = add_core(dataset, start_date)
+
 #hf diagnosis
-dataset = add_hf_diagnosis(dataset, start_date)
+dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
 
 #quality assurance
 dataset = add_quality_assurance(dataset, start_date)
-
-#core variables (sex and dob only)
-dataset = add_core(dataset, start_date, consort=True)
 
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
@@ -48,6 +49,6 @@ has_registration = practice_registrations.where(
 dataset.define_population(
     has_registration
     & (patients.is_alive_on(start_date)) #remove pts who died before start
-    & ((dataset.hf_diagnosis_date.is_null()) | (dataset.hf_exclude.is_null())|(dataset.hf_diagnosis_date > start_date))
+    & ((dataset.hf_diagnosis_date.is_null())|(dataset.hf_diagnosis_date > dataset.patient_index_date))
     )
 

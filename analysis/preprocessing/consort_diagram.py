@@ -4,6 +4,9 @@ df = pd.read_csv('output/dataset_consort.csv.gz')
 
 start_date = pd.to_datetime('2020-01-01', format = '%Y-%m-%d')
 end_date = pd.to_datetime('2025-05-01', format = '%Y-%m-%d')
+df.patient_index_date = pd.to_datetime(df.patient_index_date)
+df.death_date = pd.to_datetime(df.death_date)
+
 
 exclusion_steps = {}
 
@@ -34,13 +37,33 @@ df = df.loc[df['diff']>=45]
 exclusion_steps['under_45'] = [df.shape[0]]
 
 
-# > 110 on start_date
+# > 110 on patient_index_date
 
-df['diff'] = (start_date - df['dob']).dt.days/365.25
+df['diff'] = (df.patient_index_date - df['dob']).dt.days/364.25
 
 df = df.loc[df['diff']<=110]
 
 exclusion_steps['over_110'] = [df.shape[0]]
+
+
+# dies before start
+
+df = df.loc[((df.death_date > df.patient_index_date) | (df.death_date.isna()))]
+
+exclusion_steps['dies_before_eligibility'] = [df.shape[0]]
+
+# no IMD
+
+df = df.loc[~df.imd10.isna()]
+
+exclusion_steps['missing_imd'] = [df.shape[0]]
+
+
+# no rural/urban classification
+
+df = df.loc[~df.rural_urban.isna()]
+
+exclusion_steps['missing_rural_urban'] = [df.shape[0]]
 
 
 # Male and pregnant/hrt
@@ -55,6 +78,15 @@ exclusion_steps['male_pregnant_hrt'] = [df.shape[0]]
 df = df.loc[~((df.sex=='female') & ~(df.prostate_cancer.isna()))]
 
 exclusion_steps['female_prostate'] = [df.shape[0]]
+
+
+# add HF stats
+
+# DO WE WANT N WITH HF DIAGNOSIS??
+
+df = df.loc[df.hf_exclude.isna()]
+
+exclusion_steps['hf_evidence_pre_eligibility'] = [df.shape[0]]
 
 
 # save to csv
