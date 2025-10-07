@@ -665,15 +665,20 @@ def add_comorbidities(dataset, end_date):
     ## Type 1 Diabetes 
     # First date from primary+secondary, but also primary care date separately for diabetes algo
     dataset.tmp_t1dm_ctv3_date = first_matching_event_clinical_ctv3_before(
-        diabetes_type1_ctv3, end_date
+        diabetes_type1_ctv3, 
+        end_date
         ).date
     dataset.t1dm_date = minimum_of(
         (first_matching_event_clinical_ctv3_before(
-                diabetes_type1_ctv3, end_date)
-            .date),
+                diabetes_type1_ctv3, 
+                end_date
+                ).date
+            ),
         (first_matching_event_apc_before(
-                diabetes_type1_icd10, end_date)
-            .admission_date)
+                diabetes_type1_icd10, 
+                end_date
+                ).admission_date
+            )
         )
 
     # Count codes (individually and together, for diabetes algo)
@@ -691,15 +696,20 @@ def add_comorbidities(dataset, end_date):
     ## Type 2 Diabetes
     # First date from primary+secondary, but also primary care date separately for diabetes algo)
     dataset.tmp_t2dm_ctv3_date = first_matching_event_clinical_ctv3_before(
-        diabetes_type2_ctv3, end_date
+        diabetes_type2_ctv3, 
+        end_date
         ).date
     dataset.t2dm_date = minimum_of(
         (first_matching_event_clinical_ctv3_before(
-                diabetes_type2_ctv3, end_date)
-            .date),
+                diabetes_type2_ctv3, 
+                end_date
+                ).date
+            ),
         (first_matching_event_apc_before(
-                diabetes_type2_icd10, end_date)
-            .admission_date)
+                diabetes_type2_icd10, 
+                end_date
+                ).admission_date
+            )
         )
     # Count codes (individually and together, for diabetes algo)
     tmp_t2dm_ctv3_count = count_matching_event_clinical_ctv3_before(
