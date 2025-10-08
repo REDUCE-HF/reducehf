@@ -74,10 +74,10 @@ actions:
   diabetes_algo_wp2t:
     run: diabetes-algo:v0.0.6 --output test/dataset_wp2t.csv.gz
     config:
-      df_input: tmp_dataset_wp2t.csv.gz
+      df_input: ../test/tmp_dataset_wp2t.csv.gz
       birth_date: dob
       ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp2t.csv.gz
+      df_output: ../test/dataset_wp2t.csv.gz
     needs:
       - generate_dataset_wp2t
     outputs:

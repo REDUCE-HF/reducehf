@@ -1,7 +1,8 @@
 # Test_wp2.R
 rm(v)
 #df <- read.csv("/workspaces/reducehf/test/dataset_wp2.csv.gz", header=TRUE)
-df <- read.csv("/workspaces/reducehf/test/tmp_dataset_wp2.csv.gz", header=TRUE)
+df <- read.csv("/workspaces/reducehf/output/tmp_dataset_wp2.csv.gz", header=TRUE)
+df <- read.csv("/workspaces/reducehf/output/dataset_wp2.csv.gz", header=TRUE)
 
 
 
