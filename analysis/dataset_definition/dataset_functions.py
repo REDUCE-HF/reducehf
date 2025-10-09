@@ -328,12 +328,12 @@ def add_wp2_exclusion(dataset, index_date, end_date):
         tmp_fatigue_date_primary.is_not_null()
         )
 
-    #evidence of NP test prior to index date
-    np_pre = first_matching_event_clinical_snomed_before(
-        NP_snomed,index_date
+    #evidence of NTPro test prior to index date
+    nt_pre = first_matching_event_clinical_snomed_before(
+        NTpro_snomed,index_date
         ).exists_for_patient()
 
-    dataset.np_pre_index = np_pre
+    dataset.nt_pre_index = nt_pre
 
     #date of first incidence of any of the three HF-related symptoms
     tmp_breathless_date_primary = first_matching_event_clinical_snomed_between(
@@ -355,12 +355,11 @@ def add_wp2_exclusion(dataset, index_date, end_date):
         tmp_fatigue_date_primary
         )
 
-    first_np = first_matching_event_clinical_snomed_between(
-        NP_snomed,index_date, end_date
+    first_nt = first_matching_event_clinical_snomed_between(
+        NTpro_snomed,index_date, end_date
         )
     
-    dataset.np_date = first_np.date
-
+    dataset.nt1_date = first_nt.date
     return dataset
 
 ###################
@@ -368,7 +367,7 @@ def add_wp2_exclusion(dataset, index_date, end_date):
 ###################
 
 def add_np_vars(dataset, index_date, end_date):
- 
+
 
     # testing if np test date (BNP or NT-proBNP) closely preceded
     # or followed first hf-related symptoms (near symptoms)
@@ -410,24 +409,11 @@ def add_np_vars(dataset, index_date, end_date):
     first_nt = first_matching_event_clinical_ranges_snomed_in(
         NTpro_snomed,index_date, end_date,
         )
-    dataset.nt1_date = first_nt.date
+    dataset.nt1_date_ranges = first_nt.date
     dataset.nt1_result = first_nt.numeric_value
     dataset.nt1_comparator = first_nt.comparator
     dataset.nt1_lower_bound = first_nt.lower_bound
     dataset.nt1_upper_bound = first_nt.upper_bound
-
-    #First NP test following index date and using SNOMED codes
-    #CHECK -- do we want NP tests after index date only??
-    
-    first_np = first_matching_event_clinical_ranges_snomed_in(
-        NP_snomed,index_date, end_date,
-        )
-    dataset.np_date_ranges = first_np.date
-    dataset.np_result = first_np.numeric_value
-    dataset.np_comparator = first_np.comparator
-    dataset.np_lower_bound = first_np.lower_bound
-    dataset.np_upper_bound = first_np.upper_bound
-
 
 
     return dataset

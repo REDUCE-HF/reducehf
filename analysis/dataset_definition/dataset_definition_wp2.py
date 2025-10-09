@@ -72,7 +72,7 @@ dataset.define_population(
 # WP SPECIFIC CRITERIA
 ##################
 # exclude people with no HF symptoms after patient_index_date AND no NP test after patient_index_date
-    & ~((dataset.first_hfsymptom_date.is_null()) & (dataset.np_date.is_null())) 
+    & ~((dataset.first_hfsymptom_date.is_null()) & (dataset.nt1_date.is_null())) 
 )
 
 # ADD VARIABLES NEEDED FOR WP2
@@ -82,7 +82,7 @@ dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
 dataset = add_comorbidities(dataset, end_date)
 
 dataset = add_time_dependent_core(dataset, dataset.first_hfsymptom_date, suffix = '_wp2_1')
-dataset = add_time_dependent_core(dataset, dataset.np_date, suffix = '_wp2_2')
+dataset = add_time_dependent_core(dataset, dataset.nt1_date, suffix = '_wp2_2')
 
 # add_underserved() function still in progress
 #dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
