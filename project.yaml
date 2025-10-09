@@ -84,6 +84,13 @@ actions:
       highly_sensitive:
         dataset: output/dataset_wp3.csv.gz
   
+  prepare_clustering_data:
+    run: python:latest analysis/clustering/01_prepare_data.py
+    needs: [diabetes_algo_wp3]
+    outputs:
+      highly_sensitive:
+        raw_data: output/clustering/clustering_raw.csv.gz
+        scaled_data: output/clustering/clustering_scaled.csv.gz
 # etc...
 
 # potential other actions to add:
