@@ -7,9 +7,6 @@
 # Smaller units (counties, LSOA, MSOA): download from the ONS Open Geography portal (shapefiles / GeoJSON).
 # Raster sources: population density rasters (e.g., WorldPop, ONS), or generate from point observations.
 
-
-
-
 # install.packages(c("sf","ggplot2","rnaturalearth","rnaturalearthdata","dplyr","viridis"))
 install.packages("rnaturalearthhires")
 install.packages("rnaturalearth")
