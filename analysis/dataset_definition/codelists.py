@@ -337,43 +337,43 @@ hrt_dmd = codelist_from_csv(
 
 
 breathless_snomed = codelist_from_csv(
-    "codelists/reducehf-beathlessness4all.csv",
+    "codelists/reducehf-breathlessness-final.csv",
     column="code"
 )   
 # HF-related oedema
 
 oedema_snomed = codelist_from_csv(
-    "codelists/reducehf-oedema4all.csv",
+    "codelists/reducehf-oedema-final.csv",
     column="code"
 ) 
 # HF-related fatigue
 
 fatigue_snomed = codelist_from_csv(
-    "codelists/reducehf-fatigue4all.csv",
+    "codelists/reducehf-fatigue-final.csv",
     column="code"
 ) 
 
 # NP testing 
 
 NTpro_snomed = codelist_from_csv(
-    "codelists/reducehf-ntpro-num-only.csv",
+    "codelists/reducehf-ntpro-num-only-final.csv",
     column="code"
 )
 
 NP_snomed = codelist_from_csv(
-    "codelists/reducehf-np-any.csv",
+    "codelists/reducehf-np-any-final.csv",
     column="code"
 ) 
 
 #Echocardiography referral
 
 echo_ref=codelist_from_csv(
-    "codelists/reducehf-echocardiography-referral.csv",
+    "codelists/reducehf-echocardiography-referral-final.csv",
     column="code"
 )
 #Echocardiography has been completed
 echo_done=codelist_from_csv(
-    "codelists/reducehf-echocardiography-result.csv",
+    "codelists/reducehf-echocardiography-result-final.csv",
     column="code"
 )
 
