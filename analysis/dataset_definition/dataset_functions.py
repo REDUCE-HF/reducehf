@@ -334,13 +334,14 @@ def add_underserved(dataset, index_date):
 
     dataset.substance_abuse = last_matching_event_clinical_snomed_between(substance_abuse, index_date - years(1), index_date, where=True).exists_for_patient()
 
+    dataset.homeless = last_matching_event_clinical_snomed_between(homeless, index_date - years(1), index_date, where=True)
+
     housebound_date = last_matching_event_clinical_snomed_between(housebound, index_date - years(1), index_date, where=True)
     not_housebound_date = last_matching_event_clinical_snomed_between(no_longer_housebound, index_date - years(1), index_date, where=True)
     dataset.housebound = when(
         housebound_date.is_not_null()
         & (housebound_date.is_after(not_housebound_date) | not_housebound_date.is_null)
     )
-
 
     return dataset
 
