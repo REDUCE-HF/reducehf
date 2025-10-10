@@ -91,8 +91,8 @@ actions:
       highly_sensitive:
         raw_data: output/clustering/clustering_raw.csv.gz
         scaled_data: output/clustering/clustering_scaled.csv.gz
-# etc...
-
+  
+  
 # potential other actions to add:
   # create flow_chart (inclusions / exclusions);
   # quality assurance and other checks (e.g. checks for outliers, impossible values, weird distributions);
