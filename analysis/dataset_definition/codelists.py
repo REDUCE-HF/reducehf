@@ -220,7 +220,7 @@ copd_exacerbations_snomed = codelist_from_csv(
 )
 
 copd_exacerbations_icd10 = codelist_from_csv(
-    "codelists/opensafely-copd-exacerbation-icd10.csv",
+    "codelists/opensafely-copd-exacerbation.csv",
     column = "code"
 )
 
@@ -453,7 +453,7 @@ no_longer_housebound = codelist_from_csv(
 )
 
 homeless = codelist_from_csv(
-    "codelist/nhsd-primary-care-domain-refsets-homeless_cod.csv",
+    "codelists/nhsd-primary-care-domain-refsets-homeless_cod.csv",
     column="code"
 )
 

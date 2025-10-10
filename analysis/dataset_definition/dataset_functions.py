@@ -371,11 +371,11 @@ def add_hf_diagnosis(dataset, index_date):
     #in same admission as MI
     mi_diagnosis_apc = all_matching_event_apc_after(mi_icd10, index_date, only_prim_diagnoses=True)
     dataset.hf_mi_diagnosis_apc_date = mi_diagnosis_apc.where(
-        mi_diagnosis_apc
-        .all_diagnoses.contains_any_of(hf_icd10))
-        .sort_by(mi_diagnosis_apc.admission_date)
-        .first_for_patient()
-        .admission_date
+        mi_diagnosis_apc.all_diagnoses.contains_any_of(hf_icd10)
+        ).sort_by(
+            mi_diagnosis_apc.admission_date
+            ).first_for_patient(
+            ).admission_date
 
     return dataset
 
