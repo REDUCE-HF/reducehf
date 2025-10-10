@@ -418,6 +418,45 @@ med_review = codelist_from_csv(
     column="code"
 )
 
+
+# Myocardial infarction - secondary care
+mi_icd10 = codelist_from_csv(
+    "codelists/reducehf-myocardial-infarction-icd10.csv",
+    column="code"
+)
+
+
+#underserved
+migrant = codelist_from_csv(
+    "codelists/user-YaminaB-migration-status.csv",
+    column="code"
+)
+
+non_english_speaking = codelist_from_csv(
+    "codelists/reducehf-non-english-speaking.csv",
+    column="code"
+)
+
+substance_abuse = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-illsub_cod.csv",
+    column="code"
+)
+
+housebound = codelist_from_csv(
+    "codelists/opensafely-house-bound.csv",
+    column="code"
+)
+
+no_longer_housebound = codelist_from_csv(
+    "codelists/opensafely-not-house-bound.csv",
+    column="code"
+)
+
+homeless = codelist_from_csv(
+    "codelist/nhsd-primary-care-domain-refsets-homeless_cod.csv",
+    column="code"
+)
+
 '''
 Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
 -  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/

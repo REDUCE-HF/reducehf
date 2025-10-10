@@ -328,6 +328,20 @@ def add_underserved(dataset, index_date):
         location.care_home_does_not_require_nursing
     )
 
+    dataset.migrant = last_matching_event_clinical_snomed_before(migrant, index_date, where=True).exists_for_patient()
+
+    dataset.non_english_speaking = last_matching_event_clinical_snomed_before(non_english_speaking, index_date, where=True).exists_for_patient()
+
+    dataset.substance_abuse = last_matching_event_clinical_snomed_between(substance_abuse, index_date - years(1), index_date, where=True).exists_for_patient()
+
+    housebound_date = last_matching_event_clinical_snomed_between(housebound, index_date - years(1), index_date, where=True)
+    not_housebound_date = last_matching_event_clinical_snomed_between(no_longer_housebound, index_date - years(1), index_date, where=True)
+    dataset.housebound = when(
+        housebound_date.is_not_null()
+        & (housebound_date.is_after(not_housebound_date) | not_housebound_date.is_null)
+    )
+
+
     return dataset
 
 def add_hf_diagnosis(dataset, index_date):
@@ -347,9 +361,21 @@ def add_hf_diagnosis(dataset, index_date):
     dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
 
     #secondary care - hospital admission (primary OR secondary), or A&E visit
-    dataset.hf_diagnosis_secondary_date = minimum_of(first_matching_event_apc_after(hf_icd10, index_date).admission_date, first_matching_event_ec_after(hf_ecds, index_date).arrival_date)
+    dataset.hf_diagnosis_apc_date = first_matching_event_apc_after(hf_icd10, index_date, only_prim_diagnoses=True).admission_date
+    dataset.hf_diagnosis_ec_date = first_matching_event_ec_after(hf_ecds, index_date).arrival_date
+    dataset.hf_diagnosis_secondary_date = minimum_of(dataset.hf_diagnosis_apc_date, dataset.hf_diagnosis_ec_date)
+
     #either primary or secondary
     dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
+
+    #in same admission as MI
+    mi_diagnosis_apc = all_matching_event_apc_after(mi_icd10, index_date, only_prim_diagnoses=True)
+    dataset.hf_mi_diagnosis_apc_date = mi_diagnosis_apc.where(
+        mi_diagnosis_apc
+        .all_diagnoses.contains_any_of(hf_icd10))
+        .sort_by(mi_diagnosis_apc.admission_date)
+        .first_for_patient()
+        .admission_date
 
     return dataset
 
