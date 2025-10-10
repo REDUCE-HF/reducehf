@@ -215,7 +215,7 @@ copd_medications = codelist_from_csv(
 
 # COPD Exacerbations
 copd_exacerbations_snomed = codelist_from_csv(
-    "codelists/bristol-copd-exacerbations-snomed.csv",
+    "codelists/bristol-copd-exacerbations.csv",
     column = "code"
 )
 
