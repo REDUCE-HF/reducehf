@@ -244,15 +244,6 @@ def last_matching_event_ec_before(codelist, start_date, where=True):
         .last_for_patient()
     )
 
-def last_matching_event_ec_before(codelist, start_date, where=True):
-    return(
-        eca.where(where)
-        .where(eca.arrival_date.is_before(start_date)
-        & eca.diagnosis_01.is_in(codelist)
-        ).sort_by(eca.arrival_date).last_for_patient()
-    )
-
-
 def first_matching_event_ec_after(codelist, start_date, where=True):
     return(
         eca.where(where)
