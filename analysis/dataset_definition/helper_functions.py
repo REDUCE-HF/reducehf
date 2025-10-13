@@ -226,32 +226,6 @@ def first_matching_event_apc_acute_after(codelist, start_date, only_prim_diagnos
 
     return query.sort_by(apcs.admission_date).first_for_patient()
 
-def all_matching_event_apc_after(codelist, start_date, only_prim_diagnoses=False, where=True):
-    query = apcs.where(where).where(apcs.admission_date.is_on_or_after(start_date))
-    if only_prim_diagnoses:
-        query = query.where(
-            apcs.primary_diagnosis.is_in(codelist)
-        )
-    else:
-        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
-
-    return query
-
-def all_matching_event_apc_acute_after(codelist, start_date, only_prim_diagnoses=False, where=True):
-    query = apcs.where(where).where(
-        apcs.admission_date.is_on_or_after(start_date)
-         #emergency admissions only (excludes elective care: https://docs.opensafely.org/data-sources/apc/)
-        & apcs.admission_method.is_in(["21","2A","22","23","24","25","2D","28","2B"])
-        )
-    if only_prim_diagnoses:
-        query = query.where(
-            apcs.primary_diagnosis.is_in(codelist)
-        )
-    else:
-        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
-
-    return query
-
 def first_matching_event_ec_after(codelist, start_date, where=True):
     return(
         eca.where(where)

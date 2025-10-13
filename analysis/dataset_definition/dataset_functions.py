@@ -375,13 +375,15 @@ def add_hf_diagnosis(dataset, index_date):
     dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
 
     #in same admission as MI
-    mi_diagnosis_apc = all_matching_event_apc_acute_after(mi_icd10, index_date, only_prim_diagnoses=True)
+    mi_diagnosis_apc = apcs.where(
+        apcs.admission_date.is_on_or_after(index_date)
+        & apcs.admission_method.is_in(["21","2A","22","23","24","25","2D","28","2B"])
+        & apcs.primary_diagnosis.is_in(mi_icd10)
+        )
+    
     dataset.hf_mi_diagnosis_apc_date = mi_diagnosis_apc.where(
         mi_diagnosis_apc.all_diagnoses.contains_any_of(hf_icd10)
-        ).sort_by(
-            mi_diagnosis_apc.admission_date
-            ).first_for_patient(
-            ).admission_date
+        ).sort_by(mi_diagnosis_apc.admission_date).first_for_patient().admission_date
 
     return dataset
 
