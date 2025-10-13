@@ -210,8 +210,39 @@ def first_matching_event_apc_after(codelist, start_date, only_prim_diagnoses=Fal
 
     return query.sort_by(apcs.admission_date).first_for_patient()
 
+def first_matching_event_apc_acute_after(codelist, start_date, only_prim_diagnoses=False, where=True):
+    query = apcs.where(where).where(
+        apcs.admission_date.is_on_or_after(start_date) 
+        #emergency admissions only (excludes elective care: https://docs.opensafely.org/data-sources/apc/)
+        & apcs.admission_method.is_in(["21","2A","22","23","24","25","2D","28","2B"])
+        )
+    if only_prim_diagnoses:
+        query = query.where(
+            apcs.primary_diagnosis.is_in(codelist)
+        )
+    else:
+        query = query.where(
+            apcs.all_diagnoses.contains_any_of(codelist))
+
+    return query.sort_by(apcs.admission_date).first_for_patient()
+
 def all_matching_event_apc_after(codelist, start_date, only_prim_diagnoses=False, where=True):
     query = apcs.where(where).where(apcs.admission_date.is_on_or_after(start_date))
+    if only_prim_diagnoses:
+        query = query.where(
+            apcs.primary_diagnosis.is_in(codelist)
+        )
+    else:
+        query = query.where(apcs.all_diagnoses.contains_any_of(codelist))
+
+    return query
+
+def all_matching_event_apc_acute_after(codelist, start_date, only_prim_diagnoses=False, where=True):
+    query = apcs.where(where).where(
+        apcs.admission_date.is_on_or_after(start_date)
+         #emergency admissions only (excludes elective care: https://docs.opensafely.org/data-sources/apc/)
+        & apcs.admission_method.is_in(["21","2A","22","23","24","25","2D","28","2B"])
+        )
     if only_prim_diagnoses:
         query = query.where(
             apcs.primary_diagnosis.is_in(codelist)
@@ -230,9 +261,44 @@ def first_matching_event_ec_after(codelist, start_date, where=True):
         .first_for_patient()
     )
 
+def last_matching_event_ec_before(codelist, start_date, where=True):
+    return(
+        eca.where(where)
+        .where(eca.diagnosis_01.is_in(codelist))
+        .where(eca.arrival_date.is_before(start_date))
+        .sort_by(eca.arrival_date)
+        .last_for_patient()
+    )
 
+def last_matching_event_ec_before(codelist, start_date, only_prim_diagnoses, where=True):
+    query = eca.where(where).where(eca.arrival_date.is_before(start_date))
+    if only_prim_diagnoses:
+        query = query.where(
+            eca.diagnosis_01.is_in(codelist)
+            ).sort_by(eca.arrival_date).last_for_patient()
+    else:
+        columns = [
+            *[f"diagnosis_{i:02d}" for i in range(1, 24)],
+        ]
+        conditions = [getattr(query, column).is_in(codelist) for column in columns]
+        query = functools.reduce(operator.or_, conditions)
 
+    return query
 
+def first_matching_event_ec_after(codelist, start_date, only_prim_diagnoses, where=True):
+    query = eca.where(where).where(eca.arrival_date.is_on_or_after(start_date))
+    if only_prim_diagnoses:
+        query = query.where(
+            eca.diagnosis_01.is_in(codelist)
+            ).sort_by(eca.arrival_date).first_for_patient()
+    else:
+        columns = [
+            *[f"diagnosis_{i:02d}" for i in range(1, 24)],
+        ]
+        conditions = [getattr(query, column).is_in(codelist) for column in columns]
+        query = functools.reduce(operator.or_, conditions)
+
+    return query
 
 def first_matching_event_clinical_ranges_snomed_in(codelist, start_date, end_date, where=True):
     return(
