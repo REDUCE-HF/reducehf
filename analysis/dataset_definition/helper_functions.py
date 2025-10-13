@@ -270,35 +270,22 @@ def last_matching_event_ec_before(codelist, start_date, where=True):
         .last_for_patient()
     )
 
-def last_matching_event_ec_before(codelist, start_date, only_prim_diagnoses, where=True):
-    query = eca.where(where).where(eca.arrival_date.is_before(start_date))
-    if only_prim_diagnoses:
-        query = query.where(
-            eca.diagnosis_01.is_in(codelist)
-            ).sort_by(eca.arrival_date).last_for_patient()
-    else:
-        columns = [
-            *[f"diagnosis_{i:02d}" for i in range(1, 24)],
-        ]
-        conditions = [getattr(query, column).is_in(codelist) for column in columns]
-        query = functools.reduce(operator.or_, conditions)
+def last_matching_event_ec_before(codelist, start_date, where=True):
+    return(
+        eca.where(where)
+        .where(eca.arrival_date.is_before(start_date)
+        & eca.diagnosis_01.is_in(codelist)
+        ).sort_by(eca.arrival_date).last_for_patient()
+    )
 
-    return query
 
-def first_matching_event_ec_after(codelist, start_date, only_prim_diagnoses, where=True):
-    query = eca.where(where).where(eca.arrival_date.is_on_or_after(start_date))
-    if only_prim_diagnoses:
-        query = query.where(
-            eca.diagnosis_01.is_in(codelist)
-            ).sort_by(eca.arrival_date).first_for_patient()
-    else:
-        columns = [
-            *[f"diagnosis_{i:02d}" for i in range(1, 24)],
-        ]
-        conditions = [getattr(query, column).is_in(codelist) for column in columns]
-        query = functools.reduce(operator.or_, conditions)
-
-    return query
+def first_matching_event_ec_after(codelist, start_date, where=True):
+    return(
+        eca.where(where)
+        .where(eca.arrival_date.is_on_or_after(start_date)
+        & eca.diagnosis_01.is_in(codelist)
+        ).sort_by(eca.arrival_date).first_for_patient()
+    )
 
 def first_matching_event_clinical_ranges_snomed_in(codelist, start_date, end_date, where=True):
     return(
