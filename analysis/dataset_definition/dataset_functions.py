@@ -9,6 +9,7 @@ from ehrql import (
     days,
     maximum_of,
     minimum_of,
+
 )
 
 from ehrql.tables.tpp import (
@@ -355,14 +356,18 @@ def add_hf_diagnosis(dataset, index_date):
     i.e. community or emergency-hospital
     ''' 
 
-    #any evidence of HF, not just diagnosis codes, before index date
-    dataset.hf_exclude = last_matching_event_clinical_snomed_before(hf_exclude, index_date).date
+    #any evidence of HF, not just diagnosis codes, before index date 
+    hf_exclude_primary = last_matching_event_clinical_snomed_before(hf_exclude, index_date).exists_for_patient()
+    #same but for secondary care
+    hf_exclude_apc = last_matching_event_apc_before(hf_icd10, index_date, only_prim_diagnoses=False).exists_for_patient()
+    hf_exclude_ec = last_matching_event_ec_before(hf_ecds, index_date).exists_for_patient()
+    dataset.hf_exclude = hf_exclude_primary | hf_exclude_apc | hf_exclude_ec
 
     #primary care
     dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
 
     #secondary care - hospital admission (primary OR secondary), or A&E visit
-    dataset.hf_diagnosis_apc_date = first_matching_event_apc_after(hf_icd10, index_date, only_prim_diagnoses=True).admission_date
+    dataset.hf_diagnosis_apc_date = first_matching_event_apc_acute_after(hf_icd10, index_date, only_prim_diagnoses=True).admission_date
     dataset.hf_diagnosis_ec_date = first_matching_event_ec_after(hf_ecds, index_date).arrival_date
     dataset.hf_diagnosis_secondary_date = minimum_of(dataset.hf_diagnosis_apc_date, dataset.hf_diagnosis_ec_date)
 
@@ -370,7 +375,7 @@ def add_hf_diagnosis(dataset, index_date):
     dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
 
     #in same admission as MI
-    mi_diagnosis_apc = all_matching_event_apc_after(mi_icd10, index_date, only_prim_diagnoses=True)
+    mi_diagnosis_apc = all_matching_event_apc_acute_after(mi_icd10, index_date, only_prim_diagnoses=True)
     dataset.hf_mi_diagnosis_apc_date = mi_diagnosis_apc.where(
         mi_diagnosis_apc.all_diagnoses.contains_any_of(hf_icd10)
         ).sort_by(
