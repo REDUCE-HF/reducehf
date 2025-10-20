@@ -303,7 +303,7 @@ def add_tests(dataset, index_date):
     return dataset
 
   
-def add_underserved(dataset, index_date):
+def add_underserved(dataset, index_date, end_date):
 
     practice = practice_registrations.sort_by(
         practice_registrations.start_date,
@@ -312,7 +312,7 @@ def add_underserved(dataset, index_date):
     
     #Care home status
 
-    location = addresses.for_patient_on(dataset.patient_index)
+    location = addresses.for_patient_on(dataset.patient_index_date)
     
     #was address at patient index date a care home
     dataset.carehome_at_start = (
@@ -335,13 +335,13 @@ def add_underserved(dataset, index_date):
 
     dataset.substance_abuse = last_matching_event_clinical_snomed_between(substance_abuse, index_date - years(1), index_date, where=True).exists_for_patient()
 
-    dataset.homeless = last_matching_event_clinical_snomed_between(homeless, index_date - years(1), index_date, where=True)
+    dataset.homeless = last_matching_event_clinical_snomed_between(homeless, index_date - years(1), index_date, where=True).exists_for_patient()
 
-    housebound_date = last_matching_event_clinical_snomed_between(housebound, index_date - years(1), index_date, where=True)
-    not_housebound_date = last_matching_event_clinical_snomed_between(no_longer_housebound, index_date - years(1), index_date, where=True)
-    dataset.housebound = when(
+    housebound_date = last_matching_event_clinical_snomed_between(housebound, index_date - years(1), index_date, where=True).date
+    not_housebound_date = last_matching_event_clinical_snomed_between(no_longer_housebound, index_date - years(1), index_date, where=True).date
+    dataset.housebound = (
         housebound_date.is_not_null()
-        & (housebound_date.is_after(not_housebound_date) | not_housebound_date.is_null)
+        & (housebound_date.is_after(not_housebound_date) | not_housebound_date.is_null())
     )
 
     return dataset
