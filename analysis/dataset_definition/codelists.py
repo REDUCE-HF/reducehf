@@ -401,6 +401,11 @@ systolic_bp = codelist_from_csv(
     column="code"
 )
 
+diastolic_bp = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-diabp_cod.csv",
+    column="code"
+)
+
 # Annual reviews
 
 asthma_review = codelist_from_csv(

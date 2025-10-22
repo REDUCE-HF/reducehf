@@ -212,8 +212,6 @@
       "downloaded_at": "2025-06-28 16:44:36.635168Z",
       "sha": "c682301df15a68467f95a94abeb93e572b65e06d"
     },
-
-
     "bristol-atrial-fibrillation-snomed.csv": {
       "id": "bristol/atrial-fibrillation-snomed/6be6c30f",
       "url": "https://www.opencodelists.org/codelist/bristol/atrial-fibrillation-snomed/6be6c30f/",
@@ -309,7 +307,7 @@
       "url": "https://www.opencodelists.org/codelist/opensafely/glycated-haemoglobin-hba1c-tests-numerical-value/5134e926/",
       "downloaded_at": "2025-08-01 22:12:10.027923Z",
       "sha": "bc7e48efd370be65686755f0a843058f1ec767e0"
-
+    },
     "reducehf-heart-failure-secondary-care.csv": {
       "id": "reducehf/heart-failure-secondary-care/7eadc7d2",
       "url": "https://www.opencodelists.org/codelist/reducehf/heart-failure-secondary-care/7eadc7d2/",
@@ -356,39 +354,30 @@
     "user-RochelleKnight-prostate_cancer_icd10.csv": {
       "id": "user/RochelleKnight/prostate_cancer_icd10/6b27d648",
       "url": "https://www.opencodelists.org/codelist/user/RochelleKnight/prostate_cancer_icd10/6b27d648/",
-
       "downloaded_at": "2025-08-01 15:46:42.415677Z",
-
       "sha": "fc1791f84b1195fc21df000d3300015b1ff7d1ec"
     },
     "user-RochelleKnight-pregnancy_and_birth_snomed.csv": {
       "id": "user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3",
       "url": "https://www.opencodelists.org/codelist/user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3/",
-
       "downloaded_at": "2025-08-01 15:46:45.130685Z",
-
       "sha": "3dec4001ddd33ddaf16ce92ec450c2206880ec40"
     },
     "user-elsie_horne-cocp_dmd.csv": {
       "id": "user/elsie_horne/cocp_dmd/1666a7a3",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/cocp_dmd/1666a7a3/",
-
       "downloaded_at": "2025-08-01 15:46:47.823759Z",
-
       "sha": "ace0cce9a466e05dc0ad302be50275d0121908b2"
     },
     "user-elsie_horne-hrt_dmd.csv": {
       "id": "user/elsie_horne/hrt_dmd/19196799",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/hrt_dmd/19196799/",
-
       "downloaded_at": "2025-08-01 15:46:50.643566Z",
-
       "sha": "95dde1e61efe8ee6af3358e9640bf139c0c1c9d9"
     },
     "user-RochelleKnight-prostate_cancer_snomed.csv": {
       "id": "user/RochelleKnight/prostate_cancer_snomed/0437497e",
       "url": "https://www.opencodelists.org/codelist/user/RochelleKnight/prostate_cancer_snomed/0437497e/",
-
       "downloaded_at": "2025-08-01 15:46:53.445821Z",
       "sha": "7249bb62e32d2d60600b0d1e32562f23bd92c6aa"
     },
@@ -403,7 +392,6 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/np-testing-read/678a6104/",
       "downloaded_at": "2025-08-01 15:59:09.596966Z",
       "sha": "0997488d6dcb6459d3e0a0aa0f809a6eab996d28"
-
       "downloaded_at": "2025-07-31 16:56:10.749482Z",
       "sha": "7249bb62e32d2d60600b0d1e32562f23bd92c6aa"
     },
@@ -418,12 +406,10 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/oedema4all/2efcdccd/",
       "downloaded_at": "2025-08-18 13:46:14.483771Z",
       "sha": "d6b185a08114e292b71f3800ff044948b81970cf"
-
     },
     "reducehf-fatigue4all.csv": {
       "id": "reducehf/fatigue4all/7cddf662",
       "url": "https://www.opencodelists.org/codelist/reducehf/fatigue4all/7cddf662/",
-
       "downloaded_at": "2025-08-01 15:59:12.467731Z",
       "sha": "87a6fd950dffc59d43ecd2b9badd91779735abb9"
     },
@@ -438,8 +424,6 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/breathlessness4all/6d0c1be7/",
       "downloaded_at": "2025-08-01 15:59:04.618093Z",
       "sha": "61943b1a26c22b7fa10aefe0d884a93d0c63ce10"
-
-
       "downloaded_at": "2025-08-18 13:47:12.293027Z",
       "sha": "87a6fd950dffc59d43ecd2b9badd91779735abb9"
     },

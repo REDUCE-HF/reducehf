@@ -173,9 +173,15 @@ def add_time_dependent_core(dataset, index_date):
     bp = last_matching_event_clinical_ranges_snomed_before(
         systolic_bp, index_date
         )
-    dataset.bp_date = bp.date
-    dataset.bp_value = bp.numeric_value
+    dataset.sysbp_date = bp.date
+    dataset.sysbp_value = bp.numeric_value
 
+    # diastolic bp
+    bp = last_matching_event_clinical_ranges_snomed_before(
+        diastolic_bp, index_date
+        )
+    dataset.diasbp_date = bp.date
+    dataset.diasbp_value = bp.numeric_value
 
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
