@@ -1,6 +1,14 @@
 from functions.lib import *
 
-import functions.core as core
+from functions.core import(
+    base,
+    quality_assurance,
+    hf_exclude,
+    hf_diagnosis,
+    time_dependent,
+    underserved,
+    comorbidities
+    )
 
 dataset = create_dataset()
 
@@ -14,13 +22,13 @@ end_date = "2025-01-01"
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #core variables derived based on start_date
-dataset = core.core(dataset, start_date)
+dataset = base.fn(dataset, start_date)
 
 #quality assurance
-dataset = core.quality_assurance(dataset, dataset.patient_index_date)
+dataset = quality_assurance.fn(dataset, dataset.patient_index_date)
 
 #hf exclude
-dataset = core.hf_exclusion(dataset, dataset.patient_index_date)
+dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -65,7 +73,7 @@ dataset.define_population(
 # WP1 needs cohorts with different start dates
 
 #hf diagnosis
-dataset = core.hf_diagnosis(dataset, dataset.patient_index_date)
+dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date)
 
 cohort_dict = {
     '2017-01-01': '_2017',
@@ -81,8 +89,8 @@ cohort_dict = {
 
 for iter, (cohort_index_date, suffix) in enumerate(cohort_dict.items()):
 
-    dataset = core.time_dependent(dataset, cohort_index_date, suffix=suffix)
-    dataset = core.underserved(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
+    dataset = time_dependent.fn(dataset, cohort_index_date, suffix=suffix)
+    dataset = underserved.fn(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
 
-dataset = core.comorbidities(dataset, end_date)
+dataset = comorbidities.fn(dataset, end_date)
 
