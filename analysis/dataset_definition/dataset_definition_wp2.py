@@ -49,13 +49,16 @@ has_registration = practice_registrations.where(
         practice_registrations.end_date.is_on_or_before(start_date)
     ).exists_for_patient()
 
+###############
+#To get > 10 rows of dummy data, comment out inclusions/exclusions
+##############
 dataset.define_population(
     (has_registration)
-    & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
-    & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
-    & ~(patients.age_on(end_date) < 45) #remove pts < 45
-    & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
-    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
+#    & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
+#    & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
+#    & ~(patients.age_on(end_date) < 45) #remove pts < 45
+#    & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
+#    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
 #####################
 # If we include quality assurance conditions  when generating dummy data, no data generated
 # Assuming because the data is such low fidelity
@@ -65,9 +68,9 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
-    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
-    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
+#    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
+#    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
+#    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
