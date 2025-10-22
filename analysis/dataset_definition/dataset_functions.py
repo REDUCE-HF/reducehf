@@ -350,7 +350,10 @@ def add_underserved(dataset, index_date, end_date):
             smhres_primis, index_date
             ).date
 
-    dataset.smi = (smi_code.is_not_null()|smi_code_remission.is_not_null())
+    dataset.smi = (
+        (smi_code.is_not_null() & smi_code_remission.is_before(smi_code)) | 
+        (smi_code.is_not_null() & smi_code_remission.is_null())
+        )
 
     return dataset
 
