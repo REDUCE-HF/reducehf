@@ -64,16 +64,19 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & dataset.imd10.is_not_null() # remove pts with unknown IMD
-    & dataset.rural_urban.is_not_null() # remove pts with unknown rural/urban
-    & dataset.hf_exclude.is_null() # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
+    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
+    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
+    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
 #    & dataset.hf_diagnosis_date.is_not_null()  	#for WP3 only want people with HF diagnisis
 )
 
-dataset.index_date = case(when(dataset.hf_diagnosis_date.is_not_null()).then(dataset.hf_diagnosis_date),
+dataset.index_date = case(
+    when(
+        dataset.hf_diagnosis_date.is_not_null()
+        ).then(dataset.hf_diagnosis_date),
     otherwise = end_date - years(2)
     )
 
@@ -82,10 +85,9 @@ dataset.index_date = case(when(dataset.hf_diagnosis_date.is_not_null()).then(dat
 dataset = time_dependent.fn(dataset, dataset.index_date)
 
 # date should be date of HF diagnosis for WP3
-dataset = healthservice_use.fn(dataset, dataset.index_date)
+dataset = hsu.fn(dataset, dataset.index_date)
 
 #using date of HF diagnosis as reference for WP3 only
 dataset = comorbidities.fn(dataset, end_date)
 
-# function in progress
-#dataset = underserved.fn(dataset, dataset.patient_index_date, end_date)
+dataset = underserved.fn(dataset, dataset.patient_index_date, end_date)
