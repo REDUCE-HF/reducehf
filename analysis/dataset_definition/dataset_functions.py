@@ -308,7 +308,7 @@ def add_tests(dataset, index_date):
     return dataset
 
   
-def add_underserved(dataset, index_date):
+def add_underserved(dataset, index_date, end_date):
 
     practice = practice_registrations.sort_by(
         practice_registrations.start_date,
@@ -317,7 +317,7 @@ def add_underserved(dataset, index_date):
     
     #Care home status
 
-    location = addresses.for_patient_on(dataset.patient_index)
+    location = addresses.for_patient_on(dataset.patient_index_date)
     
     #was address at patient index date a care home
     dataset.carehome_at_start = (
@@ -333,6 +333,24 @@ def add_underserved(dataset, index_date):
         location.care_home_requires_nursing |
         location.care_home_does_not_require_nursing
     )
+
+    #learning disability
+    
+    dataset.learndis = first_matching_event_clinical_snomed_before(
+            learndis_primis, index_date
+            ).date
+
+    #severe mental illness
+
+    smi_code = first_matching_event_clinical_snomed_before(
+            sev_mental_primis, index_date
+            ).date
+
+    smi_code_remission = first_matching_event_clinical_snomed_before(
+            smhres_primis, index_date
+            ).date
+
+    dataset.smi = (smi_code.is_not_null()|smi_code_remission.is_not_null())
 
     return dataset
 
