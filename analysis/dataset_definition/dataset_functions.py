@@ -342,11 +342,11 @@ def add_underserved(dataset, index_date, end_date):
 
     #severe mental illness
 
-    smi_code = first_matching_event_clinical_snomed_before(
+    smi_code = last_matching_event_clinical_snomed_before(
             sev_mental_primis, index_date
             ).date
 
-    smi_code_remission = first_matching_event_clinical_snomed_before(
+    smi_code_remission = last_matching_event_clinical_snomed_before(
             smhres_primis, index_date
             ).date
 
