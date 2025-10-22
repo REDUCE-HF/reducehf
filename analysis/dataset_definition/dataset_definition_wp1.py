@@ -28,8 +28,8 @@ dataset = add_core(dataset, start_date)
 #quality assurance
 dataset = add_quality_assurance(dataset, dataset.patient_index_date)
 
-#hf diagnosis
-dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+#hf exclude
+dataset = add_hf_exclusion(dataset, dataset.patient_index_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -60,9 +60,9 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & dataset.imd10.is_not_null() # remove pts with unknown IMD
-    & dataset.rural_urban.is_not_null() # remove pts with unknown rural/urban
-    & dataset.hf_exclude.is_null() # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
+    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
+    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
+    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
@@ -72,6 +72,9 @@ dataset.define_population(
 
 # ADD VARIABLES NEEDED FOR WP1
 # WP1 needs cohorts with different start dates
+
+#hf diagnosis
+dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
 
 cohort_dict = {
     '2017-01-01': '_2017',
@@ -85,11 +88,10 @@ cohort_dict = {
     '2025-01-01': '_2025'
     }
 
-for cohort_index_date, suffix in cohort_dict.items():
+for iter, (cohort_index_date, suffix) in enumerate(cohort_dict.items()):
 
     dataset = add_time_dependent_core(dataset, cohort_index_date, suffix=suffix)
+    dataset = add_underserved(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
 
 dataset = add_comorbidities(dataset, end_date)
 
-# function still being developed
-#dataset = add_underserved(dataset, dataset.patient_index_date, end_date)

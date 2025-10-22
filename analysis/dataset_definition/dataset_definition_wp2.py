@@ -30,8 +30,8 @@ dataset = add_core(dataset, start_date)
 #quality assurance
 dataset = add_quality_assurance(dataset, dataset.patient_index_date)
 
-#hf diagnosis
-dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+#hf exclusion
+dataset = add_hf_exclusion(dataset, dataset.patient_index_date)
 
 #exclusion vars for WP2 only
 dataset = add_wp2_exclusion(dataset, dataset.patient_index_date, end_date)
@@ -65,9 +65,9 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & dataset.imd10.is_not_null() # remove pts with unknown IMD
-    & dataset.rural_urban.is_not_null() # remove pts with unknown rural/urban
-    & dataset.hf_exclude.is_null() # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
+    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
+    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
+    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
@@ -77,6 +77,9 @@ dataset.define_population(
 
 # ADD VARIABLES NEEDED FOR WP2
 
+#hf diagnosis
+dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+
 dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
 
 dataset = add_comorbidities(dataset, end_date)
@@ -84,5 +87,5 @@ dataset = add_comorbidities(dataset, end_date)
 dataset = add_time_dependent_core(dataset, dataset.first_hfsymptom_date, suffix = '_wp2_1')
 dataset = add_time_dependent_core(dataset, dataset.nt1_date, suffix = '_wp2_2')
 
-# add_underserved() function still in progress
-#dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
+dataset = add_underserved(dataset, dataset.first_hfsymptom_date, end_date, suffix = '_wp2_1')
+dataset = add_underserved(dataset, dataset.nt1_date, end_date, suffix = '_wp2_2', iter=1)

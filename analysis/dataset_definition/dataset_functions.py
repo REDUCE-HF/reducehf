@@ -92,7 +92,7 @@ def add_core(dataset, start_date, end_date='2025-01-01'):
 
     #patient index date latest of:
     # - project start
-    # - practice registration - 1 year (to allow for coding of variables)
+    # - practice registration + 1 year (to allow for coding of variables)
     # - 45th birthday
 
     dataset.patient_index_date = maximum_of(start_date,
@@ -322,7 +322,7 @@ def add_wp2_exclusion(dataset, index_date, end_date):
         fatigue_snomed, index_date
         ).date
 
-    #add indicator which is true is any symptom reported before index date
+    #add indicator which is true if any symptom reported before index date
     dataset.symptom_pre_index = (
         tmp_breathless_date_primary.is_not_null() | 
         tmp_oedema_date_primary.is_not_null() | 
@@ -361,6 +361,8 @@ def add_wp2_exclusion(dataset, index_date, end_date):
         )
     
     dataset.nt1_date = first_nt.date
+    dataset.nt1_result = first_nt.numeric_value
+
     return dataset
 
 ###################
@@ -411,7 +413,7 @@ def add_np_vars(dataset, index_date, end_date):
         NTpro_snomed,index_date, end_date,
         )
     dataset.nt1_date_ranges = first_nt.date
-    dataset.nt1_result = first_nt.numeric_value
+    dataset.nt1_result_ranges = first_nt.numeric_value
     dataset.nt1_comparator = first_nt.comparator
     dataset.nt1_lower_bound = first_nt.lower_bound
     dataset.nt1_upper_bound = first_nt.upper_bound
@@ -424,70 +426,75 @@ def add_np_vars(dataset, index_date, end_date):
 ####################
 
   
-def add_underserved(dataset, index_date, end_date):
-
-    practice = practice_registrations.sort_by(
-        practice_registrations.start_date,
-        practice_registrations.end_date,
-        practice_registrations.practice_pseudo_id).last_for_patient()
+def add_underserved(dataset, index_date, end_date, suffix='', iter=0):
     
     #Care home status
-
-    location = addresses.for_patient_on(dataset.patient_index_date)
+    location = addresses.for_patient_on(index_date)
     
     #was address at patient index date a care home
-    dataset.carehome_at_start = (
+    carehome_at_index_ = (
         location.care_home_is_potential_match |
         location.care_home_requires_nursing |
         location.care_home_does_not_require_nursing
     )
+    dataset.add_column('carehome_at_index' + suffix, carehome_at_index_)
+    
+    if iter==0:
+        # Migrant status
+        dataset.migrant = last_matching_event_clinical_snomed_before(migrant, index_date, where=True).exists_for_patient()
 
-    #was address at deregistration or study end date a care home
-    location = addresses.for_patient_on(
-        maximum_of(
-            dataset.practice_deregistration_date, 
-            end_date
-            )
-        )
-    dataset.carehome_at_end = (
-        location.care_home_is_potential_match |
-        location.care_home_requires_nursing |
-        location.care_home_does_not_require_nursing
-    )
+        # Non english speaking
+        dataset.non_english_speaking = last_matching_event_clinical_snomed_before(non_english_speaking, index_date, where=True).exists_for_patient()
 
-    dataset.migrant = last_matching_event_clinical_snomed_before(migrant, index_date, where=True).exists_for_patient()
+    # Substance abuse
+    substance_abuse_ = last_matching_event_clinical_snomed_between(substance_abuse, index_date - years(1), index_date, where=True).exists_for_patient()
+    dataset.add_column('substance_abuse' + suffix, substance_abuse_)
 
-    dataset.non_english_speaking = last_matching_event_clinical_snomed_before(non_english_speaking, index_date, where=True).exists_for_patient()
+    # Homeless
+    homeless_ = last_matching_event_clinical_snomed_between(homeless, index_date - years(1), index_date, where=True).exists_for_patient()
+    dataset.add_column('homeless' + suffix, homeless_)
 
-    dataset.substance_abuse = last_matching_event_clinical_snomed_between(substance_abuse, index_date - years(1), index_date, where=True).exists_for_patient()
-
-    dataset.homeless = last_matching_event_clinical_snomed_between(homeless, index_date - years(1), index_date, where=True).exists_for_patient()
-
+    # Housebound
     housebound_date = last_matching_event_clinical_snomed_between(housebound, index_date - years(1), index_date, where=True).date
     not_housebound_date = last_matching_event_clinical_snomed_between(no_longer_housebound, index_date - years(1), index_date, where=True).date
-    dataset.housebound = (
+    housebound_ = (
         housebound_date.is_not_null()
         & (housebound_date.is_after(not_housebound_date) | not_housebound_date.is_null())
     )
+    dataset.add_column('housebound' + suffix, housebound_)
+
+    return dataset
+
+##############
+# HF diganosis
+##############
+
+def add_hf_exclusion(dataset, index_date):
+
+    #any evidence of HF, not just diagnosis codes, before index date
+    hf_exclude_primary = last_matching_event_clinical_snomed_before(
+        hf_exclude, index_date
+        ).date
+
+    #same but for secondary care
+    hf_exclude_apc = last_matching_event_apc_before(
+        hf_icd10, index_date,
+        only_prim_diagnoses=False
+        ).admission_date
+
+    hf_exclude_ec = last_matching_event_ec_before(
+        hf_ecds, index_date
+        ).arrival_date
+
+    dataset.hf_exclude = minimum_of(
+        hf_exclude_primary,
+        hf_exclude_apc,
+        hf_exclude_ec
+        )
 
     return dataset
 
 def add_hf_diagnosis(dataset, index_date):
-
-    '''
-    need to define this more thoroughly
-    using primary care diagnosis for script development
-    function currently returns date of first HF diagnosis in primary care
-    function should also return location of first diagnosis
-    i.e. community or emergency-hospital
-    ''' 
-
-    #any evidence of HF, not just diagnosis codes, before index date 
-    hf_exclude_primary = last_matching_event_clinical_snomed_before(hf_exclude, index_date).exists_for_patient()
-    #same but for secondary care
-    hf_exclude_apc = last_matching_event_apc_before(hf_icd10, index_date, only_prim_diagnoses=False).exists_for_patient()
-    hf_exclude_ec = last_matching_event_ec_before(hf_ecds, index_date).exists_for_patient()
-    dataset.hf_exclude = (hf_exclude_primary | hf_exclude_apc | hf_exclude_ec)
 
     #primary care
     dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(
@@ -495,9 +502,19 @@ def add_hf_diagnosis(dataset, index_date):
         ).date
 
     #secondary care - hospital admission (primary OR secondary), or A&E visit
-    dataset.hf_diagnosis_apc_date = first_matching_event_apc_acute_after(hf_icd10, index_date, only_prim_diagnoses=True).admission_date
-    dataset.hf_diagnosis_ec_date = first_matching_event_ec_after(hf_ecds, index_date).arrival_date
-    dataset.hf_diagnosis_secondary_date = minimum_of(dataset.hf_diagnosis_apc_date, dataset.hf_diagnosis_ec_date)
+    dataset.hf_diagnosis_apc_date = first_matching_event_apc_acute_after(
+        hf_icd10, index_date, 
+        only_prim_diagnoses=True
+        ).admission_date
+    
+    dataset.hf_diagnosis_ec_date = first_matching_event_ec_after(
+        hf_ecds, index_date
+        ).arrival_date
+    
+    dataset.hf_diagnosis_secondary_date = minimum_of(
+        dataset.hf_diagnosis_apc_date, 
+        dataset.hf_diagnosis_ec_date
+        )
 
     #either primary or secondary
     dataset.hf_diagnosis_date = minimum_of(
