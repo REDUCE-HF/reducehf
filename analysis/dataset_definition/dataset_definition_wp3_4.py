@@ -1,15 +1,7 @@
-from ehrql import (
-    create_dataset, 
-    years,
-    minimum_of
-)
+from functions.lib import *
 
-from ehrql.tables.tpp import (
-    patients,
-    practice_registrations,
-)
-
-from dataset_functions import *
+import functions.core as core
+from functions.hsu import healthservice_use
 
 dataset = create_dataset()
 
@@ -23,13 +15,13 @@ end_date = "2025-01-01"
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #core variables derived based on start_date
-dataset = add_core(dataset, start_date)
+dataset = core.core(dataset, start_date)
 
 #quality assurance
-dataset = add_quality_assurance(dataset, dataset.patient_index_date)
+dataset = core.quality_assurance(dataset, dataset.patient_index_date)
 
 #hf diagnosis
-dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+dataset = core.hf_exclusion(dataset, dataset.patient_index_date)
 
 
 
@@ -78,13 +70,13 @@ dataset.index_date = case(when(dataset.hf_diagnosis_date.is_not_null()).then(dat
 
 # ADD VARIABLES NEEDED FOR WP3
 
-dataset = add_time_dependent_core(dataset, dataset.index_date)
+dataset = core.time_dependent(dataset, dataset.index_date)
 
 # date should be date of HF diagnosis for WP3
-dataset = add_healthservice_use(dataset, dataset.index_date)
+dataset = healthservice_use(dataset, dataset.index_date)
 
 #using date of HF diagnosis as reference for WP3 only
-dataset = add_comorbidities(dataset, end_date)
+dataset = core.comorbidities(dataset, end_date)
 
 # function in progress
-#dataset = add_underserved(dataset, dataset.patient_index_date, end_date)
+#dataset = core.underserved(dataset, dataset.patient_index_date, end_date)

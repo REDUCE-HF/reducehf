@@ -1,40 +1,11 @@
-#this script contains functions to add variables to dataset
-#variables 
-# re grouped by type, and whether they are WP specific
-
-from ehrql import (
-    case,
-    when,
-    years,
-    days,
-    maximum_of,
-    minimum_of,
-
-)
-
-from ehrql.tables.tpp import (
-    patients,
-    practice_registrations,
-    clinical_events,
-    addresses,
-    apcs,
-    household_memberships_2020,
-    ons_deaths,
-    clinical_events_ranges,
-    ethnicity_from_sus
-    
-)
-
-from helper_functions import *
-
-from codelists import *
+from .lib import *
 
 ###########################
 # Core variables:
 # independent of index date
 ##########################
 
-def add_core(dataset, start_date, end_date='2025-01-01'):
+def core(dataset, start_date, end_date='2025-01-01'):
 
     '''
     core variables don't differ between WPs
@@ -147,7 +118,7 @@ def add_core(dataset, start_date, end_date='2025-01-01'):
 # depend on index date
 ######################
 
-def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
+def time_dependent(dataset, index_date, suffix='', wp=None):
 
     '''
      and core variables that depend on index_date
@@ -303,130 +274,13 @@ def add_time_dependent_core(dataset, index_date, suffix='', wp=None):
     
     return dataset
 
-##########################
-# WP2 - exclusion criteria
-##########################
-
-def add_wp2_exclusion(dataset, index_date, end_date):
-
-    #date of first incidence of any of the three HF-related symptoms prior to index date
-    tmp_breathless_date_primary = first_matching_event_clinical_snomed_before(
-        breathless_snomed, index_date
-        ).date
-
-    tmp_oedema_date_primary = first_matching_event_clinical_snomed_before(
-        oedema_snomed, index_date
-        ).date
-
-    tmp_fatigue_date_primary = first_matching_event_clinical_snomed_before(
-        fatigue_snomed, index_date
-        ).date
-
-    #add indicator which is true if any symptom reported before index date
-    dataset.symptom_pre_index = (
-        tmp_breathless_date_primary.is_not_null() | 
-        tmp_oedema_date_primary.is_not_null() | 
-        tmp_fatigue_date_primary.is_not_null()
-        )
-
-    #evidence of NTPro test prior to index date
-    nt_pre = first_matching_event_clinical_snomed_before(
-        NTpro_snomed,index_date
-        ).exists_for_patient()
-
-    dataset.nt_pre_index = nt_pre
-
-    #date of first incidence of any of the three HF-related symptoms
-    tmp_breathless_date_primary = first_matching_event_clinical_snomed_between(
-        breathless_snomed, index_date, end_date,
-        ).date
-
-    tmp_oedema_date_primary = first_matching_event_clinical_snomed_between(
-        oedema_snomed, index_date, end_date
-        ).date
-
-    tmp_fatigue_date_primary = first_matching_event_clinical_snomed_between(
-        fatigue_snomed, index_date, end_date
-        ).date
-
-    #combine to find the earliest date of any symptom
-    dataset.first_hfsymptom_date = minimum_of(
-        tmp_breathless_date_primary,
-        tmp_oedema_date_primary,
-        tmp_fatigue_date_primary
-        )
-
-    first_nt = first_matching_event_clinical_snomed_between(
-        NTpro_snomed,index_date, end_date
-        )
-    
-    dataset.nt1_date = first_nt.date
-    dataset.nt1_result = first_nt.numeric_value
-
-    return dataset
-
-###################
-# WP2 -- NP testing
-###################
-
-def add_np_vars(dataset, index_date, end_date):
-
-
-    # testing if np test date (BNP or NT-proBNP) closely preceded
-    # or followed first hf-related symptoms (near symptoms)
-    dataset.np_near_symptom = clinical_events.where(
-        clinical_events.snomedct_code.is_in(NP_snomed)
-        ).where(
-            clinical_events.date.is_on_or_between(
-                dataset.first_hfsymptom_date-days(30),
-                dataset.first_hfsymptom_date+days(90)
-            )
-        ).exists_for_patient()
-
-    #echo referral or echo done near first hf-related symptoms
-
-    dataset.echo_ref_near_symptom =clinical_events.where(
-        clinical_events.snomedct_code.is_in(echo_ref)
-        ).where(
-            clinical_events.date.is_on_or_between(
-                dataset.first_hfsymptom_date-days(30), 
-                dataset.first_hfsymptom_date+days(90)
-            )
-        ).exists_for_patient()
-
-    dataset.echo_done_near_symptom =clinical_events.where(
-        clinical_events.snomedct_code.is_in(echo_done)
-        ).where(
-            clinical_events.date.is_on_or_between(
-                dataset.first_hfsymptom_date-days(30),
-                dataset.first_hfsymptom_date+days(90)
-           )
-        ).exists_for_patient()
-
-    dataset.has_echo = (
-        dataset.echo_ref_near_symptom|dataset.echo_done_near_symptom
-        ).when_null_then(False)
-
-    #First NTProBNP test following index date and using SNOMED codes  
-
-    first_nt = first_matching_event_clinical_ranges_snomed_in(
-        NTpro_snomed,index_date, end_date,
-        )
-    dataset.nt1_date_ranges = first_nt.date
-    dataset.nt1_result_ranges = first_nt.numeric_value
-    dataset.nt1_comparator = first_nt.comparator
-    dataset.nt1_lower_bound = first_nt.lower_bound
-    dataset.nt1_upper_bound = first_nt.upper_bound
-
-
-    return dataset
 
 ####################
 # Underserved groups
 ####################
 
   
-def add_underserved(dataset, index_date, end_date, suffix='', iter=0):
+def underserved(dataset, index_date, end_date, suffix='', iter=0):
     
     #Care home status
     location = addresses.for_patient_on(index_date)
@@ -501,7 +355,7 @@ def add_underserved(dataset, index_date, end_date, suffix='', iter=0):
 # HF diganosis
 ##############
 
-def add_hf_exclusion(dataset, index_date):
+def hf_exclusion(dataset, index_date):
 
     #any evidence of HF, not just diagnosis codes, before index date
     hf_exclude_primary = last_matching_event_clinical_snomed_before(
@@ -526,7 +380,7 @@ def add_hf_exclusion(dataset, index_date):
 
     return dataset
 
-def add_hf_diagnosis(dataset, index_date):
+def hf_diagnosis(dataset, index_date):
 
     #primary care
     dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(
@@ -567,171 +421,11 @@ def add_hf_diagnosis(dataset, index_date):
 
     return dataset
 
-####################
-# Health Service Use
-####################
-
-def add_healthservice_use(dataset, index_date):
-
-    '''
-    add variables measuring health service use
-    only needed for WP3 (?)
-
-    '''
-
-    ## Objective  3.1
-    time_periods = {
-        '3m': days(90),
-        '6m': days(180),
-        '12m': days(360),
-        '24m': years(2)
-    }
-
-    for time_name, time in time_periods.items():
-
-        #use in time period after index_date - COPD specific
-        dataset.add_column('copd_ed_attendances_post_'+time_name,
-            ed_attendances(index_date,
-                index_date + time,
-                where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
-                )
-            )
-        dataset.add_column('copd_primary_care_attendances_post_'+time_name,
-            primary_care_attendances(index_date,
-                index_date + time,
-                where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
-                )
-            )
-        dataset.add_column('copd_hospital_admissions_post_'+time_name,
-            hospital_admissions(index_date,
-                index_date + time,
-                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
-                )
-            )
-        dataset.add_column('copd_prescriptions_post_' + time_name,
-            prescriptions_count(index_date,
-                index_date+time,
-                where=medications.dmd_code.is_in(copd_medications)
-                )
-            )
-
-        #use in time period after index_date - general
-        dataset.add_column('ed_attendances_post_'+time_name, 
-            ed_attendances(
-                index_date, index_date + time
-                )
-            )
-        dataset.add_column('primary_care_attendances_post_'+time_name, 
-            primary_care_attendances(
-                index_date, index_date + time
-                )
-            )
-        dataset.add_column('hospital_admissions_post_'+time_name, 
-            hospital_admissions(
-                index_date, index_date + time
-                )
-            )
-
-        #use in time period before index_date - general
-        dataset.add_column('ed_attendances_pre_'+time_name, 
-            ed_attendances(
-                index_date - time, index_date
-                )
-            )
-        dataset.add_column('primary_care_attendances_pre_'+time_name, 
-            primary_care_attendances(
-                index_date - time, index_date
-                )
-            )
-        dataset.add_column('hospital_admissions_pre_'+time_name, 
-            hospital_admissions(
-                index_date-time, index_date
-                )
-            )
-
-        #use in time period before index_date - COPD specific
-        dataset.add_column('copd_ed_attendances_pre_'+time_name,
-            ed_attendances(index_date - time,
-                index_date,
-                where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
-                )
-            )
-        dataset.add_column('copd_primary_care_attendances_pre_'+time_name,
-            primary_care_attendances(index_date - time,
-                index_date,
-                where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
-                )
-            )
-        dataset.add_column('copd_hospital_admissions_pre_'+time_name,
-            hospital_admissions(index_date-time,
-                index_date,
-                where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
-                )
-            )
-        dataset.add_column('copd_prescriptions_pre' + time_name,
-            prescriptions_count(index_date-time,
-                index_date,
-                where=medications.dmd_code.is_in(copd_medications)
-                )
-            )
-        
-    ## Objective 3.2
-    periods = {
-        "post_0_3m": (index_date, index_date + days(90)),
-        "post_3_6m": (index_date + days(90), index_date + days(180)),
-        "post_6_9m": (index_date + days(180), index_date + days(270)),
-        "post_9_12m": (index_date + days(270), index_date + days(360)),
-        "pre_0_3m": (index_date - days(90), index_date),
-        "pre_3_6m": (index_date - days(180), index_date - days(90)),
-        "pre_6_9m": (index_date - days(270), index_date - days(180)),
-        "pre_9_12m": (index_date - days(360), index_date - days(270)),
-    }
-   
-
-    for time_name, (start,end) in periods.items():
-
-        #use in time period after index_date
-        dataset.add_column('ed_attendances_'+time_name, 
-            ed_attendances(start, end)
-            )
-        dataset.add_column('primary_care_attendances_'+time_name, 
-            primary_care_attendances(start,end)
-            )
-        dataset.add_column('hospital_admissions_'+time_name,
-            hospital_admissions(start,end)
-            )
-        dataset.add_column('prescriptions_' + time_name, 
-            prescriptions_count(start, end)
-            )
-
-    ## annual reviews
-    # Asthma
-    asthma_review_ = last_matching_event_clinical_snomed_before(
-        asthma_review, index_date
-        )
-    dataset.asthma_review_date = asthma_review_.date
-    
-    # COPD
-    copd_review_ = last_matching_event_clinical_snomed_before(
-        copd_review, index_date
-        )
-    dataset.copd_review_date = copd_review_.date
-
-    # Medications (any)
-    med_review_ = last_matching_event_clinical_snomed_before(
-        med_review, index_date
-        )
-    dataset.med_review_date = med_review_.date
-
-
-    return dataset
-
-
 ###############
 # Comorbidities
 ###############
 
-def add_comorbidities(dataset, end_date):
+def comorbidities(dataset, end_date):
 
     '''
     add comorbidities. 
@@ -952,7 +646,7 @@ def add_comorbidities(dataset, end_date):
 # Quality assurance
 ###################
 
-def add_quality_assurance(dataset, index_date):
+def quality_assurance(dataset, index_date):
 
     # Prostate cancer
     dataset.prostate_cancer = minimum_of(

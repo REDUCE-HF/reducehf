@@ -1,15 +1,6 @@
-from ehrql import (
-    create_dataset, 
-    years,
-    minimum_of
-)
+from functions.lib import *
 
-from ehrql.tables.tpp import (
-    patients,
-    practice_registrations,
-)
-
-from dataset_functions import *
+import functions.core as core
 
 dataset = create_dataset()
 
@@ -23,13 +14,13 @@ end_date = "2025-01-01"
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #core variables derived based on start_date
-dataset = add_core(dataset, start_date)
+dataset = core.core(dataset, start_date)
 
 #quality assurance
-dataset = add_quality_assurance(dataset, dataset.patient_index_date)
+dataset = core.quality_assurance(dataset, dataset.patient_index_date)
 
 #hf exclude
-dataset = add_hf_exclusion(dataset, dataset.patient_index_date)
+dataset = core.hf_exclusion(dataset, dataset.patient_index_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -74,7 +65,7 @@ dataset.define_population(
 # WP1 needs cohorts with different start dates
 
 #hf diagnosis
-dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+dataset = core.hf_diagnosis(dataset, dataset.patient_index_date)
 
 cohort_dict = {
     '2017-01-01': '_2017',
@@ -90,8 +81,8 @@ cohort_dict = {
 
 for iter, (cohort_index_date, suffix) in enumerate(cohort_dict.items()):
 
-    dataset = add_time_dependent_core(dataset, cohort_index_date, suffix=suffix)
-    dataset = add_underserved(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
+    dataset = core.time_dependent(dataset, cohort_index_date, suffix=suffix)
+    dataset = core.underserved(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
 
-dataset = add_comorbidities(dataset, end_date)
+dataset = core.comorbidities(dataset, end_date)
 

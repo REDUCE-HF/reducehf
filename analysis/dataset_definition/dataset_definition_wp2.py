@@ -1,15 +1,7 @@
-from ehrql import (
-    create_dataset, 
-    years,
-    minimum_of
-)
+from functions.lib import *
 
-from ehrql.tables.tpp import (
-    patients,
-    practice_registrations,
-)
-
-from dataset_functions import *
+import functions.core as core
+import functions.wp2 as wp2
 
 dataset = create_dataset()
 
@@ -25,16 +17,16 @@ dataset.configure_dummy_data(population_size=500000, timeout=500)
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #core variables derived based on start_date
-dataset = add_core(dataset, start_date)
+dataset = core.core(dataset, start_date)
 
 #quality assurance
-dataset = add_quality_assurance(dataset, dataset.patient_index_date)
+dataset = core.quality_assurance(dataset, dataset.patient_index_date)
 
 #hf exclusion
-dataset = add_hf_exclusion(dataset, dataset.patient_index_date)
+dataset = core.hf_exclusion(dataset, dataset.patient_index_date)
 
 #exclusion vars for WP2 only
-dataset = add_wp2_exclusion(dataset, dataset.patient_index_date, end_date)
+dataset = wp2.exclusion(dataset, dataset.patient_index_date, end_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -81,14 +73,14 @@ dataset.define_population(
 # ADD VARIABLES NEEDED FOR WP2
 
 #hf diagnosis
-dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+dataset = core.hf_diagnosis(dataset, dataset.patient_index_date)
 
-dataset = add_np_vars(dataset, dataset.patient_index_date, end_date)
+dataset = wp2.np_vars(dataset, dataset.patient_index_date, end_date)
 
-dataset = add_comorbidities(dataset, end_date)
+dataset = core.comorbidities(dataset, end_date)
 
-dataset = add_time_dependent_core(dataset, dataset.first_hfsymptom_date, suffix = '_wp2_1')
-dataset = add_time_dependent_core(dataset, dataset.nt1_date, suffix = '_wp2_2')
+dataset = core.time_dependent(dataset, dataset.first_hfsymptom_date, suffix = '_wp2_1')
+dataset = core.time_dependent(dataset, dataset.nt1_date, suffix = '_wp2_2')
 
-dataset = add_underserved(dataset, dataset.first_hfsymptom_date, end_date, suffix = '_wp2_1')
-dataset = add_underserved(dataset, dataset.nt1_date, end_date, suffix = '_wp2_2', iter=1)
+dataset = core.underserved(dataset, dataset.first_hfsymptom_date, end_date, suffix = '_wp2_1')
+dataset = core.underserved(dataset, dataset.nt1_date, end_date, suffix = '_wp2_2', iter=1)
