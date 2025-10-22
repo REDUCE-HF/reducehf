@@ -436,7 +436,7 @@ def add_underserved(dataset, index_date, end_date, suffix='', iter=0):
         location.care_home_is_potential_match |
         location.care_home_requires_nursing |
         location.care_home_does_not_require_nursing
-    )
+        )
     dataset.add_column('carehome_at_index' + suffix, carehome_at_index_)
     
     if iter==0:
@@ -489,11 +489,10 @@ def add_underserved(dataset, index_date, end_date, suffix='', iter=0):
     housebound_ = (
         housebound_date.is_not_null() & 
         (housebound_date.is_after(
-            not_housebound_date
-            ) | 
-        not_housebound_date.is_null()
+            not_housebound_date) | 
+            not_housebound_date.is_null()
+            )
         )
-    )
     dataset.add_column('housebound' + suffix, housebound_)
 
     return dataset
