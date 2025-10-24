@@ -9,6 +9,7 @@ from ehrql import (
     days,
     maximum_of,
     minimum_of,
+
 )
 
 from ehrql.tables.tpp import (
@@ -354,6 +355,20 @@ def add_underserved(dataset, index_date, end_date):
         (smi_code.is_not_null() & smi_code_remission.is_before(smi_code)) | 
         (smi_code.is_not_null() & smi_code_remission.is_null())
         )
+    dataset.migrant = last_matching_event_clinical_snomed_before(migrant, index_date, where=True).exists_for_patient()
+
+    dataset.non_english_speaking = last_matching_event_clinical_snomed_before(non_english_speaking, index_date, where=True).exists_for_patient()
+
+    dataset.substance_abuse = last_matching_event_clinical_snomed_between(substance_abuse, index_date - years(1), index_date, where=True).exists_for_patient()
+
+    dataset.homeless = last_matching_event_clinical_snomed_between(homeless, index_date - years(1), index_date, where=True).exists_for_patient()
+
+    housebound_date = last_matching_event_clinical_snomed_between(housebound, index_date - years(1), index_date, where=True).date
+    not_housebound_date = last_matching_event_clinical_snomed_between(no_longer_housebound, index_date - years(1), index_date, where=True).date
+    dataset.housebound = (
+        housebound_date.is_not_null()
+        & (housebound_date.is_after(not_housebound_date) | not_housebound_date.is_null())
+    )
 
     return dataset
 
@@ -367,16 +382,34 @@ def add_hf_diagnosis(dataset, index_date):
     i.e. community or emergency-hospital
     ''' 
 
-    #any evidence of HF, not just diagnosis codes, before index date
-    dataset.hf_exclude = last_matching_event_clinical_snomed_before(hf_exclude, index_date).date
+    #any evidence of HF, not just diagnosis codes, before index date 
+    hf_exclude_primary = last_matching_event_clinical_snomed_before(hf_exclude, index_date).exists_for_patient()
+    #same but for secondary care
+    hf_exclude_apc = last_matching_event_apc_before(hf_icd10, index_date, only_prim_diagnoses=False).exists_for_patient()
+    hf_exclude_ec = last_matching_event_ec_before(hf_ecds, index_date).exists_for_patient()
+    dataset.hf_exclude = hf_exclude_primary | hf_exclude_apc | hf_exclude_ec
 
     #primary care
     dataset.hf_diagnosis_primary_date = first_matching_event_clinical_snomed_after(hf_snomed, index_date).date
 
     #secondary care - hospital admission (primary OR secondary), or A&E visit
-    dataset.hf_diagnosis_secondary_date = minimum_of(first_matching_event_apc_after(hf_icd10, index_date).admission_date, first_matching_event_ec_after(hf_ecds, index_date).arrival_date)
+    dataset.hf_diagnosis_apc_date = first_matching_event_apc_acute_after(hf_icd10, index_date, only_prim_diagnoses=True).admission_date
+    dataset.hf_diagnosis_ec_date = first_matching_event_ec_after(hf_ecds, index_date).arrival_date
+    dataset.hf_diagnosis_secondary_date = minimum_of(dataset.hf_diagnosis_apc_date, dataset.hf_diagnosis_ec_date)
+
     #either primary or secondary
     dataset.hf_diagnosis_date = minimum_of(dataset.hf_diagnosis_primary_date, dataset.hf_diagnosis_secondary_date)
+
+    #in same admission as MI
+    mi_diagnosis_apc = apcs.where(
+        apcs.admission_date.is_on_or_after(index_date)
+        & apcs.admission_method.is_in(["21","2A","22","23","24","25","2D","28","2B"])
+        & apcs.primary_diagnosis.is_in(mi_icd10)
+        )
+    
+    dataset.hf_mi_diagnosis_apc_date = mi_diagnosis_apc.where(
+        mi_diagnosis_apc.all_diagnoses.contains_any_of(hf_icd10)
+        ).sort_by(mi_diagnosis_apc.admission_date).first_for_patient().admission_date
 
     return dataset
 

@@ -215,12 +215,12 @@ copd_medications = codelist_from_csv(
 
 # COPD Exacerbations
 copd_exacerbations_snomed = codelist_from_csv(
-    "codelists/bristol-copd-exacerbations-snomed.csv",
+    "codelists/bristol-copd-exacerbations.csv",
     column = "code"
 )
 
 copd_exacerbations_icd10 = codelist_from_csv(
-    "codelists/opensafely-copd-exacerbation-icd10.csv",
+    "codelists/opensafely-copd-exacerbation.csv",
     column = "code"
 )
 
@@ -420,6 +420,45 @@ copd_review = codelist_from_csv(
 
 med_review = codelist_from_csv(
     "codelists/opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv",
+    column="code"
+)
+
+
+# Myocardial infarction - secondary care
+mi_icd10 = codelist_from_csv(
+    "codelists/reducehf-myocardial-infarction-icd10.csv",
+    column="code"
+)
+
+
+#underserved
+migrant = codelist_from_csv(
+    "codelists/user-YaminaB-migration-status.csv",
+    column="code"
+)
+
+non_english_speaking = codelist_from_csv(
+    "codelists/reducehf-non-english-speaking.csv",
+    column="code"
+)
+
+substance_abuse = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-illsub_cod.csv",
+    column="code"
+)
+
+housebound = codelist_from_csv(
+    "codelists/opensafely-house-bound.csv",
+    column="code"
+)
+
+no_longer_housebound = codelist_from_csv(
+    "codelists/opensafely-not-house-bound.csv",
+    column="code"
+)
+
+homeless = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-homeless_cod.csv",
     column="code"
 )
 
