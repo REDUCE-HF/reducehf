@@ -75,3 +75,10 @@ reducehf/echocardiography-result/03ab3979/
 opensafely/copd-medications-new-dmd/20b7de09/
 bristol/copd-exacerbations/2896912f/
 opensafely/copd-exacerbation/6858db5b/
+reducehf/myocardial-infarction-icd10/6b463edb/
+user/YaminaB/migration-status/4a869a0a/
+reducehf/non-english-speaking/1ef28c64/
+nhsd-primary-care-domain-refsets/illsub_cod/20250627/
+opensafely/house-bound/705feb78/
+opensafely/not-house-bound/0c221ea4/
+nhsd-primary-care-domain-refsets/homeless_cod/20250627/
