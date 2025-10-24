@@ -1,3 +1,4 @@
+import config
 from functions.lib import *
 
 from functions.core import(
@@ -16,8 +17,8 @@ from functions.wp2 import wp2_exclude, np_vars
 dataset = create_dataset()
 
 #placeholder dates for now
-start_date = "2017-01-01"
-end_date = "2025-01-01"
+start_date = config.start_date
+end_date = config.end_date
 
 #NOTE: when running from terminal, increase the memory allocation (-m flag)
 #or decrease population_size. Default memory is 4G. This will run with 8G.

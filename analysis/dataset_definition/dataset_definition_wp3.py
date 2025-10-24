@@ -1,3 +1,4 @@
+import config
 from functions.lib import *
 
 from functions.core import(
@@ -16,8 +17,8 @@ from functions.wp3 import hsu
 dataset = create_dataset()
 
 #placeholder dates for now
-start_date = "2017-01-01"
-end_date = "2025-01-01"
+start_date = config.start_date
+end_date = config.end_date
 
 dataset.configure_dummy_data(
     population_size=100000,

@@ -32,6 +32,32 @@ def fn(dataset, index_date, end_date, suffix='', iter=0):
             where=True
             ).exists_for_patient()
 
+        #learning disability
+
+        dataset.learndis = last_matching_event_clinical_snomed_before(
+                learndis_primis, 
+                index_date
+                ).date
+    
+
+    #severe mental illness
+
+    smi_code = last_matching_event_clinical_snomed_before(
+            sev_mental_primis,
+            index_date
+            ).date
+
+    smi_code_remission = last_matching_event_clinical_snomed_before(
+            smhres_primis, 
+            index_date
+            ).date
+
+    smi_ = (
+        (smi_code.is_not_null() & smi_code_remission.is_before(smi_code)) |
+        (smi_code.is_not_null() & smi_code_remission.is_null())
+        )
+    dataset.add_column('smi' + suffix, smi_)
+
     # Substance abuse
     substance_abuse_ = last_matching_event_clinical_snomed_between(
         substance_abuse, 
