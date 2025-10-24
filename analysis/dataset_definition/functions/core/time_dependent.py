@@ -60,15 +60,15 @@ def fn(dataset, index_date, suffix='', wp=None):
     bp = last_matching_event_clinical_ranges_snomed_before(
         systolic_bp, index_date
         )
-    dataset.sysbp_date = bp.date
-    dataset.sysbp_value = bp.numeric_value
+    dataset.add_column('sysbp_date' + suffix, bp.date)
+    dataset.add_column('sysbp_value' + suffix, bp.numeric_value)
 
     # diastolic bp
     bp = last_matching_event_clinical_ranges_snomed_before(
         diastolic_bp, index_date
         )
-    dataset.diasbp_date = bp.date
-    dataset.diasbp_value = bp.numeric_value
+    dataset.add_column('diasbp_date' + suffix, bp.date)
+    dataset.add_column('diasbp_value' + suffix, bp.numeric_value)
 
     # BMI
     bmi = last_matching_event_clinical_ranges_snomed_before(
