@@ -11,6 +11,8 @@ from functions.core import(
     comorbidities
     )
 
+from functions.wp3 import hsu
+
 dataset = create_dataset()
 
 #placeholder dates for now
@@ -32,7 +34,7 @@ dataset.configure_dummy_data(
 #demographic variables derived based on start_date
 dataset = demog.fn(dataset, start_date, end_date)
 
-#location variables -- based on patient_index_date for WP1 exclusion?
+#location variables
 dataset = location.fn(dataset, dataset.patient_index_date)
 
 #quality assurance
@@ -40,6 +42,9 @@ dataset = quality_assurance.fn(dataset, dataset.patient_index_date)
 
 #hf exclude
 dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
+
+#hf diagnosis
+dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -53,6 +58,7 @@ has_registration = practice_registrations.where(
     ).except_where(
         practice_registrations.end_date.is_on_or_before(start_date)
     ).exists_for_patient()
+
 
 dataset.define_population(
     (has_registration)
@@ -70,38 +76,23 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & (dataset.imd_quintile.is_not_null()) # remove pts with unknown IMD
+    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
     & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
     & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
-# WP1 has no extra criteria
+    & (dataset.hf_diagnosis_date.is_not_null())  	#for WP3 only want people with HF diagnisis
 )
 
+# ADD VARIABLES NEEDED FOR WP3
 
-# ADD VARIABLES NEEDED FOR WP1
-# WP1 needs cohorts with different start dates
+dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
 
-#hf diagnosis
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date)
+# date should be date of HF diagnosis for WP3
+dataset = hsu.fn(dataset, dataset.hf_diagnosis_date)
 
-cohort_dict = {
-    '2017-01-01': '_2017',
-    '2018-01-01': '_2018',
-    '2019-01-01': '_2019',
-    '2020-01-01': '_2020',
-    '2021-01-01': '_2021',
-    '2022-01-01': '_2022',
-    '2023-01-01': '_2023',
-    '2024-01-01': '_2024',
-    '2025-01-01': '_2025'
-    }
-
-for iter, (cohort_index_date, suffix) in enumerate(cohort_dict.items()):
-
-    dataset = time_dependent.fn(dataset, cohort_index_date, suffix=suffix)
-    dataset = underserved.fn(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
-
+#using date of HF diagnosis as reference for WP3 only
 dataset = comorbidities.fn(dataset, end_date)
 
+dataset = underserved.fn(dataset, dataset.hf_diagnosis_date, end_date)

@@ -1,7 +1,8 @@
 from functions.lib import *
 
 from functions.core import(
-    base,
+    demog,
+    location,
     quality_assurance,
     hf_exclude,
     hf_diagnosis,
@@ -20,13 +21,21 @@ end_date = "2025-01-01"
 
 #NOTE: when running from terminal, increase the memory allocation (-m flag)
 #or decrease population_size. Default memory is 4G. This will run with 8G.
-dataset.configure_dummy_data(population_size=500000, timeout=500)
 
+dataset.configure_dummy_data(
+    population_size=100000, 
+    timeout=500,
+    additional_population_constraint = (
+        patients.sex.is_in(['male', 'female']) &
+        (patients.age_on(end_date) < 110) &
+        (patients.age_on(start_date) >=45)
+        )
+    )
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
-#core variables derived based on start_date
-dataset = base.fn(dataset, start_date)
+#demographic variables derived based on start_date
+dataset = demog.fn(dataset, start_date, end_date)
 
 #quality assurance
 dataset = quality_assurance.fn(dataset, dataset.patient_index_date)
@@ -35,7 +44,10 @@ dataset = quality_assurance.fn(dataset, dataset.patient_index_date)
 dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
 
 #exclusion vars for WP2 only
-dataset = wp2_exclude.fn(dataset, dataset.patient_index_date, end_date)
+dataset = wp2_exclude.fn(dataset, dataset.patient_index_date, end_date, objective=2)
+
+#location vars based on index_date
+dataset = location.fn(dataset, dataset.nt1_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -55,11 +67,11 @@ has_registration = practice_registrations.where(
 ##############
 dataset.define_population(
     (has_registration)
-#    & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
-#    & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
-#    & ~(patients.age_on(end_date) < 45) #remove pts < 45
-#    & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
-#    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
+    & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
+    & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
+    & ~(patients.age_on(end_date) < 45) #remove pts < 45
+    & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
+    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
 #####################
 # If we include quality assurance conditions  when generating dummy data, no data generated
 # Assuming because the data is such low fidelity
@@ -69,27 +81,25 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-#    & (dataset.imd10.is_not_null()) # remove pts with unknown IMD
-#    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
-#    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
+    & (dataset.imd_quintile.is_not_null()) # remove pts with unknown IMD
+    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
+    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
-# exclude people with no HF symptoms after patient_index_date AND no NP test after patient_index_date
-    & ~((dataset.first_hfsymptom_date.is_null()) & (dataset.nt1_date.is_null())) 
+# exclude people with no NP test after patient_index_date
+    & ~(dataset.nt1_date.is_null()) 
 )
 
-# ADD VARIABLES NEEDED FOR WP2
+# ADD VARIABLES NEEDED FOR WP2_2
 
 #hf diagnosis
 dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date)
 
-dataset = np_vars.fn(dataset, dataset.patient_index_date, end_date)
+dataset = np_vars.fn(dataset, objective=2)
 
 dataset = comorbidities.fn(dataset, end_date)
 
-dataset = time_dependent.fn(dataset, dataset.first_hfsymptom_date, suffix = '_wp2_1')
-dataset = time_dependent.fn(dataset, dataset.nt1_date, suffix = '_wp2_2')
+dataset = time_dependent.fn(dataset, dataset.nt1_date)
 
-dataset = underserved.fn(dataset, dataset.first_hfsymptom_date, end_date, suffix = '_wp2_1')
-dataset = underserved.fn(dataset, dataset.nt1_date, end_date, suffix = '_wp2_2', iter=1)
+dataset = underserved.fn(dataset, dataset.nt1_date, end_date)
