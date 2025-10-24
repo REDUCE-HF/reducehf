@@ -53,25 +53,27 @@ for col in hs_cols:
     if col in df.columns:
         df[col] = df[col].fillna(0)
 
-# CREATE count for REVIEW VARIABLES 
-# If review date exists  1, else 0
+# Create binary review indicators
 for review_col in review_cols:
     if review_col in df.columns:
-        df["review_count"] = df[review_cols].notna().sum(axis=1)
+        binary_col = review_col.replace("_date", "_bin")
+        df[binary_col] = np.where(df[review_col].notna(), 1, 0)
 
+# Drop date versions
+df.drop(columns=review_cols, inplace=True, errors="ignore")
 
-#  Drop the date versions (keep only binary)
-df.drop(columns=[c for c in review_cols if c in df.columns], inplace=True, errors="ignore")
+# Updated variable list
+binary_review_cols = [c for c in df.columns if c.endswith("_bin")]
+all_vars = hs_cols + binary_review_cols
 
-#  SCALE hs VARIABLES
-all_count_cols = hs_cols + ["review_count"]
-
+# Scale 
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(df[all_count_cols])
-scaled_df = pd.DataFrame(X_scaled, columns=all_count_cols, index=df.index)
+X_scaled = scaler.fit_transform(df[hs_cols])
+scaled_df = pd.DataFrame(X_scaled, columns=hs_cols, index=df.index)
 
-# ---------- COMBINE AND SAVE ----------
-df_scaled = pd.concat([df[["patient_id"]], scaled_df], axis=1)
+# Combine scaled HS vars + binary reviews
+df_scaled = pd.concat([df[["patient_id"]], scaled_df, df[binary_review_cols]], axis=1)
+
 
 raw_out = os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz")
 scaled_out = os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
