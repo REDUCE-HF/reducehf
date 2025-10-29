@@ -36,9 +36,7 @@ dataset.configure_dummy_data(
     additional_population_constraint = (
         patients.sex.is_in(['male', 'female']) &
         (patients.age_on(end_date) < 110) &
-        (patients.age_on(start_date) >=45) &
-        (patients.is_alive_on(end_date)) &
-        (patients.date_of_birth.is_not_null())
+        (patients.age_on(start_date) >=45)
         )
     )
 

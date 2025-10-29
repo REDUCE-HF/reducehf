@@ -112,6 +112,19 @@ actions:
       highly_sensitive:
         dataset: output/tmp_dataset_wp4.csv.gz
 
+  diabetes_algo_wp4:
+    run: diabetes-algo:v0.0.6 --output output/dataset_wp4.csv.gz
+    config:
+      df_input: tmp_dataset_wp4.csv.gz
+      birth_date: dob
+      ethnicity_cat: ethnicity_cat
+      df_output: dataset_wp4.csv.gz
+    needs:
+      - generate_dataset_wp4
+    outputs:
+      highly_sensitive:
+        dataset: output/dataset_wp4.csv.gz
+
   
 # etc...
 
