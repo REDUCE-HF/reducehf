@@ -1,36 +1,42 @@
-from ehrql import (
-    create_dataset, 
-    years,
-    minimum_of
-)
+mport config
 
 from ehrql.tables.tpp import (
     patients,
     practice_registrations,
-)
+    )
 
-from dataset_functions import *
+from ehrql import (
+    create_dataset,
+    years
+    )
+
+from functions.core import(
+    demog,
+    quality_assurance,
+    hf_exclude,
+    )
 
 dataset = create_dataset()
 
-dataset.configure_dummy_data(population_size=100000)
-
 #placeholder dates for now
-start_date = "2017-01-01"
-end_date = "2025-01-01"
+start_date = config.start_date
+end_date = config.end_date
 
+dataset.configure_dummy_data(
+    population_size=100000,
+    timeout=500,
+    )
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
+#demographic variables derived based on start_date
+dataset = demog.fn(dataset, start_date, end_date)
 
-#core variables 
-dataset = add_core(dataset, start_date)
-
-#hf diagnosis
-dataset = add_hf_diagnosis(dataset, dataset.patient_index_date)
+#hf exclusion
+dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
 
 #quality assurance
-dataset = add_quality_assurance(dataset, start_date)
+dataset = quality_assurance.fn(dataset, start_date)
 
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
@@ -47,8 +53,7 @@ has_registration = practice_registrations.where(
     ).exists_for_patient()
 
 dataset.define_population(
-    has_registration
-    & (patients.is_alive_on(start_date)) #remove pts who died before start
-    & ((dataset.hf_diagnosis_date.is_null())|(dataset.hf_diagnosis_date > dataset.patient_index_date))
+    (has_registration)
+    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
     )
 

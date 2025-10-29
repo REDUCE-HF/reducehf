@@ -1,5 +1,14 @@
 import config
-from functions.lib import *
+
+from ehrql.tables.tpp import (
+    patients,
+    practice_registrations,
+    )
+
+from ehrql import (
+    create_dataset,
+    years
+    )
 
 from functions.core import(
     demog,
@@ -20,11 +29,13 @@ end_date = config.end_date
 
 dataset.configure_dummy_data(
     population_size=100000,
-    timeout=500,
+    timeout=1500,
     additional_population_constraint = (
         patients.sex.is_in(['male', 'female']) &
         (patients.age_on(end_date) < 110) &
-        (patients.age_on(start_date) >=45)
+        (patients.age_on(start_date) >=45) &
+        (patients.is_alive_on(end_date)) &
+        (patients.date_of_birth.is_not_null())
         )
     )
 
@@ -32,9 +43,6 @@ dataset.configure_dummy_data(
 
 #demographic variables derived based on start_date
 dataset = demog.fn(dataset, start_date, end_date)
-
-#location variables -- based on patient_index_date for WP1 exclusion?
-dataset = location.fn(dataset, dataset.patient_index_date)
 
 #quality assurance
 dataset = quality_assurance.fn(dataset, dataset.patient_index_date)
@@ -71,8 +79,6 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & (dataset.imd_quintile.is_not_null()) # remove pts with unknown IMD
-    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
     & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
@@ -100,7 +106,8 @@ cohort_dict = {
     }
 
 for iter, (cohort_index_date, suffix) in enumerate(cohort_dict.items()):
-
+    
+    dataset = location.fn(dataset, cohort_index_date, suffix=suffix)
     dataset = time_dependent.fn(dataset, cohort_index_date, suffix=suffix)
     dataset = underserved.fn(dataset, cohort_index_date, end_date, suffix=suffix, iter=iter)
 

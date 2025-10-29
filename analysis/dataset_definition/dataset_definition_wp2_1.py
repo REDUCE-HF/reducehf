@@ -1,5 +1,14 @@
 import config
-from functions.lib import *
+
+from ehrql.tables.tpp import (
+    patients,
+    practice_registrations,
+    )
+
+from ehrql import (
+    create_dataset,
+    years
+    )
 
 from functions.core import(
     demog,
@@ -29,7 +38,9 @@ dataset.configure_dummy_data(
     additional_population_constraint = (
         patients.sex.is_in(['male', 'female']) &
         (patients.age_on(end_date) < 110) &
-        (patients.age_on(start_date) >=45)
+        (patients.age_on(start_date) >=45) &
+        (patients.is_alive_on(end_date)) &
+        (patients.date_of_birth.is_not_null())
         )
     )
 
@@ -46,9 +57,6 @@ dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
 
 #exclusion vars for WP2 only
 dataset = wp2_exclude.fn(dataset, dataset.patient_index_date, end_date, objective=1)
-
-#location vars based on index_date
-dataset = location.fn(dataset, dataset.first_hfsymptom_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -82,8 +90,6 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & (dataset.imd_quintile.is_not_null()) # remove pts with unknown IMD
-    & (dataset.rural_urban.is_not_null()) # remove pts with unknown rural/urban
     & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
@@ -96,6 +102,8 @@ dataset.define_population(
 
 #hf diagnosis
 dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date)
+
+dataset = location.fn(dataset, dataset.first_hfsymptom_date)
 
 dataset = np_vars.fn(dataset,dataset.first_hfsymptom_date, end_date, objective=1)
 
