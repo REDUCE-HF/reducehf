@@ -20,7 +20,7 @@ def fn(dataset, index_date):
         hf_ecds, index_date
         ).arrival_date
 
-    dataset.hf_exclude = minimum_of(
+    dataset.hf_exclude = maximum_of(
         hf_exclude_primary,
         hf_exclude_apc,
         hf_exclude_ec
