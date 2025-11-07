@@ -34,12 +34,7 @@ end_date = config.end_date
 
 dataset.configure_dummy_data(
     population_size=100000, 
-    timeout=500,
-    additional_population_constraint = (
-        patients.sex.is_in(['male', 'female']) &
-        (patients.age_on(end_date) < 110) &
-        (patients.age_on(start_date) >=45)
-        )
+    timeout=500
     )
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
