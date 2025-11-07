@@ -39,7 +39,7 @@ exclusion_steps['under_45'] = [df.shape[0]]
 
 # > 110 on patient_index_date
 
-df['diff'] = (df.patient_index_date - df['dob']).dt.days/364.25
+df['diff'] = (df.patient_index_date - df['dob']).dt.days/365.25
 
 df = df.loc[df['diff']<=110]
 
@@ -51,19 +51,6 @@ exclusion_steps['over_110'] = [df.shape[0]]
 df = df.loc[((df.death_date > df.patient_index_date) | (df.death_date.isna()))]
 
 exclusion_steps['dies_before_eligibility'] = [df.shape[0]]
-
-# no IMD
-
-df = df.loc[~df.imd10.isna()]
-
-exclusion_steps['missing_imd'] = [df.shape[0]]
-
-
-# no rural/urban classification
-
-df = df.loc[~df.rural_urban.isna()]
-
-exclusion_steps['missing_rural_urban'] = [df.shape[0]]
 
 
 # Male and pregnant/hrt
@@ -80,9 +67,8 @@ df = df.loc[~((df.sex=='female') & ~(df.prostate_cancer.isna()))]
 exclusion_steps['female_prostate'] = [df.shape[0]]
 
 
-# add HF stats
+# Evidence of HF
 
-# DO WE WANT N WITH HF DIAGNOSIS??
 
 df = df.loc[df.hf_exclude.isna()]
 
