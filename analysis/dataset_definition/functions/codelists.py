@@ -183,9 +183,9 @@ hypertension_snomed = codelist_from_csv(
 
 # COPD
 
-copd_ctv3 = codelist_from_csv(
-    "codelists/opensafely-current-copd.csv",
-    column="CTV3ID"
+copd_snomed = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-copd_cod.csv",
+    column="code"
 )
 
 copd_icd10 = codelist_from_csv(
@@ -233,8 +233,8 @@ af_icd10 = codelist_from_csv (
 
 # DIABETES
 # T1DM
-diabetes_type1_ctv3 = codelist_from_csv(
-    "codelists/user-hjforbes-type-1-diabetes.csv",column="code"
+diabetes_type1_snomed = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-dmtype1_cod.csv",column="code"
     )
 
 diabetes_type1_icd10 = codelist_from_csv(
@@ -242,8 +242,8 @@ diabetes_type1_icd10 = codelist_from_csv(
     )
 
 # T2DM
-diabetes_type2_ctv3 = codelist_from_csv(
-    "codelists/user-hjforbes-type-2-diabetes.csv",column="code"
+diabetes_type2_snomed = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-dmtype2_cod.csv",column="code"
     )
 
 diabetes_type2_icd10 = codelist_from_csv(
@@ -251,13 +251,13 @@ diabetes_type2_icd10 = codelist_from_csv(
     )
 
 # Other or non-specific diabetes
-diabetes_other_ctv3 = codelist_from_csv(
-    "codelists/user-hjforbes-other-or-nonspecific-diabetes.csv",column="code"
+diabetes_other_snomed = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-otherdmaudit_cod.csv",column="code"
     )
 
 # Gestational diabetes
-diabetes_gestational_ctv3 = codelist_from_csv(
-    "codelists/user-hjforbes-gestational-diabetes.csv",column="code"
+diabetes_gestational_snomed = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-gestdiab_cod.csv",column="code"
                                               )
 
 diabetes_gestational_icd10 = codelist_from_csv(
@@ -265,8 +265,8 @@ diabetes_gestational_icd10 = codelist_from_csv(
     )
 
 # Non-diagnostic diabetes codes
-diabetes_diagnostic_ctv3 = codelist_from_csv(
-    "codelists/user-hjforbes-nondiagnostic-diabetes-codes.csv",column="code"
+diabetes_diagnostic_snomed = codelist_from_csv(
+    "codelists/user-anschaf-diabetes-non-diagnostic-codes.csv",column="code"
                                              )
 
 # HbA1c
