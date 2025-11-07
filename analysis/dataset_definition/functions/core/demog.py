@@ -5,7 +5,7 @@ from functions.lib import *
 # independent of index date
 ##########################
 
-def fn(dataset, start_date, end_date='2025-01-01'):
+def fn(dataset, start_date, end_date='2025-02-01'):
 
     '''
     core variables don't differ between WPs
@@ -14,9 +14,10 @@ def fn(dataset, start_date, end_date='2025-01-01'):
     parameters:
 
     dataset: dataset object initialised using create_dataset()
-    start_date: for our project, 01-01-2017
+    start_date: for our project, 01-02-2019
     end_date: project / follow-up end date
     '''
+
     dataset.sex = patients.sex
     dataset.dob = patients.date_of_birth
     

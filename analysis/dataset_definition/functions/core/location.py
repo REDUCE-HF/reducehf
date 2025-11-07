@@ -8,14 +8,7 @@ from functions.lib import *
 def fn(dataset, index_date, suffix=''):
 
     # practice registration on index_date
-    practice = (
-        practice_registrations.where(
-            practice_registrations.start_date.is_on_or_before(
-                index_date
-                )
-            ).sort_by(practice_registrations.start_date)
-        .last_for_patient()
-        )
+    practice = practice_registrations.for_patient_on(index_date) 
 
     # add practice ID and registration date at index date
     dataset.add_column('practice_id' + suffix, practice.practice_pseudo_id)

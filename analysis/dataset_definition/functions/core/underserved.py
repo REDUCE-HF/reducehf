@@ -6,6 +6,8 @@ from functions.lib import *
   
 def fn(dataset, index_date, end_date, suffix='', iter=0):
     
+    gp_events = filter_gp_events("2000-01-01", index_date)
+
     #Care home status
     location = addresses.for_patient_on(index_date)
     
@@ -19,37 +21,35 @@ def fn(dataset, index_date, end_date, suffix='', iter=0):
     
     if iter==0:
         # Migrant status
-        dataset.migrant = last_matching_event_clinical_snomed_before(
-            migrant, 
-            index_date, 
+        dataset.migrant = last_matching_event_clinical_snomed(
+            gp_events,
+            migrant,
             where=True
             ).exists_for_patient()
 
         # Non english speaking
-        dataset.non_english_speaking = last_matching_event_clinical_snomed_before(
-            non_english_speaking, 
-            index_date, 
+        dataset.non_english_speaking = last_matching_event_clinical_snomed(
+            gp_events,
+            non_english_speaking,
             where=True
             ).exists_for_patient()
 
         #learning disability
-
-        dataset.learndis = last_matching_event_clinical_snomed_before(
-                learndis_primis, 
-                index_date
-                ).date
+        dataset.learndis = last_matching_event_clinical_snomed(
+            gp_events,
+            learndis_primis
+            ).date
     
 
     #severe mental illness
-
-    smi_code = last_matching_event_clinical_snomed_before(
-            sev_mental_primis,
-            index_date
+    smi_code = last_matching_event_clinical_snomed(
+            gp_events,
+            sev_mental_primis
             ).date
 
-    smi_code_remission = last_matching_event_clinical_snomed_before(
-            smhres_primis, 
-            index_date
+    smi_code_remission = last_matching_event_clinical_snomed(
+            gp_events,
+            smhres_primis 
             ).date
 
     smi_ = (
@@ -58,35 +58,39 @@ def fn(dataset, index_date, end_date, suffix='', iter=0):
         )
     dataset.add_column('smi' + suffix, smi_)
 
+    # Records from one year before index only
+    gp_events_1yr = gp_events.where(
+        gp_events.date.is_on_or_between(
+            index_date - years(1), index_date
+            )
+        )
+
     # Substance abuse
-    substance_abuse_ = last_matching_event_clinical_snomed_between(
+    substance_abuse_ = last_matching_event_clinical_snomed(
+        gp_events_1yr,
         substance_abuse, 
-        index_date - years(1), 
-        index_date, 
         where=True
         ).exists_for_patient()
     dataset.add_column('substance_abuse' + suffix, substance_abuse_)
 
     # Homeless
-    homeless_ = last_matching_event_clinical_snomed_between(
+    homeless_ = last_matching_event_clinical_snomed(
+        gp_events_1yr,
         homeless, 
-        index_date - years(1), 
-        index_date, where=True
+        where=True
         ).exists_for_patient()
     dataset.add_column('homeless' + suffix, homeless_)
 
     # Housebound
-    housebound_date = last_matching_event_clinical_snomed_between(
+    housebound_date = last_matching_event_clinical_snomed(
+        gp_events_1yr,
         housebound, 
-        index_date - years(1), 
-        index_date, 
         where=True
         ).date
 
-    not_housebound_date = last_matching_event_clinical_snomed_between(
+    not_housebound_date = last_matching_event_clinical_snomed(
+        gp_events_1yr,
         no_longer_housebound, 
-        index_date - years(1), 
-        index_date, 
         where=True
         ).date
 

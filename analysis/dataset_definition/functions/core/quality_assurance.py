@@ -3,27 +3,37 @@ from functions.lib import *
 # Quality assurance
 ###################
 
-def fn(dataset, index_date):
+# Best to look over entire period - given this is about quality assurance, and not about defining study variables
+def fn(dataset, end_date):
+
+    #filter data - use placeholder start date to get all past events
+    before_gp_events = filter_gp_events("2000-01-01", end_date)
+    before_apc_events = filter_apc_events("2000-01-01", end_date)
+    before_med_events = filter_med_events("2000-01-01", end_date)
 
     # Prostate cancer
     dataset.prostate_cancer = minimum_of(
-        last_matching_event_clinical_snomed_before(
-            prostate_cancer_snomed, index_date
-            ).date ,
-        last_matching_event_apc_before(
-            prostate_cancer_icd10, index_date
+        last_matching_event_clinical_snomed(
+            before_gp_events,
+            prostate_cancer_snomed
+            ).date,
+        last_matching_event_apc(
+            before_apc_events,
+            prostate_cancer_icd10
             ).admission_date
         )
 
     # Pregnancy
-    dataset.pregnancy = last_matching_event_clinical_snomed_before(
-        pregnancy_snomed, index_date
+    dataset.pregnancy = last_matching_event_clinical_snomed(
+        before_gp_events,
+        pregnancy_snomed
         ).date
 
 
     # COCP or HRT medication
-    dataset.hrtcocp = last_matching_med_dmd_before(
-        cocp_dmd + hrt_dmd, index_date
+    dataset.hrtcocp = last_matching_med_dmd(
+        before_med_events,
+        cocp_dmd + hrt_dmd
         ).date
 
     return dataset
