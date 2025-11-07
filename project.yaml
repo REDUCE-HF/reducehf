@@ -92,6 +92,37 @@ actions:
         raw_data: output/clustering/clustering_raw.csv.gz
         scaled_data: output/clustering/clustering_scaled.csv.gz
   
+  # These actions don't run because some libraries are not available in opensafely
+  # find_optimal_k:
+  #   run: python:latest analysis/clustering/find_optimal_k.py
+  #   needs: [prepare_clustering_data]
+  #   outputs:
+  #     moderately_sensitive:
+  #       optimal_k_results: output/clustering/optimal_k_results.csv
+  #       optimal_k_summary: output/clustering/optimal_k_summary.csv
+  #       pca_data: output/clustering/X_pca.csv
+
+  # tune_optics:
+  #   run: python:latest analysis/clustering/03_tune_optics.py
+  #   needs: [prepare_clustering_data]
+  #   outputs:
+  #     moderately_sensitive:
+  #       optics_tuning_results: output/clustering/optics_tuning_results.csv
+
+  # validate_clusters:
+  #   run: python:latest analysis/clustering/04_validate_clusters.py
+  #   needs: [find_optimal_k, tune_optics]
+  #   outputs:
+  #     moderately_sensitive:
+  #       validation_results: output/clustering/validation_results.csv
+
+  # visualize_clusters:
+  #   run: python:latest analysis/clustering/05_visualize_clusters.py
+  #   needs: [validate_clusters]
+  #   outputs:
+  #     moderately_sensitive:
+  #       visualization_summary: output/clustering/visualization_summary.csv
+
   
 # potential other actions to add:
   # create flow_chart (inclusions / exclusions);
@@ -100,4 +131,3 @@ actions:
   # modelling;
   # creating output tables / figures;
   # etc.
-

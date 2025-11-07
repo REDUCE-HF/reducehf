@@ -13,7 +13,6 @@ from dataset_functions import *
 
 dataset = create_dataset()
 
-dataset.configure_dummy_data(population_size=100000)
 
 #placeholder dates for now
 start_date = "2020-01-01"
@@ -56,6 +55,7 @@ dataset.define_population(
     & dataset.imd10.is_not_null()
     & dataset.rural_urban.is_not_null()
     )
+dataset.configure_dummy_data(population_size=100000)
 
 dataset = add_time_dependent_core(dataset, dataset.hf_diagnosis_date)
 
