@@ -12,6 +12,19 @@ def fn(dataset, index_date):
 
     '''
 
+    # Filter datasets for better efficiency
+    before_gp_events = filter_gp_events("2000-01-01", index_date)
+
+    ed_events_1 = filter_ed_events(index_date, index_date + time)
+    apc_events_1 = filter_apc_events(index_date, index_date + time)
+    gp_events_1 = filter_gp_events(index_date, index_date + time)
+    med_events_1 = filter_med_events(index_date, index_date + time)
+
+    ed_events_2 = filter_ed_events(index_date - time, index_date)
+    apc_events_2 = filter_apc_events(index_date - time, index_date)
+    gp_events_2 = filter_gp_events(index_date - time, index_date)
+    med_events_2 = filter_med_events(index_date - time, index_date)
+
     ## Objective  3.1
     time_periods = {
         '3m': days(90),
@@ -24,26 +37,26 @@ def fn(dataset, index_date):
 
         #use in time period after index_date - COPD specific
         dataset.add_column('copd_ed_attendances_post_'+time_name,
-            ed_attendances(index_date,
-                index_date + time,
+            ed_attendances(
+                ed_events_1
                 where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_primary_care_attendances_post_'+time_name,
-            primary_care_attendances(index_date,
-                index_date + time,
+            primary_care_attendances(
+                gp_events_1,
                 where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_hospital_admissions_post_'+time_name,
-            hospital_admissions(index_date,
-                index_date + time,
+            hospital_admissions(
+                apc_events_1,
                 where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
                 )
             )
         dataset.add_column('copd_prescriptions_post_' + time_name,
-            prescriptions_count(index_date,
-                index_date+time,
+            prescriptions_count(
+                med_events_1,
                 where=medications.dmd_code.is_in(copd_medications)
                 )
             )
@@ -51,59 +64,59 @@ def fn(dataset, index_date):
         #use in time period after index_date - general
         dataset.add_column('ed_attendances_post_'+time_name, 
             ed_attendances(
-                index_date, index_date + time
+                ed_events_1
                 )
             )
         dataset.add_column('primary_care_attendances_post_'+time_name, 
             primary_care_attendances(
-                index_date, index_date + time
+                gp_events_1
                 )
             )
         dataset.add_column('hospital_admissions_post_'+time_name, 
             hospital_admissions(
-                index_date, index_date + time
+                apc_events_1
                 )
             )
 
         #use in time period before index_date - general
         dataset.add_column('ed_attendances_pre_'+time_name, 
             ed_attendances(
-                index_date - time, index_date
+                ed_events_2
                 )
             )
         dataset.add_column('primary_care_attendances_pre_'+time_name, 
             primary_care_attendances(
-                index_date - time, index_date
+                gp_events_2
                 )
             )
         dataset.add_column('hospital_admissions_pre_'+time_name, 
             hospital_admissions(
-                index_date-time, index_date
+                apc_events_2
                 )
             )
 
         #use in time period before index_date - COPD specific
         dataset.add_column('copd_ed_attendances_pre_'+time_name,
-            ed_attendances(index_date - time,
-                index_date,
+            ed_attendances(
+                ed_events_2,
                 where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_primary_care_attendances_pre_'+time_name,
-            primary_care_attendances(index_date - time,
-                index_date,
+            primary_care_attendances(
+                gp_events_2,
                 where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_hospital_admissions_pre_'+time_name,
-            hospital_admissions(index_date-time,
-                index_date,
+            hospital_admissions(
+                apc_events_2,
                 where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
                 )
             )
         dataset.add_column('copd_prescriptions_pre' + time_name,
-            prescriptions_count(index_date-time,
-                index_date,
+            prescriptions_count(
+                med_events_2,
                 where=medications.dmd_code.is_in(copd_medications)
                 )
             )
@@ -139,20 +152,23 @@ def fn(dataset, index_date):
 
     ## annual reviews
     # Asthma
-    asthma_review_ = last_matching_event_clinical_snomed_before(
-        asthma_review, index_date
+    asthma_review_ = last_matching_event_clinical_snomed(
+        before_gp_events,
+        asthma_review
         )
     dataset.asthma_review_date = asthma_review_.date
     
     # COPD
-    copd_review_ = last_matching_event_clinical_snomed_before(
-        copd_review, index_date
+    copd_review_ = last_matching_event_clinical_snomed(
+        before_gp_events,
+        copd_review
         )
     dataset.copd_review_date = copd_review_.date
 
     # Medications (any)
-    med_review_ = last_matching_event_clinical_snomed_before(
-        med_review, index_date
+    med_review_ = last_matching_event_clinical_snomed(
+        before_gp_events,
+        med_review
         )
     dataset.med_review_date = med_review_.date
 

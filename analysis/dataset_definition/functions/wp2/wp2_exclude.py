@@ -8,17 +8,23 @@ def fn(dataset, index_date, end_date, objective):
 
     if objective == 1:
 
+        before_gp_events = filter_gp_events("2000-01-01", index_date)
+        after_gp_events = filter_gp_events(index_date, end_date)
+
         #date of first incidence of any of the three HF-related symptoms prior to index date
-        tmp_breathless_date_primary = first_matching_event_clinical_snomed_before(
-            breathless_snomed, index_date
+        tmp_breathless_date_primary = first_matching_event_clinical_snomed(
+            before_gp_events,
+            breathless_snomed
             ).date
 
-        tmp_oedema_date_primary = first_matching_event_clinical_snomed_before(
-            oedema_snomed, index_date
+        tmp_oedema_date_primary = first_matching_event_clinical_snomed(
+            before_gp_events,
+            oedema_snomed
             ).date
 
-        tmp_fatigue_date_primary = first_matching_event_clinical_snomed_before(
-            fatigue_snomed, index_date
+        tmp_fatigue_date_primary = first_matching_event_clinical_snomed(
+            before_gp_events,
+            fatigue_snomed
             ).date
 
         #add indicator which is true if any symptom reported before index date
@@ -29,23 +35,27 @@ def fn(dataset, index_date, end_date, objective):
             )
 
         #evidence of NTPro test prior to index date
-        nt_pre = first_matching_event_clinical_snomed_before(
-            NTpro_snomed,index_date
+        nt_pre = first_matching_event_clinical_snomed(
+            before_gp_events,
+            NTpro_snomed
             ).exists_for_patient()
 
         dataset.nt_pre_index = nt_pre
 
         #date of first incidence of any of the three HF-related symptoms
-        tmp_breathless_date_primary = first_matching_event_clinical_snomed_between(
-            breathless_snomed, index_date, end_date,
+        tmp_breathless_date_primary = first_matching_event_clinical_snomed(
+            after_gp_events,
+            breathless_snomed, 
             ).date
 
-        tmp_oedema_date_primary = first_matching_event_clinical_snomed_between(
-            oedema_snomed, index_date, end_date
+        tmp_oedema_date_primary = first_matching_event_clinical_snomed(
+            after_gp_events,
+            oedema_snomed, 
             ).date
 
-        tmp_fatigue_date_primary = first_matching_event_clinical_snomed_between(
-            fatigue_snomed, index_date, end_date
+        tmp_fatigue_date_primary = first_matching_event_clinical_snomed(
+            after_gp_events,
+            fatigue_snomed, 
             ).date
 
         #combine to find the earliest date of any symptom
@@ -55,18 +65,19 @@ def fn(dataset, index_date, end_date, objective):
             tmp_fatigue_date_primary
             )
 
-
     elif objective==2:
 
         #evidence of NTPro test prior to index date
-        nt_pre = first_matching_event_clinical_snomed_before(
-            NTpro_snomed,index_date
+        nt_pre = first_matching_event_clinical_snomed(
+            before_gp_events,
+            NTpro_snomed,
             ).exists_for_patient()
 
         dataset.nt_pre_index = nt_pre
 
-        first_nt = first_matching_event_clinical_snomed_between(
-            NTpro_snomed,index_date, end_date
+        first_nt = first_matching_event_clinical_snomed(
+            after_gp_events
+            NTpro_snomed
             )
 
         dataset.nt1_date = first_nt.date
