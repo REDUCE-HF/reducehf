@@ -49,6 +49,8 @@ dataset = hf_diagnosis.fn(dataset, start_date, end_date)
 #hf exclude 
 dataset = hf_exclude.fn(dataset, end_date)
 
+dataset = comorbidities.fn(dataset, end_date)
+
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
 
