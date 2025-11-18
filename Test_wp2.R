@@ -1,33 +1,58 @@
 # Test_wp2.R
 rm(v)
-#df <- read.csv("/workspaces/reducehf/test/dataset_wp2.csv.gz", header=TRUE)
-df <- read.csv("/workspaces/reducehf/output/tmp_dataset_wp2.csv.gz", header=TRUE)
-df <- read.csv("/workspaces/reducehf/output/dataset_wp2.csv.gz", header=TRUE)
+rm(list=ls()) 
+
+# Load packages
+library(lubridate)
+library(dplyr)
+
+# Load data 
+# This is dummy data and not including the final set of variables   
+df <- read.csv("/workspace/test/dataset_wp2.csv.gz", header=TRUE)
 
 
-
-# Patient index date is the earliest of date of age 45 years, study start date and registration date minus 1 year.
+# Data cleanging
+# Currently not clear what will be done before the final dataset is delivered
 
 # WP2.1 
+
+# Patient index date (eligibility date) is the latest of date of age 45 years, study start date and registration date minus 1 year.
+
 # Cohort entry date is date of first symptom between patient index date and study end date
 
 
 #d1 <- subset(df, select=c("patient_id", "first_oedema_date_primary", "first_fatigue_date_primary",
 #                           "first_breathless_date_primary","first_hfsymptom_date", "hf_diagnosis_date"))
 
+# Rename date variables
+df <- df %>% rename(patient_index_date=patient_index)
+df <- df %>% rename(date_of_birth=dob)
+
+#   Convert character to date format
+#   Extracts all columns with "date" in their name    
+datevars <- names(df)[grep("date",names(df))]
+#   For each column, replaces the character date to a Date format   
+for (i in 1:length(datevars)){
+  df[,datevars[i]] <- ymd(df[,datevars[i]])
+  rm(i)
+}
+rm(datevars)
+
+
+
 # Convert characters for missing values to NA
 df$hf_diagnosis_date[df$hf_diagnosis_date==""] <- NA
 df$first_hfsymptom_date[df$first_hfsymptom_date==""] <- NA
-
 df$first_oedema_date_primary[df$first_oedema_date_primary==""] <- NA
 df$first_fatigue_date_primary[df$first_fatigue_date_primary==""] <- NA
 df$first_breathless_date_primary[df$first_breathless_date_primary==""] <- NA
-
 df$dob[df$dob==""] <- NA
 df$patient_index[df$patient_index==""] <- NA
 
 
 # Create date variables
+str(df$hf_diagnosis_date)
+str(df$diag_date)
 df$diag_date <- as.Date(df$hf_diagnosis_date, format="%Y-%m-%d")
 df$symp_date <- as.Date(df$first_hfsymptom_date, format="%Y-%m-%d")
 df$dob_date <- as.Date(df$dob, format="%Y-%m-%d")
@@ -36,7 +61,7 @@ df$age<- as.numeric(difftime(df$patient_index_date,df$dob_date, units="days"))/3
 df$npdate <- as.Date(df$np_date,format="%Y-%m-%d")
 df$nt1date <- as.Date(df$nt1_date,format="%Y-%m-%d")
 df$oedema1 <- as.Date(df$first_oedema_date_primary,format="%Y-%m-%d")
-df$fatigue1 <- as.Date(first_fatigue_date_primary,format="%Y-%m-%d")
+df$fatigue1 <- as.Date(df$first_fatigue_date_primary,format="%Y-%m-%d")
 df$breathless1 <- as.Date(df$first_breathless_date_primary,format="%Y-%m-%d")
 
 
@@ -47,7 +72,7 @@ df$symp <- ifelse(is.na(df$symp_date),0,1)
 table(df$diag)
 table(df$symp)
 
-df$had_np <-ifelse(is.na(df$npdate),0,1)
+df$had_np <- ifelse(is.na(df$npdate),0,1)
 table(df$had_np)
 
 df$symp1 <- ifelse(is.na(df$oedema1),0,1)
@@ -57,9 +82,13 @@ table(df$symp1)
 table(df$symp2)
 table(df$symp3)
 
-df$nosymp <- df$symp1+df$symp2+df$symp3
-d2 <-subset(df, select=c("symp1", "symp2", "symp3", "nosymp") )
-table(df$nosymp)
+df$countsymp <- df$symp1+df$symp2+df$symp3
+table(df$countsymp)
+str(df$countsymp)
+
+df$hadsymp <- ifelse(df$countsymp>0,1,0)
+
+d2 <-subset(df, select=c(symp1, symp2, symp3, countsymp) )
 table(df$diag)
 table(df$symp)
 table(df$diag, df$symp) 
@@ -68,8 +97,18 @@ table(df$diag, df$symp)
 sum(df$symp_date<df$diag_date, na.rm=TRUE)
 sum(df$symp_date==df$diag_date, na.rm=TRUE)
 sum(df$symp_date>df$diag_date, na.rm=TRUE)
+sum(df$hadsymp==1 & is.na(df$diag_date))
 
 # QUERY - only have one symptom. Is that expected or are the data scrambled so can't tell?
+
+# Set dates of intervals
+
+Covid_start <- as.Date("2021-01-03")
+Covid_end <- as.Date("2023-01-04")
+
+# Define cohorts
+
+
 
 
 
