@@ -4,12 +4,12 @@ from functions.lib import *
 # WP2 - exclusion criteria
 ##########################
 
-def fn(dataset, index_date, end_date, objective):
+def fn(dataset, earliest_date, index_date, end_date, objective):
 
+    before_gp_events = filter_gp_events(earliest_date, index_date)
+    after_gp_events = filter_gp_events(index_date, end_date)
+    
     if objective == 1:
-
-        before_gp_events = filter_gp_events("2000-01-01", index_date)
-        after_gp_events = filter_gp_events(index_date, end_date)
 
         #date of first incidence of any of the three HF-related symptoms prior to index date
         tmp_breathless_date_primary = first_matching_event_clinical_snomed(
@@ -76,7 +76,7 @@ def fn(dataset, index_date, end_date, objective):
         dataset.nt_pre_index = nt_pre
 
         first_nt = first_matching_event_clinical_snomed(
-            after_gp_events
+            after_gp_events,
             NTpro_snomed
             )
 

@@ -3,7 +3,7 @@ from functions.lib import *
 # Comorbidities
 ###############
 
-def fn(dataset, index_date):
+def fn(dataset, earliest_date, index_date):
 
     '''
     add comorbidities. 
@@ -12,9 +12,9 @@ def fn(dataset, index_date):
     '''
 
     # Filter data for efficiency - extract everything before index date
-    before_gp_events = filter_gp_events("2000-01-01", index_date)
-    before_apc_events = filter_apc_events("2000-01-01", index_date)
-    before_med_events = filter_med_events("2000-01-01", index_date)
+    before_gp_events = filter_gp_events(earliest_date, index_date)
+    before_apc_events = filter_apc_events(earliest_date, index_date)
+    before_med_events = filter_med_events(earliest_date, index_date)
 
     ### Diabetes
     ## Type 1 Diabetes 

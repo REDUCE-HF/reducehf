@@ -4,7 +4,7 @@ from functions.lib import *
 # depend on index date
 ######################
 
-def fn(dataset, index_date, suffix='', wp=None):
+def fn(dataset, index_date, suffix='', wp=None, earliest_date = None):
 
     '''
      and core variables that depend on index_date
@@ -148,8 +148,8 @@ def fn(dataset, index_date, suffix='', wp=None):
     if wp==4:
 
         # Filter raw data 
-        gp_events_2 = filter_gp_events("2000-01-01", index_date - years(1))
-        med_events_2 = filter_med_events("2000-01-01", index_date - years(1))
+        gp_events_2 = filter_gp_events(earliest_date, index_date - years(1))
+        med_events_2 = filter_med_events(earliest_date, index_date - years(1))
 
         # Hba1c latest for pcp-hf
         last_hba1c = last_matching_event_clinical_snomed(

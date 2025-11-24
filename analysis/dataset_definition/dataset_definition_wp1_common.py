@@ -26,9 +26,10 @@ dataset = create_dataset()
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
+earliest_date = config.earliest
 
 dataset.configure_dummy_data(
-    population_size=100000,
+    population_size=10000,
     timeout=500
     )
 
@@ -38,7 +39,7 @@ dataset.configure_dummy_data(
 dataset = demog.fn(dataset, start_date, end_date)
 
 #quality assurance
-dataset = quality_assurance.fn(dataset, end_date)
+dataset = quality_assurance.fn(dataset, earliest_date, end_date)
 
 ## For the following - extract earliest possible date to be 
 ##   used to define eligibility for each cohort
@@ -47,9 +48,9 @@ dataset = quality_assurance.fn(dataset, end_date)
 dataset = hf_diagnosis.fn(dataset, start_date, end_date)
 
 #hf exclude 
-dataset = hf_exclude.fn(dataset, end_date)
+dataset = hf_exclude.fn(dataset, earliest_date, end_date)
 
-dataset = comorbidities.fn(dataset, end_date)
+dataset = comorbidities.fn(dataset, earliest_date, end_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP

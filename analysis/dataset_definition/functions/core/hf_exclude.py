@@ -4,12 +4,12 @@ from functions.lib import *
 # HF codes - for exclusion
 ###########################
 
-def fn(dataset, index_date):
+def fn(dataset, earliest_date, index_date):
 
     #filter data - use placeholder start date to get all past events
-    before_gp_events = filter_gp_events("2000-01-01", index_date)
-    before_apc_events = filter_apc_events("2000-01-01", index_date)
-    before_ed_events = filter_ed_events("2000-01-01", index_date)
+    before_gp_events = filter_gp_events(earliest_date, index_date)
+    before_apc_events = filter_apc_events(earliest_date, index_date)
+    before_ed_events = filter_ed_events(earliest_date, index_date)
 
     #any evidence of HF, not just diagnosis codes, before index date
     hf_exclude_primary = last_matching_event_clinical_snomed(

@@ -7,7 +7,9 @@ from ehrql.tables.tpp import (
 
 from ehrql import (
     create_dataset,
-    years
+    years,
+    case,
+    when
     )
 
 from functions.core import(
@@ -29,15 +31,11 @@ dataset = create_dataset()
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
+earliest_date = config.earliest
 
 dataset.configure_dummy_data(
-    population_size=100000,
+    population_size=5000,
     timeout=500,
-    additional_population_constraint = (
-        patients.sex.is_in(['male', 'female']) &
-        (patients.age_on(end_date) < 110) &
-        (patients.age_on(start_date) >=45)
-        )
     )
 
 
@@ -47,10 +45,10 @@ dataset.configure_dummy_data(
 dataset = demog.fn(dataset, start_date, end_date)
 
 #quality assurance
-dataset = quality_assurance.fn(dataset, dataset.patient_index_date)
+dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
 
 #hf exclusion
-dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
+dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
 
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
@@ -83,13 +81,13 @@ dataset.define_population(
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
 ###################
-    & (dataset.hf_exclude.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
+    & (dataset.hf_exclude_date.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
 ##################
 # WP SPECIFIC CRITERIA
 ##################
 )
 
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date)
+dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
 
 dataset.index_date = case(
     when(
@@ -101,10 +99,11 @@ dataset.index_date = case(
 #location variables
 dataset = location.fn(dataset, dataset.index_date)
 
-dataset = time_dependent.fn(dataset, dataset.index_date)
+dataset = time_dependent.fn(dataset, dataset.index_date, wp=4,
+    earliest_date=earliest_date)
 
-dataset = hsu.fn(dataset, dataset.index_date)
+dataset = hsu.fn(dataset, earliest_date, dataset.index_date)
 
-dataset = comorbidities.fn(dataset, end_date)
+dataset = comorbidities.fn(dataset, earliest_date, end_date)
 
-dataset = underserved.fn(dataset, dataset.index_date, end_date)
+dataset = underserved.fn(dataset, earliest_date, dataset.index_date, end_date)

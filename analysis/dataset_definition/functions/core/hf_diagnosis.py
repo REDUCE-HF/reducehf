@@ -46,4 +46,9 @@ def fn(dataset, index_date, end_date):
         mi_diagnosis_apc.all_diagnoses.contains_any_of(hf_icd10)
         ).sort_by(mi_diagnosis_apc.admission_date).first_for_patient().admission_date
     
+    dataset.hf_diagnosis_date = minimum_of(
+        dataset.hf_diagnosis_primary_date,
+        dataset.hf_diagnosis_emerg_date
+    )
+    
     return dataset

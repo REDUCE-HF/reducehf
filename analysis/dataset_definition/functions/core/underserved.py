@@ -4,9 +4,9 @@ from functions.lib import *
 ####################
 
   
-def fn(dataset, index_date, end_date, suffix='', iter=0):
+def fn(dataset, earliest_date, index_date, end_date, suffix='', iter=0):
     
-    gp_events = filter_gp_events("2000-01-01", index_date)
+    gp_events = filter_gp_events(earliest_date, index_date)
 
     #Care home status
     location = addresses.for_patient_on(index_date)

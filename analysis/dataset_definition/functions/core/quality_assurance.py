@@ -4,12 +4,12 @@ from functions.lib import *
 ###################
 
 # Best to look over entire period - given this is about quality assurance, and not about defining study variables
-def fn(dataset, end_date):
+def fn(dataset, earliest_date, end_date):
 
     #filter data - use placeholder start date to get all past events
-    before_gp_events = filter_gp_events("2000-01-01", end_date)
-    before_apc_events = filter_apc_events("2000-01-01", end_date)
-    before_med_events = filter_med_events("2000-01-01", end_date)
+    before_gp_events = filter_gp_events(earliest_date, end_date)
+    before_apc_events = filter_apc_events(earliest_date, end_date)
+    before_med_events = filter_med_events(earliest_date, end_date)
 
     # Prostate cancer
     dataset.prostate_cancer = minimum_of(

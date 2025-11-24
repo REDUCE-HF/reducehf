@@ -1,4 +1,4 @@
-mport config
+import config
 
 from ehrql.tables.tpp import (
     patients,
@@ -21,9 +21,10 @@ dataset = create_dataset()
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
+earliest_date = config.earliest
 
 dataset.configure_dummy_data(
-    population_size=100000,
+    population_size=10000,
     timeout=500,
     )
 
@@ -33,10 +34,10 @@ dataset.configure_dummy_data(
 dataset = demog.fn(dataset, start_date, end_date)
 
 #hf exclusion
-dataset = hf_exclude.fn(dataset, dataset.patient_index_date)
+dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
 
 #quality assurance
-dataset = quality_assurance.fn(dataset, start_date)
+dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
 
 
 #DEFINE POPULATION (inclusion/exclusion criteria)

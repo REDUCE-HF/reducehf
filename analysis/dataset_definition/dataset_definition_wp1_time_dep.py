@@ -25,9 +25,10 @@ dataset = create_dataset()
 
 start_date = config.start_date
 end_date = config.end_date
+earliest_date = config.earliest
 
 dataset.configure_dummy_data(
-    population_size=100000,
+    population_size=10000,
     timeout=500
     )
 
@@ -48,7 +49,7 @@ has_registration = practice_registrations.spanning(
 #hf diagnosis
 dataset = location.fn(dataset, cohort_index_date)
 dataset = time_dependent.fn(dataset, cohort_index_date)
-dataset = underserved.fn(dataset, cohort_index_date, end_date, iter=iter)
+dataset = underserved.fn(dataset, earliest_date, cohort_index_date, end_date)
 
 dataset.define_population(
     (has_registration)

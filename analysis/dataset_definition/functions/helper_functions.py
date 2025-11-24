@@ -22,7 +22,7 @@ def filter_ed_events(start_date, end_date):
     return eca.where(eca.arrival_date.is_on_or_between(start_date, end_date))
 
 def filter_range_events(start_date, end_date):
-    return clinical_events_ranges(clinical_events_ranges.date.is_on_or_between(start_date, end_date))
+    return clinical_events_ranges.where(clinical_events_ranges.date.is_on_or_between(start_date, end_date))
 
 
 ### Health service utilisation
