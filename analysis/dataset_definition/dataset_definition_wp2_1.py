@@ -101,7 +101,7 @@ dataset = location.fn(dataset, dataset.first_hfsymptom_date)
 
 dataset = np_vars.fn(dataset,dataset.first_hfsymptom_date, end_date, objective=1)
 
-dataset = comorbidities.fn(dataset, earliest_date, end_date)
+dataset = comorbidities.fn(dataset, earliest_date, dataset.first_hfsymptom_date)
 
 dataset = time_dependent.fn(dataset, dataset.first_hfsymptom_date)
 

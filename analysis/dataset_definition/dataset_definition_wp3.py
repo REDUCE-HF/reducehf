@@ -95,6 +95,6 @@ dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
 
 dataset = hsu.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
 
-dataset = comorbidities.fn(dataset, earliest_date, end_date)
+dataset = comorbidities.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
 
 dataset = underserved.fn(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)

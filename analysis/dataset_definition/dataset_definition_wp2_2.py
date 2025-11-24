@@ -101,7 +101,7 @@ dataset = np_vars.fn(dataset, dataset.patient_index_date, end_date, objective=2)
 
 dataset = location.fn(dataset, dataset.nt1_date)
 
-dataset = comorbidities.fn(dataset, earliest_date, end_date)
+dataset = comorbidities.fn(dataset, earliest_date, dataset.nt1_date)
 
 dataset = time_dependent.fn(dataset, dataset.nt1_date)
 
