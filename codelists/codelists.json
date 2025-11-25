@@ -1,5 +1,35 @@
 {
   "files": {
+    "user-anschaf-diabetes-non-diagnostic-codes.csv": {
+      "id": "user/anschaf/diabetes-non-diagnostic-codes/22fa3d8a",
+      "url": "https://www.opencodelists.org/codelist/user/anschaf/diabetes-non-diagnostic-codes/22fa3d8a/",
+      "downloaded_at": "2025-11-06 14:24:57.824893Z",
+      "sha": "423576d907feae247a95f4d08bfc3738587f1963"
+    },
+    "nhsd-primary-care-domain-refsets-gestdiab_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/gestdiab_cod/20250912",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/gestdiab_cod/20250912/",
+      "downloaded_at": "2025-11-06 14:16:38.397888Z",
+      "sha": "dace60e651a7ff2545aae5cece961fc652610b0e"
+    },
+    "nhsd-primary-care-domain-refsets-otherdmaudit_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/otherdmaudit_cod/20250912",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/otherdmaudit_cod/20250912/",
+      "downloaded_at": "2025-11-06 14:14:49.926066Z",
+      "sha": "791bf8321c7cf36f83240ae5b44cdc855d7e4c92"
+    },
+    "nhsd-primary-care-domain-refsets-dm_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/dm_cod/20250912",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/dm_cod/20250912/",
+      "downloaded_at": "2025-11-06 14:13:35.775073Z",
+      "sha": "aa811ead07b97e14e5ae8ddacdc0bb78af3593d4"
+    },
+    "nhsd-primary-care-domain-refsets-dmtype2_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/dmtype2_cod/20250912",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/dmtype2_cod/20250912/",
+      "downloaded_at": "2025-11-06 14:10:21.791971Z",
+      "sha": "d0150e2030c8452c247a41852853453a165a04d9"
+    },
     "bristol-hdl-cholesterol.csv": {
       "id": "bristol/hdl-cholesterol/64775990",
       "url": "https://www.opencodelists.org/codelist/bristol/hdl-cholesterol/64775990/",
@@ -132,7 +162,6 @@
       "downloaded_at": "2025-06-28 15:53:58.208717Z",
       "sha": "a4564a582dabdb385a2caf6bb6a24e4bfcaf92dc"
     },
-
     "user-elsie_horne-bmi_obesity_snomed.csv": {
       "id": "user/elsie_horne/bmi_obesity_snomed/0764e9b4",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/bmi_obesity_snomed/0764e9b4/",
@@ -157,7 +186,6 @@
       "downloaded_at": "2025-08-01 22:12:07.030328Z",
       "sha": "22988f25528e7ebcbcd079afe54c39c883bcf63c"
     },
-
     "user-elsie_horne-ckd_snomed.csv": {
       "id": "user/elsie_horne/ckd_snomed/25d9dcd5",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/ckd_snomed/25d9dcd5/",
@@ -212,8 +240,6 @@
       "downloaded_at": "2025-06-28 16:44:36.635168Z",
       "sha": "c682301df15a68467f95a94abeb93e572b65e06d"
     },
-
-
     "bristol-atrial-fibrillation-snomed.csv": {
       "id": "bristol/atrial-fibrillation-snomed/6be6c30f",
       "url": "https://www.opencodelists.org/codelist/bristol/atrial-fibrillation-snomed/6be6c30f/",
@@ -309,7 +335,7 @@
       "url": "https://www.opencodelists.org/codelist/opensafely/glycated-haemoglobin-hba1c-tests-numerical-value/5134e926/",
       "downloaded_at": "2025-08-01 22:12:10.027923Z",
       "sha": "bc7e48efd370be65686755f0a843058f1ec767e0"
-
+    },
     "reducehf-heart-failure-secondary-care.csv": {
       "id": "reducehf/heart-failure-secondary-care/7eadc7d2",
       "url": "https://www.opencodelists.org/codelist/reducehf/heart-failure-secondary-care/7eadc7d2/",
@@ -350,82 +376,37 @@
       "id": "nhsd-primary-care-domain-refsets/bmival_cod/20250627",
       "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/bmival_cod/20250627/",
       "downloaded_at": "2025-08-01 15:46:39.803231Z",
-
       "sha": "2fc9695c0029388d5d4741e821688e0c4a1b19ee"
     },
     "user-RochelleKnight-prostate_cancer_icd10.csv": {
       "id": "user/RochelleKnight/prostate_cancer_icd10/6b27d648",
       "url": "https://www.opencodelists.org/codelist/user/RochelleKnight/prostate_cancer_icd10/6b27d648/",
-
       "downloaded_at": "2025-08-01 15:46:42.415677Z",
-
       "sha": "fc1791f84b1195fc21df000d3300015b1ff7d1ec"
     },
     "user-RochelleKnight-pregnancy_and_birth_snomed.csv": {
       "id": "user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3",
       "url": "https://www.opencodelists.org/codelist/user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3/",
-
       "downloaded_at": "2025-08-01 15:46:45.130685Z",
-
       "sha": "3dec4001ddd33ddaf16ce92ec450c2206880ec40"
     },
     "user-elsie_horne-cocp_dmd.csv": {
       "id": "user/elsie_horne/cocp_dmd/1666a7a3",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/cocp_dmd/1666a7a3/",
-
       "downloaded_at": "2025-08-01 15:46:47.823759Z",
-
       "sha": "ace0cce9a466e05dc0ad302be50275d0121908b2"
     },
     "user-elsie_horne-hrt_dmd.csv": {
       "id": "user/elsie_horne/hrt_dmd/19196799",
       "url": "https://www.opencodelists.org/codelist/user/elsie_horne/hrt_dmd/19196799/",
-
       "downloaded_at": "2025-08-01 15:46:50.643566Z",
-
       "sha": "95dde1e61efe8ee6af3358e9640bf139c0c1c9d9"
     },
     "user-RochelleKnight-prostate_cancer_snomed.csv": {
       "id": "user/RochelleKnight/prostate_cancer_snomed/0437497e",
       "url": "https://www.opencodelists.org/codelist/user/RochelleKnight/prostate_cancer_snomed/0437497e/",
-
       "downloaded_at": "2025-08-01 15:46:53.445821Z",
       "sha": "7249bb62e32d2d60600b0d1e32562f23bd92c6aa"
-    },
-    "reducehf-np-testing-4all.csv": {
-      "id": "reducehf/np-testing-4all/63ce832d",
-      "url": "https://www.opencodelists.org/codelist/reducehf/np-testing-4all/63ce832d/",
-      "downloaded_at": "2025-08-01 15:59:06.896113Z",
-      "sha": "f05aac3eb2a69447496a311a829fd851fa1b6734"
-    },
-    "reducehf-np-testing-read.csv": {
-      "id": "reducehf/np-testing-read/678a6104",
-      "url": "https://www.opencodelists.org/codelist/reducehf/np-testing-read/678a6104/",
-      "downloaded_at": "2025-08-01 15:59:09.596966Z",
-      "sha": "0997488d6dcb6459d3e0a0aa0f809a6eab996d28"
-
-      "downloaded_at": "2025-07-31 16:56:10.749482Z",
-      "sha": "7249bb62e32d2d60600b0d1e32562f23bd92c6aa"
-    },
-    "reducehf-breathlessness4all.csv": {
-      "id": "reducehf/breathlessness4all/6d0c1be7",
-      "url": "https://www.opencodelists.org/codelist/reducehf/breathlessness4all/6d0c1be7/",
-      "downloaded_at": "2025-08-18 13:16:09.514715Z",
-      "sha": "61943b1a26c22b7fa10aefe0d884a93d0c63ce10"
-    },
-    "reducehf-oedema4all.csv": {
-      "id": "reducehf/oedema4all/2efcdccd",
-      "url": "https://www.opencodelists.org/codelist/reducehf/oedema4all/2efcdccd/",
-      "downloaded_at": "2025-08-18 13:46:14.483771Z",
-      "sha": "d6b185a08114e292b71f3800ff044948b81970cf"
-
-    },
-    "reducehf-fatigue4all.csv": {
-      "id": "reducehf/fatigue4all/7cddf662",
-      "url": "https://www.opencodelists.org/codelist/reducehf/fatigue4all/7cddf662/",
-
-      "downloaded_at": "2025-08-01 15:59:12.467731Z",
-      "sha": "87a6fd950dffc59d43ecd2b9badd91779735abb9"
     },
     "reducehf-oedema4all.csv": {
       "id": "reducehf/oedema4all/2efcdccd",
@@ -433,14 +414,34 @@
       "downloaded_at": "2025-08-01 15:59:15.402441Z",
       "sha": "d6b185a08114e292b71f3800ff044948b81970cf"
     },
-    "reducehf-breathlessness4all.csv": {
-      "id": "reducehf/breathlessness4all/6d0c1be7",
-      "url": "https://www.opencodelists.org/codelist/reducehf/breathlessness4all/6d0c1be7/",
-      "downloaded_at": "2025-08-01 15:59:04.618093Z",
-      "sha": "61943b1a26c22b7fa10aefe0d884a93d0c63ce10"
-
-
-      "downloaded_at": "2025-08-18 13:47:12.293027Z",
+    "opensafely-systolic-blood-pressure-qof.csv": {
+      "id": "opensafely/systolic-blood-pressure-qof/3572b5fb",
+      "url": "https://www.opencodelists.org/codelist/opensafely/systolic-blood-pressure-qof/3572b5fb/",
+      "downloaded_at": "2025-10-10 09:37:41.953703Z",
+      "sha": "f2bc461e351499f4e5573a6f94e760b99979491e"
+    },
+    "opensafely-asthma-annual-review-qof.csv": {
+      "id": "opensafely/asthma-annual-review-qof/33eeb7da",
+      "url": "https://www.opencodelists.org/codelist/opensafely/asthma-annual-review-qof/33eeb7da/",
+      "downloaded_at": "2025-10-10 09:37:43.253249Z",
+      "sha": "6f6f0221706d28a49d74f3c3edc5c627d2cc618c"
+    },
+    "opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof.csv": {
+      "id": "opensafely/chronic-obstructive-pulmonary-disease-copd-review-qof/01cfd170",
+      "url": "https://www.opencodelists.org/codelist/opensafely/chronic-obstructive-pulmonary-disease-copd-review-qof/01cfd170/",
+      "downloaded_at": "2025-10-10 09:37:44.519567Z",
+      "sha": "e2bd6c6bd876347a2546020c4ebfb4b8731d6b71"
+    },
+    "opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv": {
+      "id": "opensafely/care-planning-medication-review-simple-reference-set-nhs-digital/61b13c39",
+      "url": "https://www.opencodelists.org/codelist/opensafely/care-planning-medication-review-simple-reference-set-nhs-digital/61b13c39/",
+      "downloaded_at": "2025-10-10 09:37:45.782748Z",
+      "sha": "40e14bd0b0bea5057db28eb44e3c22624b17046a"
+    },
+    "reducehf-fatigue4all.csv": {
+      "id": "reducehf/fatigue4all/7cddf662",
+      "url": "https://www.opencodelists.org/codelist/reducehf/fatigue4all/7cddf662/",
+      "downloaded_at": "2025-10-29 14:09:03.583972Z",
       "sha": "87a6fd950dffc59d43ecd2b9badd91779735abb9"
     },
     "reducehf-beathlessness4all.csv": {
@@ -472,6 +473,84 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/echocardiography-result/03ab3979/",
       "downloaded_at": "2025-08-19 10:28:58.498947Z",
       "sha": "574fdd10ecfdf0c785fb171e34cfebaab4b135d6"
+    },
+    "opensafely-copd-medications-new-dmd.csv": {
+      "id": "opensafely/copd-medications-new-dmd/20b7de09",
+      "url": "https://www.opencodelists.org/codelist/opensafely/copd-medications-new-dmd/20b7de09/",
+      "downloaded_at": "2025-10-10 09:37:55.343181Z",
+      "sha": "8ca158de8df88cb9d1a961792c89ed650f5bd445"
+    },
+    "bristol-copd-exacerbations.csv": {
+      "id": "bristol/copd-exacerbations/2896912f",
+      "url": "https://www.opencodelists.org/codelist/bristol/copd-exacerbations/2896912f/",
+      "downloaded_at": "2025-10-10 09:37:56.443846Z",
+      "sha": "cd99911a547ee5a18220f62d36579af015f3b793"
+    },
+    "opensafely-copd-exacerbation.csv": {
+      "id": "opensafely/copd-exacerbation/6858db5b",
+      "url": "https://www.opencodelists.org/codelist/opensafely/copd-exacerbation/6858db5b/",
+      "downloaded_at": "2025-10-10 09:37:57.618722Z",
+      "sha": "df8ebce026cf3cbbdde3e32a7698b243019b4175"
+    },
+    "reducehf-myocardial-infarction-icd10.csv": {
+      "id": "reducehf/myocardial-infarction-icd10/6b463edb",
+      "url": "https://www.opencodelists.org/codelist/reducehf/myocardial-infarction-icd10/6b463edb/",
+      "downloaded_at": "2025-10-10 12:34:06.724766Z",
+      "sha": "5ea7124adc5bcfed66cabd98e0a57c98b20af016"
+    },
+    "user-YaminaB-migration-status.csv": {
+      "id": "user/YaminaB/migration-status/4a869a0a",
+      "url": "https://www.opencodelists.org/codelist/user/YaminaB/migration-status/4a869a0a/",
+      "downloaded_at": "2025-10-10 12:58:35.611835Z",
+      "sha": "5339d31c838a679c7d94e7cd7445215bce644490"
+    },
+    "reducehf-non-english-speaking.csv": {
+      "id": "reducehf/non-english-speaking/1ef28c64",
+      "url": "https://www.opencodelists.org/codelist/reducehf/non-english-speaking/1ef28c64/",
+      "downloaded_at": "2025-10-10 12:59:07.950941Z",
+      "sha": "3e3f22f8d9966e18f8898ffbc6e924d613ac2240"
+    },
+    "nhsd-primary-care-domain-refsets-illsub_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/illsub_cod/20250627",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/illsub_cod/20250627/",
+      "downloaded_at": "2025-10-10 13:01:18.849213Z",
+      "sha": "9beeff2eceb441cb3059996cf24ecef964528c87"
+    },
+    "opensafely-house-bound.csv": {
+      "id": "opensafely/house-bound/705feb78",
+      "url": "https://www.opencodelists.org/codelist/opensafely/house-bound/705feb78/",
+      "downloaded_at": "2025-10-10 13:07:27.099945Z",
+      "sha": "4408752ee525151741ce050f1a20c51cd5c0116a"
+    },
+    "opensafely-not-house-bound.csv": {
+      "id": "opensafely/not-house-bound/0c221ea4",
+      "url": "https://www.opencodelists.org/codelist/opensafely/not-house-bound/0c221ea4/",
+      "downloaded_at": "2025-10-10 13:08:46.737370Z",
+      "sha": "cedcdcc0354885c1aa08224072718ff6bdae7450"
+    },
+    "nhsd-primary-care-domain-refsets-homeless_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/homeless_cod/20250627",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/homeless_cod/20250627/",
+      "downloaded_at": "2025-10-10 13:14:52.784789Z",
+      "sha": "9fb2846a5b3fa816b5d2d09e55810f4827ee55f2"
+    },
+    "nhsd-primary-care-domain-refsets-diabp_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/diabp_cod/20250627",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/diabp_cod/20250627/",
+      "downloaded_at": "2025-10-29 14:09:05.150222Z",
+      "sha": "e8ebe45551f53a99a0e20269d0605ea16f7f0cc8"
+    },
+    "nhsd-primary-care-domain-refsets-copd_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/copd_cod/20250912",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/copd_cod/20250912/",
+      "downloaded_at": "2025-11-06 11:47:36.216807Z",
+      "sha": "57431dbda7129d9c915a404dff0348cfcc9cd6f6"
+    },
+    "nhsd-primary-care-domain-refsets-dmtype1_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/dmtype1_cod/20250912",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/dmtype1_cod/20250912/",
+      "downloaded_at": "2025-11-06 13:45:08.093432Z",
+      "sha": "658987e223c4d523959971d390f18eacc8a49b51"
     }
   }
 }

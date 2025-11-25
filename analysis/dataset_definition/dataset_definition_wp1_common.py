@@ -21,8 +21,6 @@ from functions.core import(
     comorbidities
     )
 
-from functions.wp3 import hsu
-
 dataset = create_dataset()
 
 #placeholder dates for now
@@ -35,20 +33,24 @@ dataset.configure_dummy_data(
     timeout=500
     )
 
-
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #demographic variables derived based on start_date
 dataset = demog.fn(dataset, start_date, end_date)
 
 #quality assurance
-dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
+dataset = quality_assurance.fn(dataset, earliest_date, end_date)
 
-#hf exclude
-dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
+## For the following - extract earliest possible date to be 
+##   used to define eligibility for each cohort
 
 #hf diagnosis
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
+dataset = hf_diagnosis.fn(dataset, start_date, end_date)
+
+#hf exclude 
+dataset = hf_exclude.fn(dataset, earliest_date, end_date)
+
+dataset = comorbidities.fn(dataset, earliest_date, end_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -63,38 +65,18 @@ has_registration = practice_registrations.where(
         practice_registrations.end_date.is_on_or_before(start_date)
     ).exists_for_patient()
 
-
 dataset.define_population(
     (has_registration)
     & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
     & (patients.date_of_birth.is_not_null()) #known dob proxy for data quality
-    & ~(patients.age_on(end_date) < 45) #remove pts < 45
-    & ~(patients.age_on(dataset.patient_index_date) >= 110) #remove pts age 110+
-    & ((dataset.patient_index_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
-#####################
-# If we include quality assurance conditions  when generating dummy data, no data generated
-# Assuming because the data is such low fidelity
-# Commenting out until working with real data
-####################
+    & ~(patients.age_on(end_date) < 45) #remove pts < 45 at latest possible date
+    & ~(patients.age_on(start_date) >= 110) #remove pts age 110+ at earliest possible start date
+    & ((start_date < dataset.death_date)|(dataset.death_date.is_null())) #remove pts who died before start
 #    & ~((dataset.sex == 'male') & (dataset.hrtcocp.is_not_null())) #remove males with hrt / cocp codes
 #    & ~((dataset.sex == 'male') & (dataset.pregnancy.is_not_null())) #remove males with pregnancy codes
 #    & ~((dataset.sex == 'female') & (dataset.prostate_cancer.is_not_null())) #remove females with prostate cancer codes
-###################
-    & (dataset.hf_exclude_date.is_null()) # remove pts with evidence of HF prior (including diagnosis??) to patient_index_date
-##################
-# WP SPECIFIC CRITERIA
-##################
-    & (dataset.hf_diagnosis_date.is_not_null())  	#for WP3 only want people with HF diagnisis
+    & ~(dataset.hf_exclude_date < start_date)
 )
 
-# ADD VARIABLES NEEDED FOR WP3
 
-dataset = location.fn(dataset, dataset.hf_diagnosis_date)
 
-dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
-
-dataset = hsu.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
-
-dataset = comorbidities.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
-
-dataset = underserved.fn(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)

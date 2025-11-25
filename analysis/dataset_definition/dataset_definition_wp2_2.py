@@ -21,7 +21,7 @@ from functions.core import(
     comorbidities
     )
 
-from functions.wp3 import hsu
+from functions.wp2 import wp2_exclude, np_vars
 
 dataset = create_dataset()
 
@@ -30,11 +30,13 @@ start_date = config.start_date
 end_date = config.end_date
 earliest_date = config.earliest
 
+#NOTE: when running from terminal, increase the memory allocation (-m flag)
+#or decrease population_size. Default memory is 4G. This will run with 8G.
+
 dataset.configure_dummy_data(
-    population_size=10000,
+    population_size=10000, 
     timeout=500
     )
-
 
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
@@ -44,11 +46,11 @@ dataset = demog.fn(dataset, start_date, end_date)
 #quality assurance
 dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
 
-#hf exclude
+#hf exclusion
 dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
 
-#hf diagnosis
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
+#exclusion vars for WP2 only
+dataset = wp2_exclude.fn(dataset, earliest_date, dataset.patient_index_date, end_date, objective=2)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -63,7 +65,9 @@ has_registration = practice_registrations.where(
         practice_registrations.end_date.is_on_or_before(start_date)
     ).exists_for_patient()
 
-
+###############
+#To get > 10 rows of dummy data, comment out inclusions/exclusions
+##############
 dataset.define_population(
     (has_registration)
     & (patients.sex.is_in(['male','female'])) #known sex proxy for data quality
@@ -84,17 +88,21 @@ dataset.define_population(
 ##################
 # WP SPECIFIC CRITERIA
 ##################
-    & (dataset.hf_diagnosis_date.is_not_null())  	#for WP3 only want people with HF diagnisis
+# exclude people with no NP test after patient_index_date
+    & ~(dataset.nt1_date.is_null()) 
 )
 
-# ADD VARIABLES NEEDED FOR WP3
+# ADD VARIABLES NEEDED FOR WP2_2
 
-dataset = location.fn(dataset, dataset.hf_diagnosis_date)
+#hf diagnosis
+dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
 
-dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
+dataset = np_vars.fn(dataset, dataset.patient_index_date, end_date, objective=2)
 
-dataset = hsu.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+dataset = location.fn(dataset, dataset.nt1_date)
 
-dataset = comorbidities.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+dataset = comorbidities.fn(dataset, earliest_date, dataset.nt1_date)
 
-dataset = underserved.fn(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)
+dataset = time_dependent.fn(dataset, dataset.nt1_date)
+
+dataset = underserved.fn(dataset, earliest_date, dataset.nt1_date, end_date)
