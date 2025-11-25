@@ -7,7 +7,9 @@ from ehrql.tables.tpp import (
 
 from ehrql import (
     create_dataset,
-    years
+    years,
+    case,
+    when
     )
 
 from functions.core import(
@@ -25,14 +27,15 @@ from functions.wp3 import hsu
 
 dataset = create_dataset()
 
+
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
 earliest_date = config.earliest
 
 dataset.configure_dummy_data(
-    population_size=10000,
-    timeout=500
+    population_size=5000,
+    timeout=500,
     )
 
 
@@ -44,11 +47,9 @@ dataset = demog.fn(dataset, start_date, end_date)
 #quality assurance
 dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
 
-#hf exclude
+#hf exclusion
 dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
 
-#hf diagnosis
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -84,17 +85,25 @@ dataset.define_population(
 ##################
 # WP SPECIFIC CRITERIA
 ##################
-    & (dataset.hf_diagnosis_date.is_not_null())  	#for WP3 only want people with HF diagnisis
 )
 
-# ADD VARIABLES NEEDED FOR WP3
+dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
 
-dataset = location.fn(dataset, dataset.hf_diagnosis_date)
+dataset.index_date = case(
+    when(
+        dataset.hf_diagnosis_date.is_not_null()
+        ).then(dataset.hf_diagnosis_date),
+    otherwise = end_date - years(2)
+    )
 
-dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
+#location variables
+dataset = location.fn(dataset, dataset.index_date)
 
-dataset = hsu.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+dataset = time_dependent.fn(dataset, dataset.index_date, wp=4,
+    earliest_date=earliest_date)
 
-dataset = comorbidities.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+dataset = hsu.fn(dataset, earliest_date, dataset.index_date)
 
-dataset = underserved.fn(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)
+dataset = comorbidities.fn(dataset, earliest_date, dataset.index_date)
+
+dataset = underserved.fn(dataset, earliest_date, dataset.index_date, end_date)
