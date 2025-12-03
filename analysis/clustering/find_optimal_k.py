@@ -224,4 +224,14 @@ for cfg in results_df["config"].unique():
 summary_df = pd.DataFrame(summary)
 summary_df.to_csv(os.path.join(OUTPUT_DIR, "optimal_k_summary.csv"), index=False)
 print("\nSaved optimal k summary.")
+
+# -------------------
+# Save D_gower and X_pca for downstream use
+# -------------------
+pd.DataFrame(D_gower).to_csv(os.path.join(OUTPUT_DIR, "D_gower.csv.gz"), index=False, compression="gzip")
+print(f"Saved Gower distance matrix to: {os.path.join(OUTPUT_DIR, 'D_gower.csv.gz')}")
+
+pd.DataFrame(X_pca).to_csv(os.path.join(OUTPUT_DIR, "X_pca.csv.gz"), index=False, compression="gzip")
+print(f"Saved PCA-transformed data to: {os.path.join(OUTPUT_DIR, 'X_pca.csv.gz')}")
+
 print("Done.")

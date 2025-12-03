@@ -39,24 +39,37 @@ opt_k_df = pd.read_csv(opt_k_path)
 print(f"Loaded optimal k values from {opt_k_path}")
 
 # -----------------------------
-# Compute distances and PCA
+# Load distances and PCA
 # -----------------------------
-print("Computing Gower distance matrix for raw data...")
-D_gower = compute_gower(X_raw)
+print("Loading Gower distance matrix...")
+# Opensafley doesn't support .npy files 
+D_gower_path = os.path.join(OUTPUT_DIR, "D_gower.csv.gz")
+if os.path.exists(D_gower_path):
+    D_gower = pd.read_csv(D_gower_path, compression="gzip").values
+    print(f"Loaded D_gower from {D_gower_path}")
+else:
+    print(f"Warning: {D_gower_path} not found. Computing Gower distance matrix...")
+    D_gower = compute_gower(X_raw)
 
-print("Running PCA transformation...")
-X_pca, _ = run_pca(X_scaled)
+print("Loading PCA transformation...")
+X_pca_path = os.path.join(OUTPUT_DIR, "X_pca.csv.gz")
+if os.path.exists(X_pca_path):
+    X_pca = pd.read_csv(X_pca_path, compression="gzip").values
+    print(f"Loaded X_pca from {X_pca_path}")
+else:
+    print(f"Warning: {X_pca_path} not found. Running PCA transformation...")
+    X_pca, _ = run_pca(X_scaled)
 
 # -----------------------------
 # Utility to evaluate clustering
 # -----------------------------
-def evaluate(config, X, labels):
+def evaluate(config, X, labels, metric="euclidean"):
     n_clusters = len(np.unique(labels))
     if n_clusters < 2:
         print(f"Warning: {config}: only one cluster — skipping.")
         return None
-    sil = silhouette_score(X, labels)
-    ch = calinski_harabasz_score(X, labels)
+    sil = silhouette_score(X, labels, metric=metric)
+    ch = calinski_harabasz_score(X_pca, labels)  
     print(f"{config}: silhouette={sil:.3f}, calinski_harabasz={ch:.1f}")
     return {"config": config, "silhouette": sil, "calinski_harabasz": ch}
 
@@ -96,9 +109,15 @@ for cfg, data, fn in configs:
         np.save(labels_path, labels)
         print(f"Saved labels to {labels_path}")
 
-        # Evaluate clustering quality
-        X_eval = X_raw if "raw" in cfg else X_pca
-        res = evaluate(cfg, X_eval, labels)
+        # Evaluate clustering quality with appropriate metric
+        if "raw" in cfg:
+            X_eval = D_gower
+            metric = "precomputed"
+        else:
+            X_eval = X_pca
+            metric = "euclidean"
+        
+        res = evaluate(cfg, X_eval, labels, metric=metric)
         if res:
             results.append(res)
 
