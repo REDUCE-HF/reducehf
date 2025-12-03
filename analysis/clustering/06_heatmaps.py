@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from clustering_helpers import load_data
+from clustering_helpers import load_data, load_feature_names
 
 # -----------------------------------------
 # Setup
@@ -19,16 +19,15 @@ OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
-X_raw, X_scaled, raw_df, scaled_df = load_data(
+X_raw, X_scaled = load_data(
     os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"),
     os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
 )
 
-# Drop ID column if present
-if "patient_id" in raw_df.columns:
-    raw_df = raw_df.drop(columns=["patient_id"])
-if "patient_id" in scaled_df.columns:
-    scaled_df = scaled_df.drop(columns=["patient_id"])
+# Rebuild DataFrames with feature names for labeling
+feature_names = load_feature_names(os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"))
+raw_df = pd.DataFrame(X_raw, columns=feature_names)
+scaled_df = pd.DataFrame(X_scaled, columns=feature_names)
 
 # -----------------------------------------
 # Load metadata

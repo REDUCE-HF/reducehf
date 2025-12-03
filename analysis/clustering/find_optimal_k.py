@@ -13,6 +13,7 @@ from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
 import warnings
 from clustering_helpers import load_data, compute_gower, run_pca
+import gower
 
 # -------------------
 # Config
@@ -26,7 +27,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # Load data and prepare feature matrices
 # -------------------
 print("Loading clustering datasets...")
-X_raw, X_scaled, raw_df, scaled_df = load_data(RAW_PATH, SCALED_PATH)
+X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 
 print("Computing Gower distance for raw data...")
 D_gower = compute_gower(X_raw)
@@ -68,11 +69,11 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
     np.random.seed(random_state)
     ps_values = []
     
-    # We must index X_raw based on the split indices, so we grab the indices only once.
-    
+    # We must index the feature matrix based on the split indices, so we grab the indices only once.
+    n_samples = X.shape[0]
     for split_i in range(n_splits):
         # Generate indices for the entire dataset
-        idx = np.arange(X_raw.shape[0])
+        idx = np.arange(n_samples)
         np.random.shuffle(idx)
         split_point = len(idx) // 2
         
@@ -81,33 +82,45 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
         
         # --- 1. Prepare Data for Clustering and Prediction ---
         
-        # X1_features (Training Features) and X2_features (Test Features) are required for the centroid/prediction steps
-        # This holds true for both Gower and Euclidean configurations.
-        X1_features = X_raw[idx1] 
-        X2_features = X_raw[idx2] 
-        
         if precomputed:
             # Clustering input (D1, D2) is a subset of the D_gower distance matrix (X)
-            X_clustering_input = X # which is D_gower
-            D1 = X_clustering_input[np.ix_(idx1, idx1)]
-            D2 = X_clustering_input[np.ix_(idx2, idx2)]
+            D1 = X[np.ix_(idx1, idx1)]
+            D2 = X[np.ix_(idx2, idx2)]
             labels1 = cluster_fn(D1, k)
             labels2 = cluster_fn(D2, k)
+            
+            # For Gower (precomputed), centroids are computed in raw space
+            X1_centroid_space = X_raw[idx1]
+            X2_centroid_space = X_raw[idx2]
+            distance_metric = "gower"
         else:
-            # Clustering input (X1, X2) is a subset of the feature matrix (X_pca/X_scaled)
-            X_clustering_input = X # which is X_pca
-            X1 = X_clustering_input[idx1]
-            X2 = X_clustering_input[idx2]
+            # Clustering input (X1, X2) is a subset of the feature matrix (X_pca)
+            X1 = X[idx1]
+            X2 = X[idx2]
             labels1 = cluster_fn(X1, k)
             labels2 = cluster_fn(X2, k)
             
-        # 1. Compute Centroids from training FEATURES (X1_features)
-        # We use the X_raw features here, as X_pca is feature-reduced and X_raw is the raw input.
-        # This remains the methodological compromise for Gower configurations.
-        centroids = np.vstack([X1_features[labels1 == c].mean(axis=0) for c in np.unique(labels1)])
+            # For PCA (euclidean), centroids are computed in reduced space
+            X1_centroid_space = X1
+            X2_centroid_space = X2
+            distance_metric = "euclidean"
+            
+        # 1. Compute Centroids from training data in the appropriate space
+        centroids = np.vstack([X1_centroid_space[labels1 == c].mean(axis=0) for c in np.unique(labels1)])
 
-        # 2. Assign test points (X2_features) to nearest centroids
-        nearest = np.argmin(pairwise_distances(X2_features, centroids, metric="euclidean"), axis=1)
+        # 2. Assign test points to nearest centroids using appropriate distance metric
+        if distance_metric == "gower":
+            # Compute Gower distances between test points and centroids
+            # Use gower library to compute pairwise distances efficiently
+            combined_data = np.vstack([X2_centroid_space, centroids])
+            dist_matrix = gower.gower_matrix(combined_data)
+            # Extract distances from test points to centroids
+            n_test = X2_centroid_space.shape[0]
+            distances = dist_matrix[:n_test, n_test:]
+            nearest = np.argmin(distances, axis=1)
+        else:
+            # Use euclidean distance
+            nearest = np.argmin(pairwise_distances(X2_centroid_space, centroids, metric="euclidean"), axis=1)
 
         # 3. Calculate minimum co-membership
         ps_k = []
@@ -162,10 +175,12 @@ for cfg, (X, cluster_fn, precomputed) in configs.items():
         continue
 
     for k in range(2, 11):
-        # X_features_for_ps is determined inside compute_prediction_strength using X_raw or X_pca
-        
-        # Pass the full input (D_gower or X_pca) to the function
-        ps, se = compute_prediction_strength(X, cluster_fn, k, precomputed=precomputed)
+        ps, se = compute_prediction_strength(
+            X,
+            cluster_fn,
+            k,
+            precomputed=precomputed,
+        )
         
         results.append({"config": cfg, "k": k, "ps": ps, "se": se})
         print(f"   k={k}: PS={ps:.3f}, SE={se:.3f}, PS+SE={ps+se:.3f}")
@@ -189,8 +204,7 @@ for cfg in results_df["config"].unique():
         continue
 
     # Apply PS >= 0.8 rule 
-    # NOTE: The rule in your earlier query was PS + SE >= 0.8, but the general PS rule is PS >= 0.8.
-    # We will stick to the PS >= 0.8 rule for cleaner interpretation, but the logic is robust for either.
+    
     eligible = sub[sub["ps"] >= THRESHOLD] 
     
     if not eligible.empty:

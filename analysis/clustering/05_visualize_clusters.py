@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import umap
 
-from clustering_helpers import load_data, compute_gower, run_pca
+from clustering_helpers import load_data
 
 # -----------------------------
 # Setup
@@ -21,15 +21,10 @@ OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print(" Loading datasets...")
-X_raw, X_scaled, raw_df, scaled_df = load_data(
+X_raw, X_scaled = load_data(
     os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"),
     os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
 )
-
-# Drop ID columns if present
-for df in [raw_df, scaled_df]:
-    if isinstance(df, pd.DataFrame) and "patient_id" in df.columns:
-        df.drop(columns=["patient_id"], inplace=True)
 
 # -----------------------------
 # Compute UMAP embedding

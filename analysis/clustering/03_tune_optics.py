@@ -21,7 +21,7 @@ OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading dataset...")
-X_raw, X_scaled, _, _ = load_data(RAW_PATH, SCALED_PATH)
+X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 D_gower = compute_gower(X_raw)
 X_pca, var = run_pca(X_scaled)
 print(f"PCA reduced to {X_pca.shape[1]} components (explaining {var:.1%} variance)")

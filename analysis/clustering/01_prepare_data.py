@@ -66,6 +66,13 @@ df.drop(columns=review_cols, inplace=True, errors="ignore")
 binary_review_cols = [c for c in df.columns if c.endswith("_bin")]
 all_vars = hs_cols + binary_review_cols
 
+# Save feature names for later df reconstruction 
+feature_path = os.path.join(OUTPUT_DIR, "clustering_features.txt")
+with open(feature_path, 'w') as f:
+    for item in all_vars:
+        f.write(f"{item}\n")
+print(f"Saved feature names to: {feature_path}")
+# -------------------------------------------------
 # Scale 
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(df[hs_cols])

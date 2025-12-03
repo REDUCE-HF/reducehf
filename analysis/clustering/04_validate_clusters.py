@@ -26,15 +26,10 @@ OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
-X_raw, X_scaled, raw_df, scaled_df = load_data(
+X_raw, X_scaled = load_data(
     os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"),
     os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
 )
-
-# Drop patient_id column if present
-for df in [raw_df, scaled_df]:
-    if "patient_id" in df.columns:
-        df.drop(columns=["patient_id"], inplace=True)
 
 # -----------------------------
 # Load optimal K values
@@ -47,10 +42,10 @@ print(f"Loaded optimal k values from {opt_k_path}")
 # Compute distances and PCA
 # -----------------------------
 print("Computing Gower distance matrix for raw data...")
-D_gower = compute_gower(raw_df)
+D_gower = compute_gower(X_raw)
 
 print("Running PCA transformation...")
-X_pca, _ = run_pca(scaled_df)
+X_pca, _ = run_pca(X_scaled)
 
 # -----------------------------
 # Utility to evaluate clustering
@@ -102,7 +97,7 @@ for cfg, data, fn in configs:
         print(f"Saved labels to {labels_path}")
 
         # Evaluate clustering quality
-        X_eval = raw_df.values if "raw" in cfg else X_pca
+        X_eval = X_raw if "raw" in cfg else X_pca
         res = evaluate(cfg, X_eval, labels)
         if res:
             results.append(res)

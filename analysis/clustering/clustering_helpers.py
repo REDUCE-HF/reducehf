@@ -27,7 +27,20 @@ def load_data(raw_path="output/clustering/clustering_raw.csv.gz",
     X_scaled = scaled_df.drop(columns=[id_col]).values
     
     # Return all four expected variables
-    return X_raw, X_scaled, raw_df, scaled_df
+    return X_raw, X_scaled
+
+def load_feature_names(raw_path="output/clustering/clustering_raw.csv.gz"):
+    """
+    Load the list of feature names (column names) from the raw data file.
+
+    """
+    if not os.path.exists(raw_path):
+        raise FileNotFoundError(f"Missing file: {raw_path}")
+
+    raw_df = pd.read_csv(raw_path)
+    id_col = "patient_id"
+    # Return column names, excluding the patient ID
+    return raw_df.drop(columns=[id_col], errors='ignore').columns.tolist()
 
 
 def compute_gower(X):
