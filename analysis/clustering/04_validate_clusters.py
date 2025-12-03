@@ -10,7 +10,7 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
-from clustering_helpers import load_data, compute_gower, run_pca
+from clustering_helpers import load_data
 from find_optimal_k import (
     run_kmedoids_gower,
     run_agglomerative_precomputed,
@@ -48,8 +48,7 @@ if os.path.exists(D_gower_path):
     D_gower = pd.read_csv(D_gower_path, compression="gzip").values
     print(f"Loaded D_gower from {D_gower_path}")
 else:
-    print(f"Warning: {D_gower_path} not found. Computing Gower distance matrix...")
-    D_gower = compute_gower(X_raw)
+    raise FileNotFoundError(f"Gower distance matrix not found. Run find_optimal_k.py first.")
 
 print("Loading PCA transformation...")
 X_pca_path = os.path.join(OUTPUT_DIR, "X_pca.csv.gz")
@@ -57,8 +56,8 @@ if os.path.exists(X_pca_path):
     X_pca = pd.read_csv(X_pca_path, compression="gzip").values
     print(f"Loaded X_pca from {X_pca_path}")
 else:
-    print(f"Warning: {X_pca_path} not found. Running PCA transformation...")
-    X_pca, _ = run_pca(X_scaled)
+    print(f"Error: {X_pca_path} not found. Run find_optimal_k.py first.")
+    raise FileNotFoundError(f"PCA model not found. Run find_optimal_k.py to generate it.")
 
 # -----------------------------
 # Utility to evaluate clustering

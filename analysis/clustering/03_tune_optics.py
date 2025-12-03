@@ -10,7 +10,7 @@ from sklearn.cluster import OPTICS
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
 import matplotlib.pyplot as plt
 import warnings
-from clustering_helpers import load_data, compute_gower, run_pca
+from clustering_helpers import load_data
 
 # -------------------
 # Load data
@@ -22,9 +22,22 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading dataset...")
 X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
-D_gower = compute_gower(X_raw)
-X_pca, var = run_pca(X_scaled)
-print(f"PCA reduced to {X_pca.shape[1]} components (explaining {var:.1%} variance)")
+
+print("Loading precomputed Gower distance matrix...")
+D_gower_path = os.path.join(OUTPUT_DIR, "D_gower.csv.gz")
+if os.path.exists(D_gower_path):
+    D_gower = pd.read_csv(D_gower_path, compression="gzip").values
+    print(f"Loaded D_gower from {D_gower_path}")
+else:
+    raise FileNotFoundError(f"Gower distance matrix not found. Run find_optimal_k.py first.")
+
+print("Loading precomputed PCA transformation...")
+X_pca_path = os.path.join(OUTPUT_DIR, "X_pca.csv.gz")
+if os.path.exists(X_pca_path):
+    X_pca = pd.read_csv(X_pca_path, compression="gzip").values
+    print(f"Loaded X_pca from {X_pca_path}")
+else:
+    raise FileNotFoundError(f"PCA data not found. Run find_optimal_k.py first.")
 
 # -------------------
 # Dynamic parameter grid

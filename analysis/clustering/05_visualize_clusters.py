@@ -26,12 +26,9 @@ X_raw, X_scaled = load_data(
     os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
 )
 
-# -----------------------------
-# Compute UMAP embedding
-# -----------------------------
-print(" Computing UMAP embedding on raw data...")
-reducer = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1)
-umap_embedding = reducer.fit_transform(X_raw)
+# Compute UMAP embedding from raw data
+print(" Computing UMAP embedding...")
+umap_embedding = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1).fit_transform(X_raw)
 print(" UMAP embedding ready.")
 
 # -----------------------------
@@ -44,9 +41,9 @@ opt_k_df = pd.read_csv(opt_k_path)
 val_df = pd.read_csv(val_path)
 print(f" Loaded {len(opt_k_df)} optimal-k rows and {len(val_df)} validation rows")
 
-# -----------------------------
+# ----------------------------
 # Visualization helper
-# -----------------------------
+# ----------------------------
 def plot_clusters(labels, config_name):
     plt.figure(figsize=(10, 7))
 

@@ -50,8 +50,14 @@ def compute_gower(X):
 
 
 def run_pca(X_scaled, var_threshold=0.8):
-    """Run PCA to reduce dimensions until target variance explained."""
+    """Run PCA to reduce dimensions until target variance explained.
+    
+    Returns:
+        X_pca: Transformed data in reduced PCA space
+        var_explained: Total variance explained
+    """
     pca = PCA(n_components=var_threshold, svd_solver="full", random_state=42)
     X_pca = pca.fit_transform(X_scaled)
     var_explained = pca.explained_variance_ratio_.sum()
     return X_pca, var_explained
+
