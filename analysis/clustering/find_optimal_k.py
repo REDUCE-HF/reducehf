@@ -12,7 +12,7 @@ from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
 import warnings
 from clustering_helpers import load_data, compute_gower, run_pca
-import gower
+import gower_exp as gower
 
 # -------------------
 # Config
