@@ -10,6 +10,16 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
+from config import (
+    D_GOWER_PATH,
+    OUTPUT_DIR,
+    OPTIMAL_K_SUMMARY_PATH,
+    RAW_PATH,
+    SCALED_PATH,
+    VALIDATION_RESULTS_PATH,
+    X_PCA_PATH,
+    labels_path,
+)
 from clustering_helpers import load_data
 from find_optimal_k import (
     run_kmedoids_gower,
@@ -22,28 +32,23 @@ from find_optimal_k import (
 # -----------------------------
 # Setup
 # -----------------------------
-OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
-X_raw, X_scaled = load_data(
-    os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"),
-    os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
-)
+X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 
 # -----------------------------
 # Load optimal K values
 # -----------------------------
-opt_k_path = os.path.join(OUTPUT_DIR, "optimal_k_summary.csv")
-opt_k_df = pd.read_csv(opt_k_path)
-print(f"Loaded optimal k values from {opt_k_path}")
+opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
+print(f"Loaded optimal k values from {OPTIMAL_K_SUMMARY_PATH}")
 
 # -----------------------------
 # Load distances and PCA
 # -----------------------------
 print("Loading Gower distance matrix...")
 # Opensafley doesn't support .npy files 
-D_gower_path = os.path.join(OUTPUT_DIR, "D_gower.csv.gz")
+D_gower_path = D_GOWER_PATH
 if os.path.exists(D_gower_path):
     D_gower = pd.read_csv(D_gower_path, compression="gzip").values
     print(f"Loaded D_gower from {D_gower_path}")
@@ -51,7 +56,7 @@ else:
     raise FileNotFoundError(f"Gower distance matrix not found. Run find_optimal_k.py first.")
 
 print("Loading PCA transformation...")
-X_pca_path = os.path.join(OUTPUT_DIR, "X_pca.csv.gz")
+X_pca_path = X_PCA_PATH
 if os.path.exists(X_pca_path):
     X_pca = pd.read_csv(X_pca_path, compression="gzip").values
     print(f"Loaded X_pca from {X_pca_path}")
@@ -105,9 +110,9 @@ for cfg, data, fn in configs:
 
         # Save cluster labels for later visualization (OpenSAFELY compatible format)
         labels_df = pd.DataFrame({"cluster": labels})
-        labels_path = os.path.join(OUTPUT_DIR, f"labels_{cfg}.csv.gz")
-        labels_df.to_csv(labels_path, index=False, compression="gzip")
-        print(f"Saved labels to {labels_path}")
+        labels_file = labels_path(cfg)
+        labels_df.to_csv(labels_file, index=False, compression="gzip")
+        print(f"Saved labels to {labels_file}")
 
         # Evaluate clustering quality with appropriate metric
         if "raw" in cfg:
@@ -128,9 +133,8 @@ for cfg, data, fn in configs:
 # Save validation results
 # -----------------------------
 df = pd.DataFrame(results)
-out_path = os.path.join(OUTPUT_DIR, "validation_results.csv")
-df.to_csv(out_path, index=False)
+df.to_csv(VALIDATION_RESULTS_PATH, index=False)
 
-print("\n Validation results saved to:", out_path)
+print("\n Validation results saved to:", VALIDATION_RESULTS_PATH)
 print(df)
 print("\n Validation complete.")

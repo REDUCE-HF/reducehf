@@ -2,14 +2,14 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
-import gower
+import gower_exp as gower
+from config import RAW_PATH, SCALED_PATH
 
 # ============================================
 # Common helper functions for clustering scripts
 # ============================================
 
-def load_data(raw_path="output/clustering/clustering_raw.csv.gz",
-                  scaled_path="output/clustering/clustering_scaled.csv.gz"):
+def load_data(raw_path=RAW_PATH, scaled_path=SCALED_PATH):
     """Load raw and scaled datasets and return both DataFrames and feature arrays."""
     if not os.path.exists(raw_path):
         raise FileNotFoundError(f"Missing file: {raw_path}")
@@ -29,7 +29,7 @@ def load_data(raw_path="output/clustering/clustering_raw.csv.gz",
     # Return all four expected variables
     return X_raw, X_scaled
 
-def load_feature_names(raw_path="output/clustering/clustering_raw.csv.gz"):
+def load_feature_names(raw_path=RAW_PATH):
     """
     Load the list of feature names (column names) from the raw data file.
 
@@ -44,7 +44,7 @@ def load_feature_names(raw_path="output/clustering/clustering_raw.csv.gz"):
 
 
 def compute_gower(X):
-    """Compute Gower distance matrix (convert to float64 to avoid type errors)."""
+    """Compute Gower distance matrix ."""
     X_float = X.astype(np.float64)
     return gower.gower_matrix(X_float)
 
@@ -60,4 +60,3 @@ def run_pca(X_scaled, var_threshold=0.8):
     X_pca = pca.fit_transform(X_scaled)
     var_explained = pca.explained_variance_ratio_.sum()
     return X_pca, var_explained
-

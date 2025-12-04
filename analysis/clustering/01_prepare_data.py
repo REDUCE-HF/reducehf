@@ -4,14 +4,19 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import os
+from config import (
+    FEATURE_NAMES_PATH,
+    INPUT_DATA_PATH,
+    OUTPUT_DIR,
+    RAW_PATH,
+    SCALED_PATH,
+)
 
-INPUT_PATH = "output/dataset_wp3.csv.gz"  
-OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # -------LOAD DATA--------------------
 print("Loading dataset... ")
-df = pd.read_csv(INPUT_PATH)
+df = pd.read_csv(INPUT_DATA_PATH)
 
 # ---------- SELECT VARIABLES ----------
 
@@ -67,11 +72,10 @@ binary_review_cols = [c for c in df.columns if c.endswith("_bin")]
 all_vars = hs_cols + binary_review_cols
 
 # Save feature names for later df reconstruction 
-feature_path = os.path.join(OUTPUT_DIR, "clustering_features.txt")
-with open(feature_path, 'w') as f:
+with open(FEATURE_NAMES_PATH, 'w') as f:
     for item in all_vars:
         f.write(f"{item}\n")
-print(f"Saved feature names to: {feature_path}")
+print(f"Saved feature names to: {FEATURE_NAMES_PATH}")
 # -------------------------------------------------
 # Scale 
 scaler = StandardScaler()
@@ -82,13 +86,10 @@ scaled_df = pd.DataFrame(X_scaled, columns=hs_cols, index=df.index)
 df_scaled = pd.concat([df[["patient_id"]], scaled_df, df[binary_review_cols]], axis=1)
 
 
-raw_out = os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz")
-scaled_out = os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
-
-df.to_csv(raw_out, index=False, compression="gzip")
-df_scaled.to_csv(scaled_out, index=False, compression="gzip")
+df.to_csv(RAW_PATH, index=False, compression="gzip")
+df_scaled.to_csv(SCALED_PATH, index=False, compression="gzip")
 
 print("Saved processed clustering datasets:")
-print(f"   • Raw file:    {raw_out}")
-print(f"   • Scaled file: {scaled_out}")
+print(f"   • Raw file:    {RAW_PATH}")
+print(f"   • Scaled file: {SCALED_PATH}")
 print("Data preparation complete.")

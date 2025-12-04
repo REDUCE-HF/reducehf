@@ -12,19 +12,25 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import umap
 
+from config import (
+    OPTIMAL_K_SUMMARY_PATH,
+    OUTPUT_DIR,
+    RAW_PATH,
+    SCALED_PATH,
+    VALIDATION_RESULTS_PATH,
+    VISUALIZATION_SUMMARY_PATH,
+    labels_path,
+    umap_path,
+)
 from clustering_helpers import load_data
 
 # -----------------------------
 # Setup
 # -----------------------------
-OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print(" Loading datasets...")
-X_raw, X_scaled = load_data(
-    os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"),
-    os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
-)
+X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 
 # Compute UMAP embedding from raw data
 print(" Computing UMAP embedding...")
@@ -34,11 +40,8 @@ print(" UMAP embedding ready.")
 # -----------------------------
 # Load metadata
 # -----------------------------
-opt_k_path = os.path.join(OUTPUT_DIR, "optimal_k_summary.csv")
-val_path = os.path.join(OUTPUT_DIR, "validation_results.csv")
-
-opt_k_df = pd.read_csv(opt_k_path)
-val_df = pd.read_csv(val_path)
+opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
+val_df = pd.read_csv(VALIDATION_RESULTS_PATH)
 print(f" Loaded {len(opt_k_df)} optimal-k rows and {len(val_df)} validation rows")
 
 # ----------------------------
@@ -107,7 +110,7 @@ def plot_clusters(labels, config_name):
     plt.ylabel("UMAP 2")
     plt.tight_layout()
 
-    save_path = os.path.join(OUTPUT_DIR, f"umap_{config_name}.png")
+    save_path = umap_path(config_name)
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"  Saved {save_path}")
@@ -123,8 +126,8 @@ label_files = [f for f in os.listdir(OUTPUT_DIR)
 
 for file in sorted(label_files):
     cfg = file.replace("labels_", "").replace(".csv.gz", "")
-    labels_path = os.path.join(OUTPUT_DIR, file)
-    labels_df = pd.read_csv(labels_path, compression="gzip")
+    labels_file = os.path.join(OUTPUT_DIR, file)
+    labels_df = pd.read_csv(labels_file, compression="gzip")
     labels = labels_df["cluster"].values
     n_clusters = len(np.unique(labels))
     print(f"{cfg}: loaded labels ({n_clusters} clusters)")
@@ -154,9 +157,8 @@ for file in sorted(label_files):
 # Save summary
 # -----------------------------
 summary_df = pd.DataFrame(summary_out)
-summary_path = os.path.join(OUTPUT_DIR, "visualization_summary.csv")
-summary_df.to_csv(summary_path, index=False)
+summary_df.to_csv(VISUALIZATION_SUMMARY_PATH, index=False)
 
 print("\n All visualizations complete.")
-print(" Summary saved to:", summary_path)
+print(" Summary saved to:", VISUALIZATION_SUMMARY_PATH)
 print(" Check images in:", OUTPUT_DIR)

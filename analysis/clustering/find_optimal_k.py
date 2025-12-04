@@ -11,15 +11,21 @@ from sklearn.metrics import pairwise_distances
 from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
 import warnings
+from config import (
+    D_GOWER_PATH,
+    OPTIMAL_K_RESULTS_PATH,
+    OPTIMAL_K_SUMMARY_PATH,
+    OUTPUT_DIR,
+    RAW_PATH,
+    SCALED_PATH,
+    X_PCA_PATH,
+)
 from clustering_helpers import load_data, compute_gower, run_pca
 import gower_exp as gower
 
 # -------------------
 # Config
 # -------------------
-RAW_PATH = "output/clustering/clustering_raw.csv.gz"
-SCALED_PATH = "output/clustering/clustering_scaled.csv.gz"
-OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # -------------------
@@ -109,8 +115,8 @@ def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False,
             for c in np.unique(labels_half1):
                 # Get indices of points in the cluster
                 cluster_members = np.where(labels_half1 == c)[0] 
-                cluster_data = X_half1_centroid_space[cluster_members]
-                cluster_dist = gower.gower_matrix(cluster_data)
+                # Use precomputed D_half1 instead of recomputing Gower distances
+                cluster_dist = D_half1[np.ix_(cluster_members, cluster_members)]
                 medoid_idx = np.argmin(cluster_dist.sum(axis=1))
                 medoids.append(cluster_members[medoid_idx])
             representatives = X_half1_centroid_space[medoids]
@@ -120,12 +126,12 @@ def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False,
 
         # 2. Assign test points to nearest representatives using appropriate distance metric
         if distance_metric == "gower":
-            # Compute Gower distances between second half points and medoids
-            combined_data = np.vstack([X_half2_centroid_space, representatives])
-            dist_matrix = gower.gower_matrix(combined_data)
-            # Extract distances from second half points to medoids
-            n_half2 = X_half2_centroid_space.shape[0]
-            distances = dist_matrix[:n_half2, n_half2:]
+            # Use precomputed D_half1 and D_half2 instead of recomputing Gower distances
+            # medoids are indices in idx_half1, so get their distances to all half2 points from full Gower matrix
+            medoid_indices_in_half1 = np.array(medoids)
+            medoid_indices_global = idx_half1[medoid_indices_in_half1]
+            # Extract distances from half2 points to medoids using full D_gower
+            distances = D_gower[np.ix_(idx_half2, medoid_indices_global)]
             nearest = np.argmin(distances, axis=1)
         else:
             # Use euclidean distance to centroids
@@ -195,9 +201,8 @@ for cfg, (X, cluster_fn, precomputed) in configs.items():
 # Save results
 # -------------------
 results_df = pd.DataFrame(results)
-results_path = os.path.join(OUTPUT_DIR, "optimal_k_results.csv")
-results_df.to_csv(results_path, index=False)
-print(f"\nSaved detailed PS results to: {results_path}")
+results_df.to_csv(OPTIMAL_K_RESULTS_PATH, index=False)
+print(f"\nSaved detailed PS results to: {OPTIMAL_K_RESULTS_PATH}")
 
 # Determine optimal k
 summary = []
@@ -228,16 +233,16 @@ for cfg in results_df["config"].unique():
     })
 
 summary_df = pd.DataFrame(summary)
-summary_df.to_csv(os.path.join(OUTPUT_DIR, "optimal_k_summary.csv"), index=False)
+summary_df.to_csv(OPTIMAL_K_SUMMARY_PATH, index=False)
 print("\nSaved optimal k summary.")
 
 # -------------------
 # Save D_gower and X_pca for downstream use
 # -------------------
-pd.DataFrame(D_gower).to_csv(os.path.join(OUTPUT_DIR, "D_gower.csv.gz"), index=False, compression="gzip")
-print(f"Saved Gower distance matrix to: {os.path.join(OUTPUT_DIR, 'D_gower.csv.gz')}")
+pd.DataFrame(D_gower).to_csv(D_GOWER_PATH, index=False, compression="gzip")
+print(f"Saved Gower distance matrix to: {D_GOWER_PATH}")
 
-pd.DataFrame(X_pca).to_csv(os.path.join(OUTPUT_DIR, "X_pca.csv.gz"), index=False, compression="gzip")
-print(f"Saved PCA-transformed data to: {os.path.join(OUTPUT_DIR, 'X_pca.csv.gz')}")
+pd.DataFrame(X_pca).to_csv(X_PCA_PATH, index=False, compression="gzip")
+print(f"Saved PCA-transformed data to: {X_PCA_PATH}")
 
 print("Done.")

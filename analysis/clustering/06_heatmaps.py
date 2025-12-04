@@ -10,33 +10,35 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from config import (
+    OUTPUT_DIR,
+    OPTIMAL_K_SUMMARY_PATH,
+    RAW_PATH,
+    SCALED_PATH,
+    VALIDATION_RESULTS_PATH,
+    labels_path,
+    heatmap_path,
+)
 from clustering_helpers import load_data, load_feature_names
 
 # -----------------------------------------
 # Setup
 # -----------------------------------------
-OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
-X_raw, X_scaled = load_data(
-    os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"),
-    os.path.join(OUTPUT_DIR, "clustering_scaled.csv.gz")
-)
+X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 
 # Rebuild DataFrames with feature names for labeling
-feature_names = load_feature_names(os.path.join(OUTPUT_DIR, "clustering_raw.csv.gz"))
+feature_names = load_feature_names(RAW_PATH)
 raw_df = pd.DataFrame(X_raw, columns=feature_names)
 scaled_df = pd.DataFrame(X_scaled, columns=feature_names)
 
 # -----------------------------------------
 # Load metadata
 # -----------------------------------------
-val_path = os.path.join(OUTPUT_DIR, "validation_results.csv")
-opt_k_path = os.path.join(OUTPUT_DIR, "optimal_k_summary.csv")
-
-val_df = pd.read_csv(val_path)
-opt_k_df = pd.read_csv(opt_k_path)
+val_df = pd.read_csv(VALIDATION_RESULTS_PATH)
+opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
 
 print("Selecting best configuration...")
 # Rank by silhouette + CH
@@ -49,11 +51,11 @@ print(f"Best configuration: {best_config}")
 # -----------------------------------------
 # Load labels for the best config
 # -----------------------------------------
-labels_path = os.path.join(OUTPUT_DIR, f"labels_{best_config}.csv.gz")
-if not os.path.exists(labels_path):
+labels_file = labels_path(best_config)
+if not os.path.exists(labels_file):
     raise FileNotFoundError(f"No labels found for {best_config}")
 
-labels_df = pd.read_csv(labels_path, compression="gzip")
+labels_df = pd.read_csv(labels_file, compression="gzip")
 labels = labels_df["cluster"].values
 
 # Determine which dataframe to use for heatmap
@@ -94,7 +96,7 @@ plt.xlabel("Variable")
 plt.ylabel("Cluster")
 
 plt.tight_layout()
-out_path = os.path.join(OUTPUT_DIR, f"heatmap_{best_config}.png")
+out_path = heatmap_path(best_config)
 plt.savefig(out_path, dpi=300, bbox_inches="tight")
 plt.close()
 

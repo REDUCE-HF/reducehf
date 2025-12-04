@@ -10,21 +10,26 @@ from sklearn.cluster import OPTICS
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
 import matplotlib.pyplot as plt
 import warnings
+from config import (
+    D_GOWER_PATH,
+    OPTICS_TUNING_RESULTS_PATH,
+    OUTPUT_DIR,
+    RAW_PATH,
+    SCALED_PATH,
+    X_PCA_PATH,
+)
 from clustering_helpers import load_data
 
 # -------------------
 # Load data
 # -------------------
-RAW_PATH = "output/clustering/clustering_raw.csv.gz"
-SCALED_PATH = "output/clustering/clustering_scaled.csv.gz"
-OUTPUT_DIR = "output/clustering/"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading dataset...")
 X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 
 print("Loading precomputed Gower distance matrix...")
-D_gower_path = os.path.join(OUTPUT_DIR, "D_gower.csv.gz")
+D_gower_path = D_GOWER_PATH
 if os.path.exists(D_gower_path):
     D_gower = pd.read_csv(D_gower_path, compression="gzip").values
     print(f"Loaded D_gower from {D_gower_path}")
@@ -32,7 +37,7 @@ else:
     raise FileNotFoundError(f"Gower distance matrix not found. Run find_optimal_k.py first.")
 
 print("Loading precomputed PCA transformation...")
-X_pca_path = os.path.join(OUTPUT_DIR, "X_pca.csv.gz")
+X_pca_path = X_PCA_PATH
 if os.path.exists(X_pca_path):
     X_pca = pd.read_csv(X_pca_path, compression="gzip").values
     print(f"Loaded X_pca from {X_pca_path}")
@@ -118,9 +123,8 @@ for data_name, X, metric in [
 # Save results
 # -------------------
 df = pd.DataFrame(results)
-path = os.path.join(OUTPUT_DIR, "optics_tuning_results.csv")
-df.to_csv(path, index=False)
-print(f"\nSaved results to: {path}")
+df.to_csv(OPTICS_TUNING_RESULTS_PATH, index=False)
+print(f"\nSaved results to: {OPTICS_TUNING_RESULTS_PATH}")
 
 # -------------------
 # Best parameters summary
