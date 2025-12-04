@@ -8,22 +8,43 @@ rm(list=ls())
 # Load packages
 library(lubridate)
 library(dplyr)
+library(readr)
 
 # Load data 
 # This is dummy data and not including the final set of variables   
-df <- read.csv("/workspace/test/tmp_dataset_wp2_2.csv.gz", header=TRUE)
+#df <- read.csv("/workspace/test/tmp_dataset_wp2_2.csv.gz", header=TRUE)
 
+df <- read_csv(here::here("output", "tmp_dataset_wp2_2.csv.gz"),show_col_types = FALSE)
+sum(is.na(df$nt1_result))
 
 # Data cleaning
 # Currently not clear what will be done for the final dataset
 
 # WP2.2 
 
-# Patient index date (eligibility date) is the latest of date of age 45 years, study start date and registration date plus 1 year.
+# patient_index_date (eligibility date) is the latest of date of age 45 years, study start date and registration date plus 1 year.
 
-# Cohort entry date is date of first NP-pro test between patient index date and study end date
+# nt1_date_ranges (cohort entry date) is the date of first NP-pro test between patient index date and study end date
+# "range" refers to more efficient coding
 
+# Additional exclusions for WP2_2
 
+# NP testing before index date
+sum(df$nt_pre_index==TRUE)
+df <-df[df$nt_pre_index==FALSE,]
+# 0
+# QUERY - s/b NP not NTPro  
+# Emailed charlotte 27 Nov
+
+# HF diagnosis before cohort entry date
+sum(!is.na(df$hf_diagnosis_date) & !is.na(df$nt1_date) & df$hf_diagnosis_date<df$nt1_date)
+# 6
+df <-df[!(!is.na(df$hf_diagnosis_date) & !is.na(df$nt1_date) & df$hf_diagnosis_date<df$nt1_date),]
+
+# BNP test between the eligibility date and cohort entry
+# QUERY - need to create another variable first_np so can exclude if BNP test between index date and cohort entry date (first NT prodate)  
+# Emailed charlotte 27 Nov
+# Would need to exclude if first np date was before nt1_date_ranges 
 
 
 # Convert characters for missing values to NA - Check other script

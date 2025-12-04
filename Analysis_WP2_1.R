@@ -18,24 +18,25 @@ library(tableone)
 string <-"/workspace/test/"
 
 #variable is df$symp
+# To add NP2symp (cts) and NP2symp_cat
+
 
 df <- read_feather(here::here("test", "file4analysisWP1.feather"))
 
-Vars <- c("age", "sex", "bmi", "ethnicity_cat", "smoking","sbp", "np2diag", "asthma")
-convar <- c("age","bmi", "sbp", "np2diag")
-FactorVars <-  c("sex", "ethnicity_cat","smoking", "asthma")
+Vars <- c("age", "sex",  "ethnicity_cat", "smoking","ihd", "copd","sbp", 
+          "hypertension", "ckd", "obesity", "diabetes", "deprived", "homeless", "carehome", "LD", "housebound", 
+          "substance_abuse", "smi", "non_english_sp")
+convar <- c("age", "sbp")
+FactorVars <-  c("sex", "ethnicity_cat","smoking", "ihd", "copd", 
+                 "hypertension", "ckd", "obesity", "deprived", 
+                 "homeless", "carehome", "LD", "housebound", 
+                 "substance_abuse", "smi", "non_english_sp")
 
 # Select dataset
-#dta <- subset(df, symp==1) 
-#dta <- subset(df, symp==1 & during==1) - too few
-dta <- subset(df, symp==1 & after==1)
-#dta <- subset(df, symp==1 & asthma==1)
-# No patients
-# Asthma is used temporarily until we have COPD, hypertension and obesity 
-#btable<-"Baseline table, with symptoms, during"
-btable<-"Baseline table, with symptoms, after"
+dta <- subset(df, symp==1) 
 
-#btable<-"Baseline table for asthma subset of those with symptoms"
+
+btable<-"Baseline table for all"
 
 
 Table <- CreateTableOne(vars=Vars, strata="sex", factorVars = FactorVars, data=dta,
