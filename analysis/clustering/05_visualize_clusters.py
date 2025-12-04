@@ -119,12 +119,13 @@ summary_out = []
 print("\n Generating visualizations...\n")
 
 label_files = [f for f in os.listdir(OUTPUT_DIR)
-               if f.startswith("labels_") and f.endswith(".npy")]
+               if f.startswith("labels_") and f.endswith(".csv.gz")]
 
 for file in sorted(label_files):
-    cfg = file.replace("labels_", "").replace(".npy", "")
+    cfg = file.replace("labels_", "").replace(".csv.gz", "")
     labels_path = os.path.join(OUTPUT_DIR, file)
-    labels = np.load(labels_path)
+    labels_df = pd.read_csv(labels_path, compression="gzip")
+    labels = labels_df["cluster"].values
     n_clusters = len(np.unique(labels))
     print(f"{cfg}: loaded labels ({n_clusters} clusters)")
 

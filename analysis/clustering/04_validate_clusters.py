@@ -103,9 +103,10 @@ for cfg, data, fn in configs:
             print(f"Evaluating {cfg} (OPTICS, no k)")
             labels = fn(data)
 
-        # Save cluster labels for later visualization
-        labels_path = os.path.join(OUTPUT_DIR, f"labels_{cfg}.npy")
-        np.save(labels_path, labels)
+        # Save cluster labels for later visualization (OpenSAFELY compatible format)
+        labels_df = pd.DataFrame({"cluster": labels})
+        labels_path = os.path.join(OUTPUT_DIR, f"labels_{cfg}.csv.gz")
+        labels_df.to_csv(labels_path, index=False, compression="gzip")
         print(f"Saved labels to {labels_path}")
 
         # Evaluate clustering quality with appropriate metric

@@ -7,7 +7,6 @@
 import os
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import pairwise_distances
 from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
@@ -35,10 +34,6 @@ D_gower = compute_gower(X_raw)
 print("Running PCA on scaled data...")
 X_pca, var_explained = run_pca(X_scaled)
 print(f"PCA reduced to {X_pca.shape[1]} components (explaining {var_explained:.1%} variance)")
-
-# -------------------
-# Clustering functions
-# -------------------
 def run_kmedoids_gower(D, k):
     # D is Gower distance matrix
     model = KMedoids(n_clusters=k, metric="precomputed", init="k-medoids++", random_state=42)
@@ -56,7 +51,7 @@ def run_agglomerative_euclidean(X, k):
     return AgglomerativeClustering(n_clusters=k, metric="euclidean", linkage="average").fit_predict(X)
 
 def run_optics(X):
-    # Parameters set arbitrarily; tuning is required in 03_tune_optics.py
+    # OPTICS does not require a fixed k
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=RuntimeWarning)
         optics = OPTICS(min_samples=10, xi=0.05, metric="euclidean").fit(X)
@@ -65,11 +60,11 @@ def run_optics(X):
 # -------------------
 # Prediction Strength (PS) Calculation
 # -------------------
-def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5, random_state=42):
+def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False, n_splits=5, random_state=42):
     np.random.seed(random_state)
     ps_values = []
     
-    # We must index the feature matrix based on the split indices, so we grab the indices only once.
+    # number of patients
     n_samples = X.shape[0]
     for split_i in range(n_splits):
         # Generate indices for the entire dataset
@@ -77,55 +72,69 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
         np.random.shuffle(idx)
         split_point = len(idx) // 2
         
-        # idx1 = Training Indices, idx2 = Test Indices
-        idx1, idx2 = idx[:split_point], idx[split_point:]
+        # Split the data into two halves
+        idx_half1, idx_half2 = idx[:split_point], idx[split_point:]
         
         # --- 1. Prepare Data for Clustering and Prediction ---
-        
+        # Precomputed indicates if X is a distance matrix (Gower) or feature matrix (PCA)
         if precomputed:
-            # Clustering input (D1, D2) is a subset of the D_gower distance matrix (X)
-            D1 = X[np.ix_(idx1, idx1)]
-            D2 = X[np.ix_(idx2, idx2)]
-            labels1 = cluster_fn(D1, k)
-            labels2 = cluster_fn(D2, k)
+            # subset distance matrix for half1 and half2
+            D_half1 = X[np.ix_(idx_half1, idx_half1)]
+            D_half2 = X[np.ix_(idx_half2, idx_half2)]
+            # Cluster each half separately
+            labels_half1 = cluster_fn(D_half1, k)
+            labels_half2 = cluster_fn(D_half2, k)
             
             # For Gower (precomputed), centroids are computed in raw space
-            X1_centroid_space = X_raw[idx1]
-            X2_centroid_space = X_raw[idx2]
+            X_half1_centroid_space = X_raw[idx_half1]
+            X_half2_centroid_space = X_raw[idx_half2]
             distance_metric = "gower"
         else:
-            # Clustering input (X1, X2) is a subset of the feature matrix (X_pca)
-            X1 = X[idx1]
-            X2 = X[idx2]
-            labels1 = cluster_fn(X1, k)
-            labels2 = cluster_fn(X2, k)
+            # Clustering input (X_half1, X_half2) is a subset of the feature matrix (X_pca)
+            X_half1 = X[idx_half1]
+            X_half2 = X[idx_half2]
+            labels_half1 = cluster_fn(X_half1, k)
+            labels_half2 = cluster_fn(X_half2, k)
             
-            # For PCA (euclidean), centroids are computed in reduced space
-            X1_centroid_space = X1
-            X2_centroid_space = X2
+            # For PCA (euclidean), centroids are computed in PCA space
+            X_half1_centroid_space = X_half1
+            X_half2_centroid_space = X_half2
             distance_metric = "euclidean"
             
-        # 1. Compute Centroids from training data in the appropriate space
-        centroids = np.vstack([X1_centroid_space[labels1 == c].mean(axis=0) for c in np.unique(labels1)])
-
-        # 2. Assign test points to nearest centroids using appropriate distance metric
+        # 1. Compute Centroids/Medoids from training data 
         if distance_metric == "gower":
-            # Compute Gower distances between test points and centroids
-            # Use gower library to compute pairwise distances efficiently
-            combined_data = np.vstack([X2_centroid_space, centroids])
+            # For Gower, use medoids (actual data points) instead of centroids (means)
+            medoids = []
+            # For each cluster, find the medoid: the point with minimum average distance to all other cluster members
+            for c in np.unique(labels_half1):
+                # Get indices of points in the cluster
+                cluster_members = np.where(labels_half1 == c)[0] 
+                cluster_data = X_half1_centroid_space[cluster_members]
+                cluster_dist = gower.gower_matrix(cluster_data)
+                medoid_idx = np.argmin(cluster_dist.sum(axis=1))
+                medoids.append(cluster_members[medoid_idx])
+            representatives = X_half1_centroid_space[medoids]
+        else:
+            # For Euclidean (PCA), use centroids (mean points)
+            representatives = np.vstack([X_half1_centroid_space[labels_half1 == c].mean(axis=0) for c in np.unique(labels_half1)])
+
+        # 2. Assign test points to nearest representatives using appropriate distance metric
+        if distance_metric == "gower":
+            # Compute Gower distances between second half points and medoids
+            combined_data = np.vstack([X_half2_centroid_space, representatives])
             dist_matrix = gower.gower_matrix(combined_data)
-            # Extract distances from test points to centroids
-            n_test = X2_centroid_space.shape[0]
-            distances = dist_matrix[:n_test, n_test:]
+            # Extract distances from second half points to medoids
+            n_half2 = X_half2_centroid_space.shape[0]
+            distances = dist_matrix[:n_half2, n_half2:]
             nearest = np.argmin(distances, axis=1)
         else:
-            # Use euclidean distance
-            nearest = np.argmin(pairwise_distances(X2_centroid_space, centroids, metric="euclidean"), axis=1)
+            # Use euclidean distance to centroids
+            nearest = np.argmin(pairwise_distances(X_half2_centroid_space, representatives, metric="euclidean"), axis=1)
 
-        # 3. Calculate minimum co-membership
+        # Calculate minimum co-membership
         ps_k = []
-        for c in np.unique(labels2):
-            idx_c = np.where(labels2 == c)[0]
+        for c in np.unique(labels_half2):
+            idx_c = np.where(labels_half2 == c)[0]
             if len(idx_c) < 2: continue
             
             pairs = [(i, j) for i in idx_c for j in idx_c if i < j]
@@ -145,15 +154,11 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
 # -------------------
 # Configurations
 # -------------------
-# PS on Gower (distance matrix) is methodologically compromised due to the centroid step 
-# requiring feature data, which defeats the purpose of Gower. However, we proceed 
-# by using X_raw features for the centroid calculation as the only way to run PS.
+
 configs = {
-    # Raw data (Gower distance) - X is D_gower (distance matrix)
     "raw_kmedoids_gower": (D_gower, run_kmedoids_gower, True),
     "raw_agglomerative_gower": (D_gower, run_agglomerative_precomputed, True),
     
-    # PCA data (Euclidean) - X is X_pca (feature matrix)
     "pca_kmeans_euclidean": (X_pca, run_kmeans, False),
     "pca_agglomerative_euclidean": (X_pca, run_agglomerative_euclidean, False),
     "pca_optics": (X_pca, run_optics, False), # PS skipped in loop below
@@ -179,6 +184,7 @@ for cfg, (X, cluster_fn, precomputed) in configs.items():
             X,
             cluster_fn,
             k,
+            X_raw=X_raw,
             precomputed=precomputed,
         )
         
@@ -195,7 +201,7 @@ print(f"\nSaved detailed PS results to: {results_path}")
 
 # Determine optimal k
 summary = []
-THRESHOLD = 0.8  # PS rule
+THRESHOLD = 0.8  # PS + SE rule
 
 for cfg in results_df["config"].unique():
     sub = results_df[results_df["config"] == cfg].dropna()
@@ -203,9 +209,9 @@ for cfg in results_df["config"].unique():
         summary.append({"config": cfg, "k_opt": np.nan, "ps_opt": np.nan, "se_opt": np.nan})
         continue
 
-    # Apply PS >= 0.8 rule 
-    
-    eligible = sub[sub["ps"] >= THRESHOLD] 
+    # Apply PS + SE >= 0.8 rule
+    sub["ps_plus_se"] = sub["ps"] + sub["se"]
+    eligible = sub[sub["ps_plus_se"] >= THRESHOLD] 
     
     if not eligible.empty:
         # Find the largest k satisfying the rule

@@ -49,11 +49,12 @@ print(f"Best configuration: {best_config}")
 # -----------------------------------------
 # Load labels for the best config
 # -----------------------------------------
-labels_path = os.path.join(OUTPUT_DIR, f"labels_{best_config}.npy")
+labels_path = os.path.join(OUTPUT_DIR, f"labels_{best_config}.csv.gz")
 if not os.path.exists(labels_path):
     raise FileNotFoundError(f"No labels found for {best_config}")
 
-labels = np.load(labels_path)
+labels_df = pd.read_csv(labels_path, compression="gzip")
+labels = labels_df["cluster"].values
 
 # Determine which dataframe to use for heatmap
 if best_config.startswith("raw"):
