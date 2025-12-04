@@ -34,29 +34,24 @@ def fn(dataset, earliest_date, index_date, end_date, objective):
             tmp_fatigue_date_primary.is_not_null()
             )
 
-        #evidence of NTPro test prior to index date
-        nt_pre = first_matching_event_clinical_snomed(
-            before_gp_events,
-            NTpro_snomed
-            ).exists_for_patient()
-
-        dataset.nt_pre_index = nt_pre
-
         #date of first incidence of any of the three HF-related symptoms
         tmp_breathless_date_primary = first_matching_event_clinical_snomed(
             after_gp_events,
             breathless_snomed, 
             ).date
+        dataset.breathless_date = tmp_breathless_date_primary
 
         tmp_oedema_date_primary = first_matching_event_clinical_snomed(
             after_gp_events,
             oedema_snomed, 
             ).date
+        dataset.oedema_date = tmp_oedema_date_primary
 
         tmp_fatigue_date_primary = first_matching_event_clinical_snomed(
             after_gp_events,
             fatigue_snomed, 
             ).date
+        dataset.fatigue_date = tmp_fatigue_date_primary
 
         #combine to find the earliest date of any symptom
         dataset.first_hfsymptom_date = minimum_of(
@@ -64,16 +59,23 @@ def fn(dataset, earliest_date, index_date, end_date, objective):
             tmp_oedema_date_primary,
             tmp_fatigue_date_primary
             )
+        
 
     elif objective==2:
 
-        #evidence of NTPro test prior to index date
-        nt_pre = first_matching_event_clinical_snomed(
+        #evidence of NP test prior to index date
+        np_pre = first_matching_event_clinical_snomed(
             before_gp_events,
-            NTpro_snomed,
+            NP_snomed,
             ).exists_for_patient()
 
-        dataset.nt_pre_index = nt_pre
+        dataset.np_pre_index = np_pre
+
+        first_np = first_matching_event_clinical_snomed(
+            after_gp_events,
+            NP_snomed
+            )
+        dataset.np_date=first_np.date
 
         first_nt = first_matching_event_clinical_snomed(
             after_gp_events,
