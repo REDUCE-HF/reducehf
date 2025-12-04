@@ -10,18 +10,20 @@ def fn(dataset, index_date, end_date, objective):
 
         #Subset data once to use in downstream cod (more efficient)
         gp_events = filter_gp_events(
-            dataset.first_hfsymptom_date-days(90),
-            dataset.first_hfsymptom_date-days(30)
+            dataset.first_hfsymptom_date-days(31),
+            dataset.first_hfsymptom_date+days(93)
             )
     
         # testing if np test date (BNP or NT-proBNP) closely preceded
         # or followed first hf-related symptoms (near symptoms)
-        dataset.np_near_symptom = gp_events.where(
-            gp_events.snomedct_code.is_in(NP_snomed)
-            ).exists_for_patient()
+        np_near_symptom_ = first_matching_event_clinical_snomed(
+            gp_events,
+            NP_snomed
+            )
+        dataset.np_near_symptom = np_near_symptom_.exists_for_patient()
+        dataset.np_near_symptom_first = np_near_symptom_.date
 
         #echo referral or echo done near first hf-related symptoms
-
         dataset.echo_ref_near_symptom = gp_events.where(
             gp_events.snomedct_code.is_in(echo_ref)
             ).exists_for_patient()
