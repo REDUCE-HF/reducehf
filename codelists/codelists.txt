@@ -75,3 +75,17 @@ reducehf/echocardiography-result/03ab3979/
 opensafely/copd-medications-new-dmd/20b7de09/
 bristol/copd-exacerbations/2896912f/
 opensafely/copd-exacerbation/6858db5b/
+reducehf/myocardial-infarction-icd10/6b463edb/
+user/YaminaB/migration-status/4a869a0a/
+reducehf/non-english-speaking/1ef28c64/
+nhsd-primary-care-domain-refsets/illsub_cod/20250627/
+opensafely/house-bound/705feb78/
+opensafely/not-house-bound/0c221ea4/
+nhsd-primary-care-domain-refsets/homeless_cod/20250627/
+nhsd-primary-care-domain-refsets/diabp_cod/20250627/
+nhsd-primary-care-domain-refsets/copd_cod/20250912/
+nhsd-primary-care-domain-refsets/dmtype1_cod/20250912/
+nhsd-primary-care-domain-refsets/dmtype2_cod/20250912/
+nhsd-primary-care-domain-refsets/otherdmaudit_cod/20250912/
+nhsd-primary-care-domain-refsets/gestdiab_cod/20250912/
+user/anschaf/diabetes-non-diagnostic-codes/22fa3d8a/
