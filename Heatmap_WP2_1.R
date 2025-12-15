@@ -1,55 +1,91 @@
 # Heatmap_WP2_1.R
 
+# Need one line per region
+# TEMP
+# count number male
+
+
 rm(v)
 rm(list=ls()) 
 
-df <- read_feather(here::here("test", "file4analysisWP2_1_COVID.feather"))
-# Only for post-COVID. Using COVID file for script development
+library(feather)
+library(sf)
+library(leaflet)
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(viridis)
 
+
+# Boundary datafile
+# Strategic Health Authorities 
+# East of England,SE, EM, SW, London, WM, NE, Y&H, NW (n=9)
+# Source: Open Geography portal
+# Website: https://geoportal.statistics.gov.uk/
+# Search Terms: "Regions (December 2021) Boundaries" (selected  "EN BUC", downloaded geojson format)
+# To display: Office for National Statistics licensed under the Open Government Licence v.3.0
+regions <- st_read(here::here("test", "Regions_December_2021_EN_BUC_2022_5473375263085398332.geojson"))
+names(regions)[names(regions)=="RGN21NM"] <- "region"
+table(regions$region)
+str(regions$region)
+#Character
+
+# Import files
+# General datafile
+df <- read_feather(here::here("test", "file4analysisWP2_1_COVID.feather"))
+# Only for post-COVID WP2_1. 
 any(grepl("region",names(df)))
 grep("region",names(df), value=TRUE)
 table(df$region)
-# Has 9 SHAs
-# East, South East, East Midlands, South West, London, West Midlands, North East, Yorkshire and the Humber, North West
-# The source below has 10 SHAs
-# East, South East Coast, South Central,East Midlands, South West, London, West Midlands, North East, Yorkshire and the Humber, North West
+str(df$region)
+#Character
+
+# Standardise region names
+df$region[df$region=="East"] <- "East of England"
 
 # Heat variable
-table(df$near_np)
-# The following code only runs outside Github. I don't know how to import the map.
-# Messaged SLACK on Tues 10/12/25 but they are away all week for a conference. 
-# someone replied saying they probably won't know. Messaged Andrea and Olivia as Marwa has python scripts for heat maps
-# I can't read them.
-# The heat variable is sha$demo_value
+# Obtain counts of  in each region
+# TEMP heat variable
+# should be count with (df$near_np)
 
-# Strategic Health Authority regional data (n=10)
-# Source: University of Edinburgh Datashare
-# Website: https://datashare.ed.ac.uk/
-# Search Term: Strategic Health Authority (SHA) Boundaries (2006)
-# Citation: McGarva, Guy. (2017). Strategic Health Authority (SHA) Boundaries (2006), [Dataset]. University of Edinburgh. https://doi.org/10.7488/ds/1725.
-# Extracted .shp file from zipped directory
+table(df$sex, df$region)
 
-# 1) Get subnational units 
-sha_shp_path <- "C:/Users/ktaylor/OneDrive - Nexus365/Emily & Clare REDUCE HF/SHA/SHA.shp"
-# Read data
-sha <- st_read(sha_shp_path, quiet = TRUE)
+df2 <- data.frame(table(df$sex, df$region))
+df2 <- df2[df2$Var1=="male",]
+names(df2)[names(df2)=="Var2"] <-"reg"
+str(df2$reg)
+#Factor 
 
-#Inspect data
-print(names(sha))
-print(head(sha))
+df2$region<-as.character(df2$reg)
 
-# Write to GeoJSON
-st_write(sha, "SHA_2006.geojson", driver = "GeoJSON",append=FALSE)
+df2$region <-ifelse(df2$region=="1","East Midlands",df2$region)
+df2$region <-ifelse(df2$region=="2","East of England",df2$region)
+df2$region <-ifelse(df2$region=="3","London",df2$region)
+df2$region <-ifelse(df2$region=="4","North East",df2$region)
+df2$region <-ifelse(df2$region=="5","North West",df2$region)
+df2$region <-ifelse(df2$region=="6","South East",df2$region)
+df2$region <-ifelse(df2$region=="7","South West",df2$region)
+df2$region <-ifelse(df2$region=="8","West Midlands",df2$region)
+df2$region <-ifelse(df2$region=="9","Yorkshire and The Humber",df2$region)
+str(df2$region)
+
+# Merge data
+
+merged<- regions %>%
+  left_join(df2, by="region")
+
 
 # 2) Create demo data - one row per English region
-set.seed(42)
-sha$demo_value <- runif(nrow(sha), min = 0, max = 100)
+#set.seed(42)
+#regions$demo_value <- runif(nrow(regions), min = 0, max = 100)
 
-# 3) Plot choropleth with ggplot2
-ggplot(sha) +
-  geom_sf(aes(fill = demo_value), size = 0.15, color = "white") +
+
+# 4) Plot choropleth with ggplot2
+ggplot(merged) +
+  geom_sf(aes(fill =Freq), size = 0.15, color = "white") +
   scale_fill_viridis(option = "magma", name = "Value", na.value = "grey80") +
   theme_minimal() +
-  labs(title = "Choropleth of England by SHA  region (demo values)",
-       caption = "Data: demo random values") +
+  labs(title = "Choropleth of England by region (males)",
+       caption = "Data:dummy data") +
   theme(axis.text = element_blank(), axis.ticks = element_blank())
+

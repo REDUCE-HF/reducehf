@@ -9,6 +9,7 @@ rm(list=ls())
 library(lubridate)
 library(dplyr)
 library(readr)
+library(feather)
 
 # Load data 
 # This is dummy data and not including the final set of variables   
@@ -21,6 +22,81 @@ df <- read_csv(here::here("output", "tmp_dataset_wp2_2.csv.gz"),show_col_types =
 # Post-COVID
 # df <-.....    
 
+# TEMP CODE - FOR DUMMY DATASET ONLY ###########################################
+set.seed(123)
+n <- nrow(df)
+
+summary(df$bmi_value)
+df$bmi_value <- ifelse(
+  runif(n)<0.2,
+  NA,
+  runif(n, min=18, max=35)
+)
+summary(df$bmi_value)
+
+summary(df$weight)
+df$weight <- runif(n, min=45, max=80)
+summary(df$weight)
+
+summary(df$height)
+df$height <- runif(n, min=1.45, max=1.95)
+summary(df$height)
+
+summary(df$last_cholesterol_value)
+df$last_cholesterol_value <- ifelse(
+  runif(n)<0.1,
+  NA,
+  runif(n, min=1, max=10)
+)
+summary(df$last_cholesterol_value)
+
+summary(df$diasbp_value)
+
+df$diasbp_value<-ifelse(
+  runif(n)<0.05,
+  NA,
+  runif(n, min=60, max=140)
+)
+
+summary(df$sysbp_value)
+
+df$sysbp_value<-ifelse(
+  runif(n)<0.05,
+  NA,
+  runif(n, min=100, max=145)
+)
+
+df$obesity_sus_date <- as.Date("2019-03-30")
+df$obesity_primary_date <- as.Date("2019-01-30")
+# approx 50% missing
+df$obesity_sus_date[runif(n)<0.5] <- NA
+df$obesity_primary_date[runif(n)<0.5] <- NA
+
+df$first_copd_date <- as.Date("2019-03-30")
+# approx 40% missing
+df$first_copd_date[runif(n)<0.4] <- NA
+
+nrow(df)
+
+df2 <- df
+df3 <- df
+df4 <- df
+df5 <- df
+df6 <- df
+df7 <- df
+
+df <- bind_rows(df, df2, df3, df4, df5, df6, df7)
+nrow(df)
+df8 <- df
+df8$sex <- "female"
+df <- bind_rows(df,df8)
+
+
+# END OF TEMP CODE #############################################################
+
+
+
+
 # Start date and end dates define the population - applied by Charlotte 
 # COVID start date 1/1/20, end date 31/3/24  
 # Post-COVID start date 1/4/24, end date 1/4/27 (currently set at 1/5/25) 
@@ -31,7 +107,7 @@ df$Covid_end <- as.Date("2024-03-31")
 # Dates TBC
 
 sum(is.na(df$nt1_result))
-# All have symptoms
+# All have NP testing
 
 # Data cleaning
 # Currently not clear what will be done for the final dataset
@@ -94,24 +170,13 @@ df <- df %>%
     is.na(weight) | is.na(height) ~ NA_real_,
     TRUE ~ weight / (height^2)
   ))
-# TEMP- none with bmi
-df$bmi <-as.numeric(df$bmi)
-df$bmi <-50
-d1 <- subset(df, select=c("patient_id", "bmi", "weight", "height"))
-rm(d1)
+
 
 # Systolic BP
 summary(df$sbp)
-df$sbp <-as.numeric(df$sbp)
-df$sbp[is.na(df$sbp)]<-350
-# TEMP none
-
 
 # Diastolic BP
 summary(df$dbp)
-df$dbp <-as.numeric(df$dbp)
-df$dbp <-df$sbp-20
-# TEMP none with dbp
 
 # Ethnicity
 table(df$ethnicity_cat)
@@ -120,19 +185,14 @@ table(df$ethnicity_cat)
 table(df$sex)
 
 # Cholesterol
-df$cholesterol <- as.numeric(df$cholesterol)
 summary(df$cholesterol)
-# TEMP all missing
-df$cholesterol <-20
 
 # COPD
 any(grepl("copd",names(df)))
 grep("copd",names(df), value=TRUE)
 df$copd <- ifelse(is.na(df$first_copd_date),0,1)
-#df$copd <- factor(df$copd, levels=0:1, labels=c("no COPD", "with COPD"))
 table(df$copd)
-#TEMP none
-df$copd <- ifelse(df$patient_id>40000,1,0)
+
 
 # Diabetes
 any(grepl("diabetes",names(df)))
@@ -149,8 +209,6 @@ any(grepl("obesity",names(df)))
 grep("obesity",names(df), value=TRUE)
 df$obesity <- ifelse(is.na(df$obesity_primary_date) & is.na(df$obesity_sus_date),0,1)
 table(df$obesity)
-# TEMP none. 
-df$obesity<- ifelse(df$patient_id<40000,1,0) 
 
 
 # Hypertension
@@ -250,12 +308,12 @@ str(df$NT2HF)
 
 summary(df$NT2HF)
 df$NT2HF_cat <- NA
-df$NT2HF_cat <- ifelse(is.na(df$NT2HF_cat) & df$NT2HF<0, 0, df$NT2HF_cat)
 df$NT2HF_cat <- ifelse(is.na(df$NT2HF_cat) & df$NT2HF<14, 0, df$NT2HF_cat)
 df$NT2HF_cat <- ifelse(is.na(df$NT2HF_cat) & df$NT2HF<42, 1, df$NT2HF_cat)
 df$NT2HF_cat <- ifelse(is.na(df$NT2HF_cat) & df$NT2HF>=42, 2, df$NT2HF_cat)
 df$NT2HF_cat <- factor(df$NT2HF_cat, levels = 0:2, labels = c("< 2 weeks","2-6 weeks",">= 6 weeks"))
 prop.table(table(df$NT2HF_cat))*100
+table(df$NT2HF_cat)
 
 # May only select certain variables
 # keep <- c(......)

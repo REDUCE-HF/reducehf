@@ -64,7 +64,8 @@ datasets <- list(df1=df1,
 for (nm in names(datasets)) {
   
   dat <- datasets[[nm]]
-
+# includeNA=TRUE includes NA as a regular factor level and not missing
+  
   Table <- CreateTableOne(vars=Vars, strata="sex", factorVars = FactorVars, data=dat,
                           test=FALSE, smd=F)
   tab1 <- print(Table, quote=FALSE, smd=F, nonnormal=convar,cramVars="sex")
@@ -73,7 +74,11 @@ for (nm in names(datasets)) {
 
 }
 
-  
+df1 <- subset(df, NT==1) 
+Table <- CreateTableOne(vars=Vars, strata="sex", factorVars = FactorVars, data=dat,
+                        test=FALSE, smd=F)
+tab1 <- print(Table, quote=FALSE, smd=F, nonnormal=convar,cramVars="sex")
+
 # PREVIOUS CODE 
   
 

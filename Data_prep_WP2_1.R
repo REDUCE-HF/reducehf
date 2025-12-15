@@ -11,7 +11,6 @@ rm(list=ls())
 library(lubridate)
 library(dplyr)
 library(readr)
-library(data.table)
 library(feather)
 
 # Load data 
@@ -27,6 +26,79 @@ library(feather)
 df <- read_csv(here::here("output", "tmp_dataset_wp2_1.csv.gz"),show_col_types = FALSE)
 # Post-COVID
 # df <-.....    
+
+# TEMP CODE - FOR DUMMY DATASET ONLY ###########################################
+set.seed(123)
+n <- nrow(df)
+
+summary(df$bmi_value)
+df$bmi_value <- ifelse(
+  runif(n)<0.2,
+  NA,
+  runif(n, min=18, max=35)
+  )
+summary(df$bmi_value)
+
+summary(df$weight)
+df$weight <- runif(n, min=45, max=80)
+summary(df$weight)
+
+summary(df$height)
+df$height <- runif(n, min=1.45, max=1.95)
+summary(df$height)
+
+summary(df$last_cholesterol_value)
+df$last_cholesterol_value <- ifelse(
+  runif(n)<0.1,
+  NA,
+  runif(n, min=1, max=10)
+)
+summary(df$last_cholesterol_value)
+
+summary(df$diasbp_value)
+
+df$diasbp_value<-ifelse(
+  runif(n)<0.05,
+  NA,
+  runif(n, min=60, max=140)
+)
+
+summary(df$sysbp_value)
+
+df$sysbp_value<-ifelse(
+  runif(n)<0.05,
+  NA,
+  runif(n, min=100, max=145)
+)
+
+
+df$obesity_sus_date <- as.Date("2019-03-30")
+df$obesity_primary_date <- as.Date("2019-01-30")
+# approx 50% missing
+df$obesity_sus_date[runif(n)<0.5] <- NA
+df$obesity_primary_date[runif(n)<0.5] <- NA
+
+t <- subset(df, select=c("obesity_sus_date","obesity_primary_date"))
+rm(t)
+
+# Just make near symptoms and echos after symptom date for symplicity
+df$np_near_symptom_first <- df$first_hfsymptom_date + sample(1:93, nrow(df), replace=TRUE)
+# approx 10% missing
+df$np_near_symptom_first[runif(n)<0.1] <- NA
+df$diff <- as.numeric(difftime(df$np_near_symptom_first,df$first_hfsymptom_date, units="days"))
+summary(df$diff)
+df$diff <- NULL
+df$np_near_symptom <- ifelse(is.na(df$np_near_symptom_first),FALSE,TRUE)
+table(df$np_near_symptom)
+
+df$echo_done_near_symptom <- df$np_near_symptom
+df$echo_ref_near_symptom <- df$np_near_symptom
+
+
+nrow(df)
+
+# END OF TEMP CODE #############################################################
+
 
 # Start date and end dates define the population - applied by Charlotte 
 # COVID start date 1/1/20, end date 31/3/24  
@@ -52,7 +124,7 @@ sum(is.na(df$first_hfsymptom_date))
 # HF symptom before patient_index_date
 sum(df$symptom_pre_index==TRUE)
 # 61
-df <-df[df$symptom_pre_index==FALSE,]
+df <- df[df$symptom_pre_index==FALSE,]
 
 # HF diagnosis before cohort entry date
 sum(!is.na(df$hf_diagnosis_date) & !is.na(df$first_hfsymptom_date) & df$hf_diagnosis_date<df$first_hfsymptom_date)
@@ -102,8 +174,6 @@ summary(df$age)
 
 # BMI
 summary(df$bmi)
-
-
 # Calculate bmi from height and weight if possible
 df <- df %>%
   mutate(bmi = case_when(
@@ -111,20 +181,14 @@ df <- df %>%
     is.na(weight) | is.na(height) ~ NA_real_,
     TRUE ~ weight / (height^2)
   ))
-# TEMP- none with bmi
-df$bmi <-as.numeric(df$bmi)
-df$bmi <-50
-d1 <- subset(df, select=c("patient_id", "bmi", "weight", "height"))
-rm(d1)
+summary(df$bmi)
 
 # Systolic BP
 summary(df$sbp)
 
 # Diastolic BP
 summary(df$dbp)
-df$dbp <-as.numeric(df$dbp)
-df$dbp <-df$sbp-20
-# TEMP none with dbp
+
 
 # Ethnicity
 table(df$ethnicity_cat)
@@ -133,10 +197,7 @@ table(df$ethnicity_cat)
 table(df$sex)
 
 # Cholesterol
-df$cholesterol <- as.numeric(df$cholesterol)
 summary(df$cholesterol)
-# QUERY all missing
-df$cholesterol <-20
 
 # COPD
 any(grepl("copd",names(df)))
@@ -160,8 +221,6 @@ any(grepl("obesity",names(df)))
 grep("obesity",names(df), value=TRUE)
 df$obesity <- ifelse(is.na(df$obesity_primary_date) & is.na(df$obesity_sus_date),0,1)
 table(df$obesity)
-# TEMP none. 
-df$obesity<- ifelse(df$patient_id<40000,1,0) 
 
 
 # Hypertension
@@ -172,6 +231,7 @@ df$hypertension <- ifelse(!is.na(df$hypertension_date_primary)|!is.na(df$hyperte
 table(df$hypertension)
 
 # IHD
+
 any(grepl("ihd",names(df)))
 grep("ihd",names(df), value=TRUE)
 df$ihd <- ifelse(!is.na(df$ihd_date_primary)|!is.na(df$ihd_date_sus),1,0)
@@ -286,46 +346,33 @@ grep("np",names(df), value=TRUE)
 
 # binary variable
 table(df$np_near_symptom)
-df$near_np <- as.numeric(df$np_near_symptom)
+df$near_np <- factor(df$np_near_symptom, levels=c(FALSE, TRUE), 
+       labels=c("No","Yes"))
 table(df$near_np)
-hist(df$patient_id)
-df$near_np <- ifelse(df$patient_id>60000,1,0) 
-# TEMP None
 
-
-# date variable
-str(df$np_near_symptom_first)
-df$near_npdate <- ymd(df$np_near_symptom_first)
-str(df$near_npdate)
-table(df$near_npdate)
-# TEMP none
-df$near_npdate <- df$symp_date+20
 
 # Echo done near symptom
 table(df$echo_done_near_symptom)
-df$near_echo <- as.numeric(df$np_near_symptom)
+df$near_echo <- factor(df$echo_done_near_symptom, levels=c(FALSE, TRUE), 
+                      labels=c("No","Yes"))
 table(df$near_echo)
-# TEMP None
-df$near_echo <- ifelse(df$patient_id>65000,1,0) 
+
+
 
 # Echo referral near symptom
 table(df$echo_ref_near_symptom)
-df$near_echoref <- as.numeric(df$np_near_symptom)
-table(df$near_echoref)
-# TEMP None
-df$near_echoref<- ifelse(df$patient_id>65000,1,0) 
-
-# QUERY - no NP, echo completed or referral for echo near symptom
-# Emailed Emily, Andrea and Will to check
+df$near_echoref <- factor(df$echo_ref_near_symptom, levels=c(FALSE, TRUE), 
+                          labels=c("No","Yes"))
+table(df$near_echoref) 
 
 # Time between the first near NP test and the first HF symptom
 # Code time 1 month before to <2weeks after as 0 days
 # also categorise <2 weeks, 2 to <6 weeks, 6-12 weeks
 
 str(df$symp_date)
-str(df$near_npdate)
+str(df$np_near_symptom_first)
 
-df$NP2symp<- as.numeric(difftime(df$near_npdate,df$symp_date, units="days"))
+df$NP2symp<- as.numeric(difftime(df$np_near_symptom_first,df$symp_date, units="days"))
 str(df$NP2symp)
 
 summary(df$NP2symp)
