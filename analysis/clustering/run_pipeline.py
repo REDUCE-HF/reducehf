@@ -54,7 +54,7 @@ def main():
     print("\n" + "=" * 70)
     print("RUNNING CORE PIPELINE")
     print("=" * 70)
-    run("python3 analysis/clustering/find_optimal_k.py", env=env)
+    run("python3 analysis/clustering/02_find_optimal_k.py", env=env)
     run("python3 analysis/clustering/03_tune_optics.py", env=env)
     run("python3 analysis/clustering/04_validate_clusters.py", env=env)
     run("python3 analysis/clustering/05_visualize_clusters.py", env=env)

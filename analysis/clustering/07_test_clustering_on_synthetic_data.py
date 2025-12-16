@@ -17,8 +17,10 @@ from sklearn.metrics import (
     fowlkes_mallows_score
 )
 import config
-from clustering_helpers import load_data, compute_gower, run_pca
-from find_optimal_k import (
+from clustering_helpers import (
+    load_data,
+    compute_gower,
+    run_pca,
     run_kmedoids_gower,
     run_agglomerative_precomputed,
     run_kmeans,
