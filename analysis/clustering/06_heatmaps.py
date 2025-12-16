@@ -27,18 +27,17 @@ from clustering_helpers import load_data, load_feature_names
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
+X_raw, _ = load_data(RAW_PATH, SCALED_PATH)
 
 # Rebuild DataFrames with feature names for labeling
 feature_names = load_feature_names(RAW_PATH)
 raw_df = pd.DataFrame(X_raw, columns=feature_names)
-scaled_df = pd.DataFrame(X_scaled, columns=feature_names)
 
 # -----------------------------------------
 # Load metadata
 # -----------------------------------------
 val_df = pd.read_csv(VALIDATION_RESULTS_PATH)
-opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
+# opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
 
 print("Selecting best configuration...")
 # Rank by silhouette + CH
@@ -58,14 +57,8 @@ if not os.path.exists(labels_file):
 labels_df = pd.read_csv(labels_file, compression="gzip")
 labels = labels_df["cluster"].values
 
-# Determine which dataframe to use for heatmap
-if best_config.startswith("raw"):
-    data = raw_df
-else:
-    data = scaled_df
-
-# Attach labels
-df = data.copy()
+# Visualize clusters on raw features DataFrame
+df = raw_df.copy()
 df["cluster"] = labels
 
 # -----------------------------------------
