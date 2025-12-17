@@ -47,7 +47,7 @@ print(f" Loaded {len(opt_k_df)} optimal-k rows and {len(val_df)} validation rows
 # ----------------------------
 # Visualization helper
 # ----------------------------
-def plot_clusters(labels, config_name):
+def plot_clusters(umap_embedding, labels, config_name):
     plt.figure(figsize=(10, 7))
 
     # Count cluster sizes
@@ -133,7 +133,7 @@ for file in sorted(label_files):
     print(f"{cfg}: loaded labels ({n_clusters} clusters)")
 
     # Plot
-    plot_clusters(labels, cfg)
+    plot_clusters(umap_embedding, labels, cfg)
 
     # Metrics and k_opt
     val_row = val_df[val_df["config"] == cfg]

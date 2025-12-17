@@ -73,7 +73,7 @@ def evaluate(config, X, labels, metric="euclidean"):
         print(f"Warning: {config}: only one cluster — skipping.")
         return None
     sil = silhouette_score(X, labels, metric=metric)
-    ch = calinski_harabasz_score(X_pca, labels)  
+    ch = calinski_harabasz_score(X, labels)  
     print(f"{config}: silhouette={sil:.3f}, calinski_harabasz={ch:.1f}")
     return {"config": config, "silhouette": sil, "calinski_harabasz": ch}
 
