@@ -1,5 +1,4 @@
 # ============================================
-# 02_find_optimal_k.py (Removed 02_ from name to be able to import it in validate clusters)
 # Find optimal number of clusters (k)
 # using Prediction Strength (Tibshirani & Walther, 2005)
 # ============================================
@@ -27,25 +26,8 @@ from clustering_helpers import (
     run_agglomerative_euclidean,
     run_optics,
 )
-import gower_exp as gower
 
-# -------------------
-# Config
-# -------------------
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# -------------------
-# Load data and prepare feature matrices
-# -------------------
-print("Loading clustering datasets...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
-
-print("Computing Gower distance for raw data...")
-D_gower = compute_gower(X_raw)
-
-print("Running PCA on scaled data...")
-X_pca, var_explained = run_pca(X_scaled)
-print(f"PCA reduced to {X_pca.shape[1]} components (explaining {var_explained:.1%} variance)")
 
 # -------------------
 # Prediction Strength (PS) Calculation
@@ -115,7 +97,7 @@ def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False,
             medoid_indices_in_half1 = np.array(medoids)
             medoid_indices_global = idx_half1[medoid_indices_in_half1]
             # Extract distances from half2 points to medoids using full D_gower
-            distances = D_gower[np.ix_(idx_half2, medoid_indices_global)]
+            distances = X[np.ix_(idx_half2, medoid_indices_global)]
             nearest = np.argmin(distances, axis=1)
         else:
             # Use euclidean distance to centroids
@@ -141,92 +123,115 @@ def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False,
         return np.nan, np.nan
     return np.mean(ps_values), np.std(ps_values) / np.sqrt(n_splits)
 
-# -------------------
-# Configurations
-# -------------------
+def main():
+    """Main function to find optimal k using Prediction Strength."""
+    # -------------------
+    # Config
+    # -------------------
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-configs = {
-    "raw_kmedoids_gower": (D_gower, run_kmedoids_gower, True),
-    "raw_agglomerative_gower": (D_gower, run_agglomerative_precomputed, True),
-    
-    "pca_kmeans_euclidean": (X_pca, run_kmeans, False),
-    "pca_agglomerative_euclidean": (X_pca, run_agglomerative_euclidean, False),
-    "pca_optics": (X_pca, run_optics, False), # PS skipped in loop below
-}
+    # -------------------
+    # Load data and prepare feature matrices
+    # -------------------
+    print("Loading clustering datasets...")
+    X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
 
-# -------------------
-# Run PS for each config
-# -------------------
-print("\nStarting prediction strength estimation...")
-results = []
+    print("Computing Gower distance for raw data...")
+    D_gower = compute_gower(X_raw)
 
-for cfg, (X, cluster_fn, precomputed) in configs.items():
-    print(f"\nConfiguration: {cfg}")
-    if "optics" in cfg:
-        labels = cluster_fn(X)
-        for k in range(2, 11):
-            results.append({"config": cfg, "k": k, "ps": np.nan, "se": np.nan})
-        print("   OPTICS skipped (no fixed k).")
-        continue
+    print("Running PCA on scaled data...")
+    X_pca, var_explained = run_pca(X_scaled)
+    print(f"PCA reduced to {X_pca.shape[1]} components (explaining {var_explained:.1%} variance)")
 
-    for k in range(2, 11):
-        ps, se = compute_prediction_strength(
-            X,
-            cluster_fn,
-            k,
-            X_raw=X_raw,
-            precomputed=precomputed,
-        )
+    # -------------------
+    # Configurations
+    # -------------------
+    configs = {
+        "raw_kmedoids_gower": (D_gower, run_kmedoids_gower, True),
+        "raw_agglomerative_gower": (D_gower, run_agglomerative_precomputed, True),
         
-        results.append({"config": cfg, "k": k, "ps": ps, "se": se})
-        print(f"   k={k}: PS={ps:.3f}, SE={se:.3f}, PS+SE={ps+se:.3f}")
+        "pca_kmeans_euclidean": (X_pca, run_kmeans, False),
+        "pca_agglomerative_euclidean": (X_pca, run_agglomerative_euclidean, False),
+        "pca_optics": (X_pca, run_optics, False), # PS skipped in loop below
+    }
 
-# -------------------
-# Save results
-# -------------------
-results_df = pd.DataFrame(results)
-results_df.to_csv(OPTIMAL_K_RESULTS_PATH, index=False)
-print(f"\nSaved detailed PS results to: {OPTIMAL_K_RESULTS_PATH}")
+    # -------------------
+    # Run PS for each config
+    # -------------------
+    print("\nStarting prediction strength estimation...")
+    results = []
 
-# Determine optimal k
-summary = []
-THRESHOLD = 0.8  # PS + SE rule
+    for cfg, (X, cluster_fn, precomputed) in configs.items():
+        print(f"\nConfiguration: {cfg}")
+        if "optics" in cfg:
+            labels = cluster_fn(X)
+            for k in range(2, 11):
+                results.append({"config": cfg, "k": k, "ps": np.nan, "se": np.nan})
+            print("   OPTICS skipped (no fixed k).")
+            continue
 
-for cfg in results_df["config"].unique():
-    sub = results_df[results_df["config"] == cfg].dropna()
-    if sub.empty or "optics" in cfg:
-        summary.append({"config": cfg, "k_opt": np.nan, "ps_opt": np.nan, "se_opt": np.nan})
-        continue
+        for k in range(2, 11):
+            ps, se = compute_prediction_strength(
+                X,
+                cluster_fn,
+                k,
+                X_raw=X_raw,
+                precomputed=precomputed,
+            )
+            
+            results.append({"config": cfg, "k": k, "ps": ps, "se": se})
+            print(f"   k={k}: PS={ps:.3f}, SE={se:.3f}, PS+SE={ps+se:.3f}")
 
-    # Apply PS + SE >= 0.8 rule
-    sub["ps_plus_se"] = sub["ps"] + sub["se"]
-    eligible = sub[sub["ps_plus_se"] >= THRESHOLD] 
-    
-    if not eligible.empty:
-        # Find the largest k satisfying the rule
-        best = eligible.loc[eligible["k"].idxmax()]  
-    else:
-        # Fallback: Find the most stable k if none meet the threshold
-        best = sub.loc[sub["ps"].idxmax()]           
+    # -------------------
+    # Save results
+    # -------------------
+    results_df = pd.DataFrame(results)
+    results_df.to_csv(OPTIMAL_K_RESULTS_PATH, index=False)
+    print(f"\nSaved detailed PS results to: {OPTIMAL_K_RESULTS_PATH}")
 
-    summary.append({
-        "config": cfg,
-        "k_opt": int(best["k"]),
-        "ps_opt": float(best["ps"]),
-        "se_opt": float(best["se"]),
-    })
+    # Determine optimal k
+    summary = []
+    THRESHOLD = 0.8  # PS + SE rule
 
-summary_df = pd.DataFrame(summary)
-summary_df.to_csv(OPTIMAL_K_SUMMARY_PATH, index=False)
-print("\nSaved optimal k summary.")
+    for cfg in results_df["config"].unique():
+        sub = results_df[results_df["config"] == cfg].dropna()
+        if sub.empty or "optics" in cfg:
+            summary.append({"config": cfg, "k_opt": np.nan, "ps_opt": np.nan, "se_opt": np.nan})
+            continue
 
-# -------------------
-# Save D_gower and X_pca for downstream use
-# -------------------
-pd.DataFrame(D_gower).to_csv(D_GOWER_PATH, index=False, compression="gzip")
-print(f"Saved Gower distance matrix to: {D_GOWER_PATH}")
+        # Apply PS + SE >= 0.8 rule
+        sub["ps_plus_se"] = sub["ps"] + sub["se"]
+        eligible = sub[sub["ps_plus_se"] >= THRESHOLD] 
+        
+        if not eligible.empty:
+            # Find the largest k satisfying the rule
+            best = eligible.loc[eligible["k"].idxmax()]  
+        else:
+            # Fallback: Find the most stable k if none meet the threshold
+            best = sub.loc[sub["ps"].idxmax()]           
 
-pd.DataFrame(X_pca).to_csv(X_PCA_PATH, index=False, compression="gzip")
-print(f"Saved PCA-transformed data to: {X_PCA_PATH}")
+        summary.append({
+            "config": cfg,
+            "k_opt": int(best["k"]),
+            "ps_opt": float(best["ps"]),
+            "se_opt": float(best["se"]),
+        })
 
-print("Done.")
+    summary_df = pd.DataFrame(summary)
+    summary_df.to_csv(OPTIMAL_K_SUMMARY_PATH, index=False)
+    print("\nSaved optimal k summary.")
+
+    # -------------------
+    # Save D_gower and X_pca for downstream use
+    # -------------------
+    pd.DataFrame(D_gower).to_csv(D_GOWER_PATH, index=False, compression="gzip")
+    print(f"Saved Gower distance matrix to: {D_GOWER_PATH}")
+
+    pd.DataFrame(X_pca).to_csv(X_PCA_PATH, index=False, compression="gzip")
+    print(f"Saved PCA-transformed data to: {X_PCA_PATH}")
+
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main()
