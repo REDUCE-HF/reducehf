@@ -4,7 +4,6 @@
 # Validate clustering algorithms on synthetic data with known clusters
 # ============================================
 
-import argparse
 import os
 import numpy as np
 import pandas as pd
@@ -28,20 +27,9 @@ from clustering_helpers import (
     run_optics,
 )
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Validate clustering on synthetic data.")
-    parser.add_argument(
-        "--synthetic-output-dir",
-        help="Read/write synthetic artifacts from this directory instead of the config default.",
-    )
-    return parser.parse_args()
-
 # -------------------
 # Setup
 # -------------------
-args = parse_args()
-if args.synthetic_output_dir:
-    config.set_synthetic_output_dir(args.synthetic_output_dir)
 
 os.makedirs(config.SYNTHETIC_OUTPUT_DIR, exist_ok=True)
 
