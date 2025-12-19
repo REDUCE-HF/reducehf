@@ -53,7 +53,7 @@ VISUALIZATION_SUMMARY_PATH = os.path.join(OUTPUT_DIR, "visualization_summary.csv
 # Synthetic validation results path
 SYNTHETIC_VALIDATION_RESULTS_PATH = os.path.join(SYNTHETIC_OUTPUT_DIR, "synthetic_validation_results.csv")
 
-
+VARIANCE_OF_MEANS_PATH = os.path.join(OUTPUT_DIR, "variance_of_means.csv")
 def labels_path(config_name: str) -> str:
     return os.path.join(OUTPUT_DIR, f"labels_{config_name}.csv.gz")
 
