@@ -22,73 +22,88 @@ actions:
   
   #WP1
   generate_dataset_wp1_common:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_common.py --output output/tmp_dataset_wp1_common.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_common.py --output output/wp1/tmp_dataset_wp1_common.csv.gz
     outputs:
       highly_sensitive:
-        dataset: output/tmp_dataset_wp1_common.csv.gz
+        dataset: output/wp1/tmp_dataset_wp1_common.csv.gz
 
   diabetes_algo_wp1:
-    run: diabetes-algo:v0.0.9 --output output/dataset_wp1_common.csv.gz
+    run: diabetes-algo:v0.0.9 --output output/wp1/tmp_dataset_wp1_common.csv.gz
     config:
-      df_input: tmp_dataset_wp1_common.csv.gz
+      df_input: wp1/tmp_dataset_wp1_common.csv.gz
       birth_date: dob
       ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp1_common.csv.gz
+      df_output: wp1/dataset_wp1_common.csv.gz
     needs:
       - generate_dataset_wp1_common
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_common.csv.gz
+        dataset: output/wp1/dataset_wp1_common.csv.gz
 
   generate_dataset_wp1_2019:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2019.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2019.csv.gz
       -- --cohort_index_date "2019-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2019.csv.gz
+        dataset: output/wp1/dataset_wp1_2019.csv.gz
 
   generate_dataset_wp1_2020:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2020.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2020.csv.gz
       -- --cohort_index_date "2020-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2020.csv.gz
+        dataset: output/wp1/dataset_wp1_2020.csv.gz
 
   generate_dataset_wp1_2021:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2021.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2021.csv.gz
       -- --cohort_index_date "2021-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2021.csv.gz
+        dataset: output/wp1/dataset_wp1_2021.csv.gz
 
   generate_dataset_wp1_2022:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2022.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2022.csv.gz
       -- --cohort_index_date "2022-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2022.csv.gz
+        dataset: output/wp1/dataset_wp1_2022.csv.gz
 
   generate_dataset_wp1_2023:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2023.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2023.csv.gz
       -- --cohort_index_date "2023-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2023.csv.gz
+        dataset: output/wp1/dataset_wp1_2023.csv.gz
         
   generate_dataset_wp1_2024:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2024.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2024.csv.gz
       -- --cohort_index_date "2024-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2024.csv.gz
+        dataset: output/wp1/dataset_wp1_2024.csv.gz
         
   generate_dataset_wp1_2025:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/dataset_wp1_2025.csv.gz
+    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2025.csv.gz
       -- --cohort_index_date "2025-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/dataset_wp1_2025.csv.gz
+        dataset: output/wp1/dataset_wp1_2025.csv.gz
 
+  wp1_processing:
+    run: r:latest analysis/wp1/processing/wp1_processing.R 
+    needs: [diabetes_algo_wp1, generate_dataset_wp1_2019, generate_dataset_wp1_2020, generate_dataset_wp1_2021, generate_dataset_wp1_2022, generate_dataset_wp1_2023, generate_dataset_wp1_2024, generate_dataset_wp1_2025]
+    outputs:
+      highly_sensitive:
+        csv: output/wp1/processed/wp1_all.csv.gz
+
+  wp1_checks:
+    run: r:latest analysis/wp1/processing/wp1_checks.R 
+    needs: [wp1_processing]
+    outputs:
+      moderately_sensitive:
+        csv: output/wp1/checks/check_*.csv
+        figs: output/wp1/checks/check_*.png
+ 
 
   #WP2
   generate_dataset_wp2_1:
