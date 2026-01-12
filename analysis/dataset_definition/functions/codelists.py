@@ -447,10 +447,24 @@ homeless = codelist_from_csv(
     column="code"
 )
 
-'''
-Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
--  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
--  oedema: not currently available - need to create
--  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
-'''
+# COVID-19
 
+covid_codes = codelist_from_csv(
+    "codelists/user-RochelleKnight-confirmed-hospitalised-covid-19.csv",
+    column="code"
+)
+
+covid_primary_care_positive_test = codelist_from_csv(
+    "codelists/opensafely-covid-identification-in-primary-care-probable-covid-positive-test.csv",
+    column="CTV3ID"
+)
+
+covid_primary_care_code = codelist_from_csv(
+    "codelists/opensafely-covid-identification-in-primary-care-probable-covid-clinical-code.csv",
+    column="CTV3ID"
+)
+
+covid_primary_care_sequalae = codelist_from_csv(
+    "codelists/opensafely-covid-identification-in-primary-care-probable-covid-sequelae.csv",
+    column="CTV3ID"
+)

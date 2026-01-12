@@ -17,8 +17,8 @@ from ehrql.tables.tpp import (
     household_memberships_2020,
     ons_deaths,
     clinical_events_ranges,
-    ethnicity_from_sus
-    
+    ethnicity_from_sus,
+    sgss_covid_all_tests    
 )
 
 from .helper_functions import *

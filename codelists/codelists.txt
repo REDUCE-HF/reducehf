@@ -89,3 +89,7 @@ nhsd-primary-care-domain-refsets/dmtype2_cod/20250912/
 nhsd-primary-care-domain-refsets/otherdmaudit_cod/20250912/
 nhsd-primary-care-domain-refsets/gestdiab_cod/20250912/
 user/anschaf/diabetes-non-diagnostic-codes/22fa3d8a/
+opensafely/covid-identification-in-primary-care-probable-covid-positive-test/2020-07-16/
+opensafely/covid-identification-in-primary-care-probable-covid-clinical-code/2020-07-16/
+opensafely/covid-identification-in-primary-care-probable-covid-sequelae/2020-07-16/
+user/RochelleKnight/confirmed-hospitalised-covid-19/1f0d2526
