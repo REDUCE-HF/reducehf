@@ -49,8 +49,16 @@ def build_membership_features(df):
         if col in df.columns:
             out[col] = df[col].astype("object")
     
-    # Continuous variables
-    out["household_size"] = pd.to_numeric(df["household_size"], errors="coerce")
+    # Household size (categorised)
+    hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
+    out["cat_household_size"] = pd.cut(
+        hs_numeric,
+        bins=[0, 1, 2, np.inf],
+        labels=["1", "2", ">=3"],
+        right=True,
+        include_lowest=True
+    ).astype("object")
+    out.loc[hs_numeric.isna(), "cat_household_size"] = "unknown"
     
     # Binary conditions from dates
     date_based_conditions = {
@@ -121,7 +129,7 @@ def main():
     X = pd.get_dummies(membership.drop(columns="patient_id"), dummy_na=True, drop_first=False)
 
     # Identify continuous vs dummy columns
-    continuous_vars = ['household_size', 'mltc_count']
+    continuous_vars = ['mltc_count']
     continuous_cols = [col for col in X.columns if col in continuous_vars]
     dummy_cols = [col for col in X.columns if col not in continuous_cols]
 
