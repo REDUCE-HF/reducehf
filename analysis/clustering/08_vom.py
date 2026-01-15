@@ -43,13 +43,7 @@ def build_membership_features(df):
     out["age_band"] = pd.cut(age, bins=age_bins, labels=age_labels, right=False).astype("object")
     
     # Categorical variables
-    categorical_cols = ["sex", "ethnicity_cat", "imd_quintile", "region", 
-                        "rural_urban", "cat_diabetes", "smoking"]
-    for col in categorical_cols:
-        if col in df.columns:
-            out[col] = df[col].astype("object")
-    
-    # Household size (categorised)
+     # Household size (categorised)
     hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
     out["cat_household_size"] = pd.cut(
         hs_numeric,
@@ -59,6 +53,13 @@ def build_membership_features(df):
         include_lowest=True
     ).astype("object")
     out.loc[hs_numeric.isna(), "cat_household_size"] = "unknown"
+    categorical_cols = ["sex", "ethnicity_cat", "imd_quintile", "region", 
+                        "rural_urban", "cat_diabetes", "smoking","cat_household_size"]
+    for col in categorical_cols:
+        if col in df.columns:
+            out[col] = df[col].astype("object")
+    
+   
     
     # Binary conditions from dates
     date_based_conditions = {
