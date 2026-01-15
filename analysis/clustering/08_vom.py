@@ -133,15 +133,6 @@ def main():
     continuous_cols = [col for col in X.columns if col in continuous_vars]
     dummy_cols = [col for col in X.columns if col not in continuous_cols]
 
-    # Convert types and handle missing values
-    for col in X.columns:
-        if X[col].dtype == 'bool':
-            X[col] = X[col].astype(int)
-        elif X[col].dtype == 'object':
-            X[col] = pd.to_numeric(X[col], errors='coerce')
-
-    X[dummy_cols] = X[dummy_cols].fillna(0)  # Fill NaN for dummy columns only
-
     print(f"After one-hot encoding: {len(X.columns)} features "
           f"({len(continuous_cols)} continuous, {len(dummy_cols)} dummy)")
 
