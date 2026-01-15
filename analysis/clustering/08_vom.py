@@ -27,16 +27,16 @@ def build_membership_features(df):
         "obesity_primary_date", "obesity_sus_date",
         "learndis",
         "hf_diagnosis_primary_date", "hf_diagnosis_emerg_date", 
-        "hf_diagnosis_ec_date", "hf_diagnosis_apc_date"
+        "hf_diagnosis_ec_date", "hf_diagnosis_apc_date","hf_diagnosis_date"
     ]
-    dates = {col: pd.to_datetime(df[col], errors="coerce") 
+    dates_df = {col: pd.to_datetime(df[col], errors="coerce") 
              for col in date_cols if col in df.columns}
     
     # Diagnosis location
     out["diagnosis_community"], out["diagnosis_emergency"] = get_diagnosis_location(df)
     
     # Age bands
-    age = np.floor((dates["patient_index_date"] - dates["birth_date"]).dt.days / 365.25)
+    age = np.floor((dates_df["patient_index_date"] - dates_df["birth_date"]).dt.days / 365.25)
     age_bins = [0, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 120]
     age_labels = ['<45', '45-49', '50-54', '55-59', '60-64', '65-69', '70-74', 
                   '75-79', '80-84', '85-89', '90-94', '95-99', '100+']
@@ -47,12 +47,14 @@ def build_membership_features(df):
     hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
     out["cat_household_size"] = pd.cut(
         hs_numeric,
-        bins=[0, 1, 2, np.inf],
+        bins=[1, 2, np.inf],
         labels=["1", "2", ">=3"],
         right=True,
         include_lowest=True
     ).astype("object")
-    out.loc[hs_numeric.isna(), "cat_household_size"] = "unknown"
+
+    out.loc[hs_numeric.isna() | (hs_numeric <= 0), "cat_household_size"] = "unknown"
+
     categorical_cols = ["sex", "ethnicity_cat", "imd_quintile", "region", 
                         "rural_urban", "cat_diabetes", "smoking","cat_household_size"]
     for col in categorical_cols:
@@ -71,10 +73,21 @@ def build_membership_features(df):
         "learndis": ["learndis"],
         "obesity_date": ["obesity_primary_date", "obesity_sus_date"]
     }
+    # Create pre_existing and new conditions based on 1 year before hf diagnosis
+    hf_diagnosis_date = dates_df["hf_diagnosis_date"]
+    
     for condition, cols in date_based_conditions.items():
-        condition_dates = pd.DataFrame({c: dates.get(c) for c in cols if c in dates})
-        out[condition] = (condition_dates.notna().any(axis=1).astype(int) 
-                         if not condition_dates.empty else 0)
+        condition_dates = pd.DataFrame({c: dates_df.get(c) for c in cols if c in dates_df})
+        
+        if not condition_dates.empty:
+            first_date = condition_dates.min(axis=1)
+            out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - pd.Timedelta(days=365))).fillna(False).astype(int)
+            out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - pd.Timedelta(days=365))) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
+            # out[condition] = condition_dates.notna().any(axis=1).astype(int) Keep or drop ? 
+        else:
+            out[f"{condition}_preexisting"] = 0
+            out[f"{condition}_new"] = 0
+            # out[condition] = 0 Keep or drop ? 
     
     # Obesity (date OR BMI >= 30)
     obesity_bmi = (pd.to_numeric(df["bmi_value"], errors="coerce") >= 30).astype(int)
@@ -148,7 +161,7 @@ def main():
     print(f"\nSaved: {VARIANCE_OF_MEANS_PATH}")
     print(f"\nTop 10 most discriminative features:")
     print(vom.sort_values(ascending=False).head(10))
-
+    print([col for col in df.columns if '_date' in col])
 
 if __name__ == "__main__":
     main()
