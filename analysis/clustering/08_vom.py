@@ -25,6 +25,7 @@ def build_membership_features(df):
         "ihd_date_primary", "ihd_date_sus",
         "ckd_date_primary", "ckd_date_sus",
         "obesity_primary_date", "obesity_sus_date",
+        "bmi_date",
         "learndis",
         "hf_diagnosis_primary_date", "hf_diagnosis_emerg_date", 
         "hf_diagnosis_ec_date", "hf_diagnosis_apc_date","hf_diagnosis_date"
@@ -47,7 +48,7 @@ def build_membership_features(df):
     hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
     out["cat_household_size"] = pd.cut(
         hs_numeric,
-        bins=[1, 2, np.inf],
+        bins=[0, 1, 2, np.inf],
         labels=["1", "2", ">=3"],
         right=True,
         include_lowest=True
@@ -71,7 +72,6 @@ def build_membership_features(df):
         "ihd": ["ihd_date_primary", "ihd_date_sus"],
         "ckd": ["ckd_date_primary", "ckd_date_sus"],
         "learndis": ["learndis"],
-        "obesity_date": ["obesity_primary_date", "obesity_sus_date"]
     }
     # Create pre_existing and new conditions based on 1 year before hf diagnosis
     hf_diagnosis_date = dates_df["hf_diagnosis_date"]
@@ -83,21 +83,26 @@ def build_membership_features(df):
             first_date = condition_dates.min(axis=1)
             out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - pd.Timedelta(days=365))).fillna(False).astype(int)
             out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - pd.Timedelta(days=365))) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
-            # out[condition] = condition_dates.notna().any(axis=1).astype(int) Keep or drop ? 
+            # out[condition] = condition_dates.notna().any(axis=1).astype(int)    # Keep or drop ? 
         else:
             out[f"{condition}_preexisting"] = 0
             out[f"{condition}_new"] = 0
-            # out[condition] = 0 Keep or drop ? 
+            # out[condition] = 0  # Keep or drop ? 
     
-    # Obesity (date OR BMI >= 30)
-    obesity_bmi = (pd.to_numeric(df["bmi_value"], errors="coerce") >= 30).astype(int)
-    out["obesity"] = ((out["obesity_date"] == 1) | (obesity_bmi == 1)).astype(int)
+    # Obesity: combine date-based (obesity_primary_date, obesity_sus_date) and BMI-based (≥30)
+    obesity_date_cols = ["obesity_primary_date", "obesity_sus_date"]
+    obesity_dates = pd.DataFrame({c: dates_df.get(c) for c in obesity_date_cols if c in dates_df})
+    obesity_from_dates = obesity_dates.notna().any(axis=1).astype(int) if not obesity_dates.empty else 0
+    obesity_bmi = (pd.to_numeric(df["bmi_value"], errors="coerce") >= 30).fillna(False).astype(int)
+    out["obesity"] = ((obesity_from_dates == 1) | (obesity_bmi == 1)).astype(int)
     
     # Diabetes
     out["has_diabetes"] = (df["cat_diabetes"] != "DM unlikely").astype(int)
     
     # Multi-morbidity
-    ltc_cols = ["copd", "hypertension", "obesity", "af", "ihd", "ckd", "has_diabetes"]
+    ltc_cols = ["copd_preexisting", "copd_new", "hypertension_preexisting", "hypertension_new", 
+                "obesity", "af_preexisting", "af_new", "ihd_preexisting", "ihd_new", 
+                "ckd_preexisting", "ckd_new", "has_diabetes"]
     out["mltc_count"] = out[ltc_cols].sum(axis=1)
     out["has_mltc"] = (out["mltc_count"] >= 2).astype(int)
     
@@ -161,7 +166,8 @@ def main():
     print(f"\nSaved: {VARIANCE_OF_MEANS_PATH}")
     print(f"\nTop 10 most discriminative features:")
     print(vom.sort_values(ascending=False).head(10))
-    print([col for col in df.columns if '_date' in col])
+    print(sorted([col for col in df.columns if '_date' in col]))
+    # print (X.columns)
 
 if __name__ == "__main__":
     main()
