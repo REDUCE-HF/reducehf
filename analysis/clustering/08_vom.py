@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 
 from clustering_helpers import get_best_config, get_diagnosis_location
-from sklearn.tree import DecisionTreeClassifier
 from config import (
     INPUT_DATA_PATH,
     VALIDATION_RESULTS_PATH,
@@ -166,8 +165,7 @@ def main():
     print(f"\nSaved: {VARIANCE_OF_MEANS_PATH}")
     print(f"\nTop 10 most discriminative features:")
     print(vom.sort_values(ascending=False).head(10))
-    print(sorted([col for col in df.columns if '_date' in col]))
-    # print (X.columns)
+  
 
 if __name__ == "__main__":
     main()
