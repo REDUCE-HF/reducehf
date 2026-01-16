@@ -104,7 +104,7 @@ def main():
     )
     
     # Remove continuous variables until we decide on how to handle them??? 
-    continuous_vars = ['household_size', 'mltc_count']
+    continuous_vars = [ 'mltc_count']
     X = X.drop(columns=[col for col in continuous_vars if col in X.columns])
     
     X = X.fillna(0)
