@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
 
 from clustering_helpers import get_best_config
 from config import (
@@ -12,26 +13,46 @@ from config import (
 )
 
 
-def train_ovr(X, labels, max_depth=3, min_samples_leaf=50, random_state=42):
-    """Train one-vs-rest decision trees and return combined importance+means table."""
+def train_ovr(X, labels, output_dir, random_state=42):
+    """Train one-vs-rest decision trees with GridSearchCV and return combined importance+means table."""
     # drop -1 cluster and keep indices aligned  
     X = X.loc[labels != -1].reset_index(drop=True)
     labels = labels[labels != -1].reset_index(drop=True)
 
     clusters = sorted(labels.unique())
+    
+    
+    param_grid = {
+        'max_depth': [5, 10, 50, 100],
+        'min_samples_leaf': [5, 10, 50]
+    }
 
     all_rows = []
+    all_cv_results = []
+    
     for k in clusters:
         y = (labels == k).astype(int)
 
-        dt = DecisionTreeClassifier(
-            max_depth=max_depth,
-            min_samples_leaf=min_samples_leaf,
-            random_state=random_state
+        dt = DecisionTreeClassifier(random_state=random_state)
+        grid_search = GridSearchCV(
+            dt,
+            param_grid=param_grid,
+            scoring='roc_auc',
+            cv=5,
+            return_train_score=True,
+            n_jobs=-1
         )
-        dt.fit(X, y)
+        grid_search.fit(X, y)
+        
+        best_dt = grid_search.best_estimator_
+        
+        cv_results_df = pd.DataFrame(grid_search.cv_results_)
+        cv_results_df['cluster'] = k
+        all_cv_results.append(cv_results_df)
+        
+        print(f"Cluster {k}: Best params = {grid_search.best_params_}, Best ROC-AUC = {grid_search.best_score_:.3f}")
 
-        gini = pd.Series(dt.feature_importances_, index=X.columns)
+        gini = pd.Series(best_dt.feature_importances_, index=X.columns)
 
         mean_in = X[y == 1].mean(axis=0)
         mean_out = X[y == 0].mean(axis=0)
@@ -47,6 +68,11 @@ def train_ovr(X, labels, max_depth=3, min_samples_leaf=50, random_state=42):
         tmp["distinguishing_feature"] = np.where(tmp["mean_difference"] > 0, "presence",
                                                  np.where(tmp["mean_difference"] < 0, "absence", "equal"))
         all_rows.append(tmp)
+
+    cv_results_all = pd.concat(all_cv_results, ignore_index=True)
+    cv_results_path = os.path.join(output_dir, "ovr_gridsearch_cv_results.csv")
+    cv_results_all.to_csv(cv_results_path, index=False)
+    print(f"Saved GridSearchCV results to {cv_results_path}")
 
     out = pd.concat(all_rows, ignore_index=True)
     return out.sort_values(["cluster", "gini_importance"], ascending=[True, False])
@@ -81,12 +107,11 @@ def main():
     continuous_vars = ['household_size', 'mltc_count']
     X = X.drop(columns=[col for col in continuous_vars if col in X.columns])
     
-    # Fill NaN with 0 for binary features (same as VoM)
     X = X.fillna(0)
     
     print(f"Using {len(X.columns)} binary features for {len(X)} patients")
 
-    combined = train_ovr(X, labels)
+    combined = train_ovr(X, labels, output_dir)
 
     out_all = os.path.join(output_dir, "ovr_feature_importance_all.csv")
     out_top = os.path.join(output_dir, "ovr_feature_importance_top15_per_cluster.csv")
