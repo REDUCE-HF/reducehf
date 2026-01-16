@@ -228,5 +228,17 @@ def fn(dataset, earliest_date, index_date):
         ckd_icd10
         ).admission_date
 
+    # Depression
+
+    dataset.depr_date_primary = last_matching_event_clinical_snomed(
+        before_gp_events,
+        depr_diagnosis
+        ).date
+
+    dataset.depr_resolved_date_primary = last_matching_event_clinical_snomed(
+        before_gp_events,
+        depr_resolved
+        ).date
+
     return dataset
 

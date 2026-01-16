@@ -93,3 +93,5 @@ opensafely/covid-identification-in-primary-care-probable-covid-positive-test/202
 opensafely/covid-identification-in-primary-care-probable-covid-clinical-code/2020-07-16/
 opensafely/covid-identification-in-primary-care-probable-covid-sequelae/2020-07-16/
 user/RochelleKnight/confirmed-hospitalised-covid-19/1f0d2526
+nhsd-primary-care-domain-refsets/depr_cod/20250912/
+nhsd-primary-care-domain-refsets/depres_cod/20250912/

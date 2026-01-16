@@ -468,3 +468,16 @@ covid_primary_care_sequalae = codelist_from_csv(
     "codelists/opensafely-covid-identification-in-primary-care-probable-covid-sequelae.csv",
     column="CTV3ID"
 )
+
+
+# Depression
+
+depr_diagnosis = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-depr_cod.csv",
+    column="code"
+)
+
+depr_resolved = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-depres_cod.csv",
+    column="code"
+)
