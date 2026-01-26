@@ -18,7 +18,8 @@ from functions.core import(
     hf_diagnosis,
     time_dependent,
     underserved,
-    comorbidities
+    comorbidities,
+    covid
     )
 
 from functions.wp3 import hsu
@@ -96,5 +97,7 @@ dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
 dataset = hsu.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
 
 dataset = comorbidities.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+
+dataset = covid.fn(dataset, start_date, dataset.hf_diagnosis_date)
 
 dataset = underserved.fn(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)
