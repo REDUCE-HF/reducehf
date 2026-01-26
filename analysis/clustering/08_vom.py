@@ -77,16 +77,11 @@ def build_membership_features(df):
     
     for condition, cols in date_based_conditions.items():
         condition_dates = pd.DataFrame({c: dates_df.get(c) for c in cols if c in dates_df})
-        
-        if not condition_dates.empty:
-            first_date = condition_dates.min(axis=1)
-            out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - pd.Timedelta(days=365))).fillna(False).astype(int)
-            out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - pd.Timedelta(days=365))) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
+        first_date = condition_dates.min(axis=1)
+        out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - pd.Timedelta(days=365))).fillna(False).astype(int)
+        out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - pd.Timedelta(days=365))) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
             # out[condition] = condition_dates.notna().any(axis=1).astype(int)    # Keep or drop ? 
-        else:
-            out[f"{condition}_preexisting"] = 0
-            out[f"{condition}_new"] = 0
-            # out[condition] = 0  # Keep or drop ? 
+       
     
     # Obesity: combine date-based (obesity_primary_date, obesity_sus_date) and BMI-based (≥30)
     obesity_date_cols = ["obesity_primary_date", "obesity_sus_date"]
