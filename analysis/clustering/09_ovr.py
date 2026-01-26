@@ -9,6 +9,7 @@ from config import (
     INPUT_DATA_PATH,
     VALIDATION_RESULTS_PATH,
     VARIANCE_OF_MEANS_PATH,
+    ENCODED_MEMBERSHIP_PATH,
     labels_path
 )
 
@@ -95,13 +96,10 @@ def main():
     print(f"Merged {len(df)} patients with cluster labels")
     
     labels = df["cluster"]  
-    
-    # One-hot encode (same as VoM)
-    X = pd.get_dummies(
-        df.drop(columns=["patient_id", "cluster"]), 
-        dummy_na=True, 
-        drop_first=False
-    )
+    # Load one-hot encoded features
+    X = pd.read_csv(ENCODED_MEMBERSHIP_PATH)
+
+
     
     # Remove continuous variables until we decide on how to handle them??? 
     continuous_vars = [ 'mltc_count']

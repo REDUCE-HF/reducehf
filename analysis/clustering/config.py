@@ -53,7 +53,11 @@ VISUALIZATION_SUMMARY_PATH = os.path.join(OUTPUT_DIR, "visualization_summary.csv
 # Synthetic validation results path
 SYNTHETIC_VALIDATION_RESULTS_PATH = os.path.join(SYNTHETIC_OUTPUT_DIR, "synthetic_validation_results.csv")
 
+# path to variance of means table
 VARIANCE_OF_MEANS_PATH = os.path.join(OUTPUT_DIR, "variance_of_means.csv")
+# path to one-hot encoded membership features
+ENCODED_MEMBERSHIP_PATH = os.path.join(OUTPUT_DIR, "membership_features_encoded.csv")
+
 def labels_path(config_name: str) -> str:
     return os.path.join(OUTPUT_DIR, f"labels_{config_name}.csv.gz")
 
@@ -113,3 +117,4 @@ FEATURE_RANGES = {
     "prescriptions_pre_6_9m": (0, 10),
     "prescriptions_pre_9_12m": (0, 10),
 }
+

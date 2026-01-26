@@ -80,7 +80,7 @@ def build_membership_features(df):
         first_date = condition_dates.min(axis=1)
         out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - pd.Timedelta(days=365))).fillna(False).astype(int)
         out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - pd.Timedelta(days=365))) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
-            # out[condition] = condition_dates.notna().any(axis=1).astype(int)    # Keep or drop ? 
+        # out[condition] = condition_dates.notna().any(axis=1).astype(int)    # Keep or drop ? 
        
     
     # Obesity: combine date-based (obesity_primary_date, obesity_sus_date) and BMI-based (≥30)
@@ -107,7 +107,7 @@ def build_membership_features(df):
         if col in df.columns:
             out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
     
-    return out.dropna(axis=1, how="all")
+    return out
 
 def variance_of_means(labels, X):
     """Calculate variance of cluster means for each feature."""
@@ -148,6 +148,11 @@ def main():
 
     print(f"After one-hot encoding: {len(X.columns)} features "
           f"({len(continuous_cols)} continuous, {len(dummy_cols)} dummy)")
+
+    #set type to int 
+    for col in dummy_cols:
+        if col in X.columns:
+            X[col] = X[col].astype(int)
 
     encoded_path = os.path.join(output_dir, "membership_features_encoded.csv")
     X.to_csv(encoded_path, index=False)
