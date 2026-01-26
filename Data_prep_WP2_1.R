@@ -127,12 +127,12 @@ sum(is.na(df$first_hfsymptom_date))
 
 # HF symptom before patient_index_date
 sum(df$symptom_pre_index==TRUE)
-# 61
+# 49
 df <- df[df$symptom_pre_index==FALSE,]
 
 # HF diagnosis before cohort entry date
 sum(!is.na(df$hf_diagnosis_date) & !is.na(df$first_hfsymptom_date) & df$hf_diagnosis_date<df$first_hfsymptom_date)
-# 78
+# 74
 df <-df[!(!is.na(df$hf_diagnosis_date) & !is.na(df$first_hfsymptom_date) & df$hf_diagnosis_date<df$first_hfsymptom_date),]
 
 

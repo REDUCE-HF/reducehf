@@ -23,11 +23,27 @@ td1$nt1_result <- td1$nt1_result*12
 summary(td1$nt1_result)
 
 td2 <-df
+summary(td2$nt1_result)
+td2$nt1_result <- td2$nt1_result*7
+summary(td2$nt1_result)
+
+
 td3 <-df
+td3$nt1_result <- td3$nt1_result*4
+
 td4 <-df
+td4$nt1_result <- td4$nt1_result*2
+
 td5 <-df
 
-merged <-rbind(td1,td2,td3,td4,td5)
+td6 <-df
+td6$diag<-1
+
+td7 <-df
+td8 <-df
+
+
+merged <-rbind(td1,td2,td3,td4,td5, td6,td7,td8)
 df <-merged
 # END OF TEMP
 
@@ -73,14 +89,53 @@ t1 <- subset(df2, agecat3=="<50 years")
 t2 <- subset(df2, agecat3=="50-75 years")
 t3 <- subset(df2, agecat3=="75 years+")
 
-table(df2$agecat3)
-summary(t1$nt1_result)
-summary(t2$nt1_result)
-summary(t3$nt1_result)
-
 table(t1$diag)
 table(t2$diag)
 table(t3$diag)
+
+
+# # debug
+# 
+# d1 <-subset(t1,nt1_result>=125 & diag==1)
+# d2 <-subset(t1,nt1_result>=125 & diag==0)
+# d3 <-subset(t1,nt1_result<125 & diag==1)
+# d4 <-subset(t1,nt1_result<125 & diag==0)
+# 
+# nrow(d1)
+# nrow(d2)
+# nrow(d3)
+# nrow(d4)
+# 
+# d1 <-subset(t2,nt1_result>=125 & diag==1)
+# d2 <-subset(t2,nt1_result>=125 & diag==0)
+# d3 <-subset(t2,nt1_result<125 & diag==1)
+# d4 <-subset(t2,nt1_result<125 & diag==0)
+# 
+# nrow(d1)
+# nrow(d2)
+# nrow(d3)
+# nrow(d4)
+# 
+# d1 <-subset(t3,nt1_result>=125 & diag==1)
+# d2 <-subset(t3,nt1_result>=125 & diag==0)
+# d3 <-subset(t3,nt1_result<125 & diag==1)
+# d4 <-subset(t3,nt1_result<125 & diag==0)
+# 
+# nrow(d1)
+# nrow(d2)
+# nrow(d3)
+# nrow(d4)
+# 
+# 
+# 
+# table(df2$agecat3)
+# summary(t1$nt1_result)
+# summary(t2$nt1_result)
+# summary(t3$nt1_result)
+# 
+# table(t1$diag)
+# table(t2$diag)
+# table(t3$diag)
   
 #   Empty table with diagnostic accuracy parameters
 Test <- rep(c("nt1_result"), times = 2)
