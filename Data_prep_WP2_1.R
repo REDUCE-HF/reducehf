@@ -27,6 +27,10 @@ df <- read_csv(here::here("output", "tmp_dataset_wp2_1.csv.gz"),show_col_types =
 # Post-COVID
 # df <-.....    
 
+# Check everyone has a HF symptom date
+all(!is.na(df$first_hfsymptom_date))
+
+
 # TEMP CODE - FOR DUMMY DATASET ONLY ###########################################
 set.seed(123)
 n <- nrow(df)

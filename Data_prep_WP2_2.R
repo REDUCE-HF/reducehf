@@ -22,6 +22,9 @@ df <- read_csv(here::here("output", "tmp_dataset_wp2_2.csv.gz"),show_col_types =
 # Post-COVID
 # df <-.....    
 
+# Check everyone has a NP date
+all(!is.na(df$nt1_date))
+
 # TEMP CODE - FOR DUMMY DATASET ONLY ###########################################
 set.seed(123)
 n <- nrow(df)
@@ -158,6 +161,15 @@ df <- df %>%
 # Age
 df$age<- as.numeric(difftime(df$patient_index_date,df$dob, units="days"))/365.25
 summary(df$age)
+
+
+# Age categories
+
+df$agecat3 <- with(df, ifelse(age <50,1,
+                                ifelse(age<75,2,3)))
+df$agecat3 <- factor(df$agecat3, labels = c("<50 years", "50-75 years", "75 years+"))
+table(df$agecat3)
+
 
 # BMI
 summary(df$bmi)

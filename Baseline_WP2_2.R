@@ -39,6 +39,7 @@ FactorVars <-  c("sex", "ethnicity_cat","smoking", "ihd", "copd",
                  "substance_abuse", "smi", "non_english_sp","NT2HF_cat")
 
 # QUERY To add MLTCs
+# All have NT==1
 df1 <- subset(df, NT==1) 
 df2 <- subset(df, NT==1 & copd==1)
 df3 <- subset(df, NT==1 & copd==0)
