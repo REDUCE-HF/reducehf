@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import roc_auc_score
 
 from clustering_helpers import get_best_config
 from config import (
@@ -47,11 +48,25 @@ def train_ovr(X, labels, output_dir, random_state=42):
         
         best_dt = grid_search.best_estimator_
         
+        # Calculate training AUC on the full dataset for the best decision treee
+        y_pred_train = best_dt.predict_proba(X)[:, 1]
+        train_auc = roc_auc_score(y, y_pred_train)
+        
         cv_results_df = pd.DataFrame(grid_search.cv_results_)
         cv_results_df['cluster'] = k
+        
+        # Add training AUC to the results dataframe
+        cv_results_df['train_auc'] = np.nan
+        best_estimator_index = grid_search.best_index_
+        cv_results_df.loc[best_estimator_index, 'train_auc'] = train_auc
+        
         all_cv_results.append(cv_results_df)
         
-        print(f"Cluster {k}: Best params = {grid_search.best_params_}, Best ROC-AUC = {grid_search.best_score_:.3f}")
+        print(
+            f"Cluster {k}: Best params = {grid_search.best_params_}, "
+            f"Mean Test AUC = {grid_search.best_score_:.3f}, "
+            f"Train AUC = {train_auc:.3f}"
+        )
 
         gini = pd.Series(best_dt.feature_importances_, index=X.columns)
 
@@ -98,16 +113,6 @@ def main():
     labels = df["cluster"]  
     # Load one-hot encoded features
     X = pd.read_csv(ENCODED_MEMBERSHIP_PATH)
-
-
-    
-    # Remove continuous variables until we decide on how to handle them??? 
-    continuous_vars = [ 'mltc_count']
-    X = X.drop(columns=[col for col in continuous_vars if col in X.columns])
-    
-    X = X.fillna(0)
-    
-    print(f"Using {len(X.columns)} binary features for {len(X)} patients")
 
     combined = train_ovr(X, labels, output_dir)
 

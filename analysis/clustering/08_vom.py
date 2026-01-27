@@ -154,6 +154,9 @@ def main():
         if col in X.columns:
             X[col] = X[col].astype(int)
 
+    # Remove continuous variables and fill NaNs
+    X = X.drop(columns=[col for col in continuous_vars if col in X.columns])
+
     encoded_path = os.path.join(output_dir, "membership_features_encoded.csv")
     X.to_csv(encoded_path, index=False)
     print(f"Saved one-hot encoded features to {encoded_path}")
