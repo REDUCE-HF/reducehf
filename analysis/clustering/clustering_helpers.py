@@ -6,7 +6,12 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
 import gower_exp as gower
-from config import RAW_PATH, SCALED_PATH
+from config import (
+    RAW_PATH, SCALED_PATH,
+    MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
+    CATEGORICAL_COLS, DATE_BASED_CONDITIONS, OBESITY_DATE_COLS, OBESITY_BMI_THRESHOLD,
+    LTC_COLS, UNDERSERVED_COLS, CONDITION_TIME_WINDOW_DAYS, DIABETES_UNLIKELY_VALUE
+)
 
 # ============================================
 # Common helper functions for clustering scripts
@@ -195,3 +200,72 @@ def get_best_config(validation_results_path):
     best_config = val_df.sort_values("rank").iloc[0]["config"]
     
     return best_config
+
+
+def variance_of_means(labels, X):
+    """Calculate variance of cluster means for each feature."""
+    df = X.assign(cluster=labels)
+    df = df[df["cluster"] != -1]
+    return df.groupby("cluster").mean(numeric_only=True).var()
+
+
+def build_membership_features(df):
+    """Build membership features for cluster characterization."""
+    out = pd.DataFrame({"patient_id": df["patient_id"]})
+
+    # Convert all date columns to datetime
+    dates_df = {col: pd.to_datetime(df[col], errors="coerce") 
+             for col in MEMBERSHIP_DATE_COLS if col in df.columns}
+    
+    # Diagnosis location
+    out["diagnosis_community"], out["diagnosis_emergency"] = get_diagnosis_location(df)
+    
+    # Age bands
+    age = np.floor((dates_df["patient_index_date"] - dates_df["birth_date"]).dt.days / 365.25)
+    out["age_band"] = pd.cut(age, bins=AGE_BINS, labels=AGE_LABELS, right=False).astype("object")
+    
+    # Categorical variables - Household size
+    hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
+    out["cat_household_size"] = pd.cut(
+        hs_numeric,
+        bins=HOUSEHOLD_BINS,
+        labels=HOUSEHOLD_LABELS,
+        right=True,
+        include_lowest=True
+    ).astype("object")
+
+    out.loc[hs_numeric.isna() | (hs_numeric <= 0), "cat_household_size"] = "unknown"
+
+    for col in CATEGORICAL_COLS:
+        if col in df.columns:
+            out[col] = df[col].astype("object")
+    
+    # Create pre_existing and new conditions based on time window before hf diagnosis
+    hf_diagnosis_date = dates_df["hf_diagnosis_date"]
+    time_window = pd.Timedelta(days=CONDITION_TIME_WINDOW_DAYS)
+    
+    for condition, cols in DATE_BASED_CONDITIONS.items():
+        condition_dates = pd.DataFrame({c: dates_df.get(c) for c in cols if c in dates_df})
+        first_date = condition_dates.min(axis=1)
+        out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - time_window)).fillna(False).astype(int)
+        out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - time_window)) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
+    
+    # Obesity: combine date-based and BMI-based
+    obesity_dates = pd.DataFrame({c: dates_df.get(c) for c in OBESITY_DATE_COLS if c in dates_df})
+    obesity_from_dates = obesity_dates.notna().any(axis=1).astype(int) if not obesity_dates.empty else 0
+    obesity_bmi = (pd.to_numeric(df["bmi_value"], errors="coerce") >= OBESITY_BMI_THRESHOLD).fillna(False).astype(int)
+    out["obesity"] = ((obesity_from_dates == 1) | (obesity_bmi == 1)).astype(int)
+    
+    # Diabetes
+    out["has_diabetes"] = (df["cat_diabetes"] != DIABETES_UNLIKELY_VALUE).astype(int)
+    
+    # Multi-morbidity
+    out["mltc_count"] = out[LTC_COLS].sum(axis=1)
+    out["has_mltc"] = (out["mltc_count"] >= 2).astype(int)
+    
+    # Under-served groups
+    for col in UNDERSERVED_COLS:
+        if col in df.columns:
+            out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+    
+    return out
