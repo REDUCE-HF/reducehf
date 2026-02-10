@@ -10,7 +10,8 @@ from config import (
     RAW_PATH, SCALED_PATH,
     MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
     CATEGORICAL_COLS, DATE_BASED_CONDITIONS, OBESITY_DATE_COLS, OBESITY_BMI_THRESHOLD,
-    LTC_COLS, UNDERSERVED_COLS, CONDITION_TIME_WINDOW_DAYS, DIABETES_UNLIKELY_VALUE
+    LTC_COLS, UNDERSERVED_COLS, CONDITION_TIME_WINDOW_DAYS, DIABETES_UNLIKELY_VALUE,
+    DIAGNOSIS_PRIMARY_COL, DIAGNOSIS_HOSPITAL_COLS
 )
 
 # ============================================
@@ -55,37 +56,16 @@ def get_diagnosis_location(df):
     """
     Determine diagnosis location (community vs emergency) based on earliest diagnosis date.
     
-    Parameters
-    ----------
-    df : pd.DataFrame
-        DataFrame containing diagnosis date columns
-        
-    Returns
-    -------
-    tuple of pd.Series
-        (diagnosis_community, diagnosis_emergency) as binary indicators (0/1)
     """
-    primary_cols = ["hf_diagnosis_primary_date"]
-    hospital_cols = ["hf_diagnosis_emerg_date", "hf_diagnosis_ec_date", "hf_diagnosis_apc_date"]
-    all_diag_cols = primary_cols + hospital_cols
-    
-    # Get earliest diagnosis date overall - convert to datetime first
-    all_dates = pd.DataFrame({
-        c: pd.to_datetime(df[c], errors="coerce") 
-        for c in all_diag_cols if c in df.columns
-    })
-    earliest_overall = all_dates.min(axis=1)
-    
-    # Community diagnosis: earliest == primary care date
-    if "hf_diagnosis_primary_date" in df.columns:
-        primary_date = pd.to_datetime(df["hf_diagnosis_primary_date"], errors="coerce")
-        diagnosis_community = np.where(primary_date == earliest_overall, 1, 0)
-    else:
-        diagnosis_community = 0
-    
-    # Hospital diagnosis: inverse of community
-    diagnosis_emergency = np.where(diagnosis_community == 0, 1, 0)
-    
+    all_diag_cols = [DIAGNOSIS_PRIMARY_COL, *DIAGNOSIS_HOSPITAL_COLS]
+    diag_dates = df[all_diag_cols].apply(pd.to_datetime, errors="coerce")
+
+    primary_date = diag_dates[DIAGNOSIS_PRIMARY_COL]
+    earliest_overall = diag_dates.min(axis=1)
+
+    diagnosis_community = primary_date.eq(earliest_overall).astype(int)
+    diagnosis_emergency = (1- diagnosis_community).astype(int)
+
     return diagnosis_community, diagnosis_emergency
 
 
@@ -211,7 +191,7 @@ def variance_of_means(labels, X):
 
 def build_membership_features(df):
     """Build membership features for cluster characterization."""
-    out = pd.DataFrame({"patient_id": df["patient_id"]})
+    out = pd.DataFrame({"patient_id": df["patient_id"]},index=df.index)
 
     # Convert all date columns to datetime
     dates_df = {col: pd.to_datetime(df[col], errors="coerce") 

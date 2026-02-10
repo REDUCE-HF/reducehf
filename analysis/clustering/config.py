@@ -135,6 +135,9 @@ CONDITION_TIME_WINDOW_DAYS = 365
 # Diabetes definition
 DIABETES_UNLIKELY_VALUE = "DM unlikely"
 
+# Diagnosis location columns
+DIAGNOSIS_PRIMARY_COL = "hf_diagnosis_primary_date"
+DIAGNOSIS_HOSPITAL_COLS = ["hf_diagnosis_emerg_date", "hf_diagnosis_ec_date", "hf_diagnosis_apc_date"]
 # -------------------
 # Synthetic generation parameters
 # -------------------
@@ -183,4 +186,3 @@ FEATURE_RANGES = {
     "prescriptions_pre_6_9m": (0, 10),
     "prescriptions_pre_9_12m": (0, 10),
 }
-
