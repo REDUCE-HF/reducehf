@@ -90,10 +90,13 @@ df7 <- df
 
 df <- bind_rows(df, df2, df3, df4, df5, df6, df7)
 nrow(df)
+table(df$imd_quintile)
+
 df8 <- df
 df8$sex <- "female"
+#df$imd_quintile<-"1 (most deprived)"
 df <- bind_rows(df,df8)
-
+table(df$imd_quintile)
 
 # END OF TEMP CODE #############################################################
 
@@ -245,8 +248,8 @@ table(df$ckd)
 # IMD
 table(df$imd_quintile)
 df$deprived <- NA
-df$deprived <- ifelse(is.na(df$deprived) & df$imd_quintile=="1 (most deprived)",1,df$deprived)
-df$deprived <- ifelse(is.na(df$deprived) & df$imd_quintile!="1 (most deprived)" & df$imd_quintile!="unknown",0,df$deprived)
+df$deprived <- ifelse(is.na(df$deprived) & df$imd_quintile=="1",1,df$deprived)
+df$deprived <- ifelse(is.na(df$deprived) & df$imd_quintile!="1" & df$imd_quintile!="unknown",0,df$deprived)
 df$deprived <- ifelse(is.na(df$deprived),2,df$deprived)
 df$deprived <- factor(df$deprived, levels=0:2, labels=c("Not deprived", "Bottom quintile", "Unknown"))
 table(df$deprived)

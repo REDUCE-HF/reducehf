@@ -14,6 +14,7 @@ today=Sys.Date()
 library(lubridate)
 library(dplyr)
 library(tableone)
+library(feather)
 
 #string <-"/workspace/test/"
 
@@ -57,8 +58,9 @@ datasets <- list(df1=df1,
                  df2=df2, df3=df3, df4=df4,
                  df5=df5, df6=df6,
                  df7=df7, 
-                 #df8=df8,
-                 df9=df9, df10=df10,
+                #df8=df8,
+                 df9=df9, 
+                df10=df10,
                  df11=df11
                  )
 

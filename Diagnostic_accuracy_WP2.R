@@ -9,6 +9,7 @@ rm(list=ls())
 library(epitools)
 library(pROC)
 library(dplyr)
+library(feather)
 
 # Load dataset
 # COVID

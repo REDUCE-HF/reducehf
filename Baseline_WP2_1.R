@@ -14,6 +14,7 @@ today=Sys.Date()
 library(lubridate)
 library(dplyr)
 library(tableone)
+library(feather)
 
 #string <-"/workspace/test/"
 
@@ -61,7 +62,7 @@ datasets <- list(df1=df1, df2=df2,
                  df11=df11
                  )
 
-
+table(df$deprived) 
 for (nm in names(datasets)) {
   
   dat <- datasets[[nm]]
