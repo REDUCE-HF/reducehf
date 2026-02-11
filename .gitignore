@@ -2,6 +2,7 @@
 model.log
 */input.csv
 __pycache__
+.ipynb_checkpoints
 .python-version
 /output/*
 metadata/*
