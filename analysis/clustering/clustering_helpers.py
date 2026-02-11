@@ -52,21 +52,7 @@ def load_feature_names(raw_path=RAW_PATH):
     return raw_df.drop(columns=[id_col], errors='ignore').columns.tolist()
 
 
-def get_diagnosis_location(df):
-    """
-    Determine diagnosis location (community vs emergency) based on earliest diagnosis date.
-    
-    """
-    all_diag_cols = [DIAGNOSIS_PRIMARY_COL, *DIAGNOSIS_HOSPITAL_COLS]
-    diag_dates = df[all_diag_cols].apply(pd.to_datetime, errors="coerce")
 
-    primary_date = diag_dates[DIAGNOSIS_PRIMARY_COL]
-    earliest_overall = diag_dates.min(axis=1)
-
-    diagnosis_community = primary_date.eq(earliest_overall).astype(int)
-    diagnosis_emergency = (1- diagnosis_community).astype(int)
-
-    return diagnosis_community, diagnosis_emergency
 
 
 def compute_gower(X):
@@ -188,6 +174,21 @@ def variance_of_means(labels, X):
     df = df[df["cluster"] != -1]
     return df.groupby("cluster").mean(numeric_only=True).var()
 
+def get_diagnosis_location(df):
+    """
+    Determine diagnosis location (community vs emergency) based on earliest diagnosis date.
+    
+    """
+    all_diag_cols = [DIAGNOSIS_PRIMARY_COL, *DIAGNOSIS_HOSPITAL_COLS]
+    diag_dates = df[all_diag_cols].apply(pd.to_datetime, errors="coerce")
+
+    primary_date = diag_dates[DIAGNOSIS_PRIMARY_COL]
+    earliest_overall = diag_dates.min(axis=1)
+
+    diagnosis_community = primary_date.eq(earliest_overall).astype(int)
+    diagnosis_emergency = (1- diagnosis_community).astype(int)
+
+    return diagnosis_community, diagnosis_emergency
 
 def build_membership_features(df):
     """Build membership features for cluster characterization."""
