@@ -1,5 +1,6 @@
 # Diagnostic_accuracy_WP2.R
 # Script for diagnostic accuracy of NP testing for WP2 of the REDUCE HF project
+# By age group for each core group, with age-specific thresholds - WRONG!
 # KS Taylor
 
 rm(v)
@@ -48,7 +49,7 @@ merged <-rbind(td1,td2,td3,td4,td5, td6,td7,td8)
 df <-merged
 # END OF TEMP
 
-# Select dataset
+# Select dataset 
 # QUERY To add MLTCs
 # All have NT==1
 df2 <- subset(df, NT==1) 

@@ -24,8 +24,15 @@ df <- read_csv(here::here("output", "tmp_dataset_wp2_2.csv.gz"),show_col_types =
 
 # Check everyone has a NP date
 all(!is.na(df$nt1_date))
+all(!is.na(df$nt1_result))
+all(!is.na(df$death_date))
 
 # TEMP CODE - FOR DUMMY DATASET ONLY ###########################################
+
+# Extracts all columns with "COPD" in their name    
+vars <- names(df)[grep("copd",names(df))]
+vars
+
 set.seed(123)
 n <- nrow(df)
 
