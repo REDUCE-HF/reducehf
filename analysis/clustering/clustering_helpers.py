@@ -245,7 +245,6 @@ def build_membership_features(df):
     
     # Under-served groups
     for col in UNDERSERVED_COLS:
-        if col in df.columns:
-            out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+        out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
     
     return out
