@@ -225,14 +225,14 @@ def build_membership_features(df):
     time_window = pd.Timedelta(days=CONDITION_TIME_WINDOW_DAYS)
     
     for condition, cols in DATE_BASED_CONDITIONS.items():
-        condition_dates = pd.DataFrame({c: dates_df.get(c) for c in cols if c in dates_df})
+        condition_dates = pd.DataFrame({c: dates_df.get(c) for c in cols })
         first_date = condition_dates.min(axis=1)
         out[f"{condition}_preexisting"] = (first_date < (hf_diagnosis_date - time_window)).fillna(False).astype(int)
         out[f"{condition}_new"] = ((first_date >= (hf_diagnosis_date - time_window)) & (first_date <= hf_diagnosis_date)).fillna(False).astype(int)
     
     # Obesity: combine date-based and BMI-based
-    obesity_dates = pd.DataFrame({c: dates_df.get(c) for c in OBESITY_DATE_COLS if c in dates_df})
-    obesity_from_dates = obesity_dates.notna().any(axis=1).astype(int) if not obesity_dates.empty else 0
+    obesity_dates = pd.DataFrame({c: dates_df.get(c) for c in OBESITY_DATE_COLS })
+    obesity_from_dates = obesity_dates.notna().any(axis=1).astype(int) 
     obesity_bmi = (pd.to_numeric(df["bmi_value"], errors="coerce") >= OBESITY_BMI_THRESHOLD).fillna(False).astype(int)
     out["obesity"] = ((obesity_from_dates == 1) | (obesity_bmi == 1)).astype(int)
     
