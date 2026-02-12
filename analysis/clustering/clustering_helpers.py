@@ -196,7 +196,7 @@ def build_membership_features(df):
 
     # Convert all date columns to datetime
     dates_df = {col: pd.to_datetime(df[col], errors="coerce") 
-             for col in MEMBERSHIP_DATE_COLS if col in df.columns}
+             for col in MEMBERSHIP_DATE_COLS }
     
     # Diagnosis location
     out["diagnosis_community"], out["diagnosis_emergency"] = get_diagnosis_location(df)
@@ -218,8 +218,7 @@ def build_membership_features(df):
     out.loc[hs_numeric.isna() | (hs_numeric <= 0), "cat_household_size"] = "unknown"
 
     for col in CATEGORICAL_COLS:
-        if col in df.columns:
-            out[col] = df[col].astype("object")
+        out[col] = df[col].astype("object")
     
     # Create pre_existing and new conditions based on time window before hf diagnosis
     hf_diagnosis_date = dates_df["hf_diagnosis_date"]
