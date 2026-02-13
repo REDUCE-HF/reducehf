@@ -252,7 +252,6 @@ def build_membership_features(df):
         out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
     
     return out
-<<<<<<< Updated upstream
 
 def make_ovr_labels(labels, cluster_id):
     """Binary labels: 1 = in cluster, 0 = outside."""
@@ -337,4 +336,4 @@ def train_ovr(X, labels, output_dir, random_state=42):
 
 =======
     
->>>>>>> Stashed changes
+
