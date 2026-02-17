@@ -333,14 +333,3 @@ def train_ovr(X, labels, output_dir, random_state=42):
           .sort_values(["cluster", "gini_importance"], ascending=[True, False])
     )
 
-
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
-=======
-
->>>>>>> Stashed changes
-    
-
