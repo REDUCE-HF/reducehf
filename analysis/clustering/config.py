@@ -109,7 +109,7 @@ HOUSEHOLD_LABELS = ["1", "2", ">=3"]
 
 # Categorical columns to preserve as-is
 CATEGORICAL_COLS = ["sex", "ethnicity_cat", "imd_quintile", "region", 
-                    "rural_urban", "cat_diabetes", "smoking", "cat_household_size"]
+                    "rural_urban", "cat_diabetes", "smoking"]
 
 # Date-based conditions: map condition name to its date columns
 DATE_BASED_CONDITIONS = {
