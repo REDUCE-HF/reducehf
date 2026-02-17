@@ -222,6 +222,8 @@ def build_membership_features(df):
     out.loc[hs_numeric.isna() | (hs_numeric <= 0), "cat_household_size"] = "unknown"
 
     for col in CATEGORICAL_COLS:
+        if col=="cat_household_size":
+            continue
         out[col] = df[col].astype("object")
     
     # Create pre_existing and new conditions based on time window before hf diagnosis
