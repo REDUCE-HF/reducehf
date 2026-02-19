@@ -27,6 +27,7 @@ df <- read_csv(here::here("output", "tmp_dataset_wp2_1.csv.gz"),show_col_types =
 # Post-COVID
 # df <-.....    
 
+        
 # Check everyone has a HF symptom date
 all(!is.na(df$first_hfsymptom_date))
 
@@ -101,10 +102,19 @@ df$echo_ref_near_symptom <- df$np_near_symptom
 
 nrow(df)
 
+df2 <- df
+df3 <- df
+df4 <- df
+df5 <- df
+df6 <- df
+df7 <- df
 
-
-
+df <- bind_rows(df, df2, df3, df4, df5, df6, df7)
+nrow(df)
+table(df$np_near_symptom)
+rm(df2,df3,df4,df5,df6,df7)
 # END OF TEMP CODE #############################################################
+table(df$np_near_symptom)
 
 
 # Start date and end dates define the population - applied by Charlotte 
@@ -127,6 +137,10 @@ sum(is.na(df$first_hfsymptom_date))
 # first_hfsymptom_date (cohort entry date) is the date of first HF symptom between patient index date and study end date
 
 # Additional exclusions for WP2_1
+ 
+sum(!is.na(df$np_near_symptom_first) & !is.na(df$patient_index_date) & df$np_near_symptom_first<df$patient_index_date)
+
+# 0
 
 # HF symptom before patient_index_date
 sum(df$symptom_pre_index==TRUE)
@@ -137,6 +151,7 @@ df <- df[df$symptom_pre_index==FALSE,]
 sum(!is.na(df$hf_diagnosis_date) & !is.na(df$first_hfsymptom_date) & df$hf_diagnosis_date<df$first_hfsymptom_date)
 # 74
 df <-df[!(!is.na(df$hf_diagnosis_date) & !is.na(df$first_hfsymptom_date) & df$hf_diagnosis_date<df$first_hfsymptom_date),]
+table(df$np_near_symptom)
 
 
 # Reads dates as characters if all are NA
@@ -356,6 +371,7 @@ table(df$np_near_symptom)
 df$near_np <- factor(df$np_near_symptom, levels=c(FALSE, TRUE), 
        labels=c("No","Yes"))
 table(df$near_np)
+table(df$np_near_symptom)
 
 
 # Echo done near symptom
@@ -396,8 +412,10 @@ prop.table(table(df$NP2symp_cat))*100
 # May only select certain variables
 # keep <- c(......)
 # df <- df[,keep]
+table(df$np_near_symptom)
 
 # Save file for analysis
 # Using feather as it compresses and preserves column types
 write_feather(df,"/workspace/test/file4analysisWP2_1_COVID.feather")
+
 #write_feather(df,"/workspace/test/file4analysisWP2_1_postCOVID.feather")

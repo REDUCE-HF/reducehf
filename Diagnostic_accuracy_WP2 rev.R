@@ -347,8 +347,6 @@ nrow(d4)
 
 #   Empty table with diagnostic accuracy parameters
 Test <- rep(c("nt1_result"), times = 3)
-# TEMP replacing 2000 with 400
-#Cutoff <- c(125,400,2000)
 Cutoff <- c(125,400,2000)
 tab1 <- data.frame(Test, Cutoff, N = NA,
                    TP = NA, FN = NA, FP = NA, TN = NA,
@@ -452,8 +450,6 @@ summary(df2$nt1_result)
 
 #   Empty table with diagnostic accuracy parameters
 Test <- rep(c("nt1_result"), times = 3)
-# TEMP replacing 2000 with 400
-#Cutoff <- c(125,400,2000)
 Cutoff <- c(125,400,2000)
 tab1 <- data.frame(Test, Cutoff, N = NA,
                    TP = NA, FN = NA, FP = NA, TN = NA,
@@ -556,7 +552,7 @@ summary(df2$nt1_result)
 
 #   Empty table with diagnostic accuracy parameters
 Test <- rep(c("nt1_result"), times = 3)
-# TEMP replacing 2000 with 400
+# TEMP 
 #Cutoff <- c(125,400,2000)
 Cutoff <- c(125,400,700)
 tab1 <- data.frame(Test, Cutoff, N = NA,
@@ -670,7 +666,7 @@ nrow(d4)
 
 #   Empty table with diagnostic accuracy parameters
 Test <- rep(c("nt1_result"), times = 3)
-# TEMP replacing 2000 with 400
+# TEMP 
 #Cutoff <- c(125,400,2000)
 Cutoff <- c(125,400,700)
 tab1 <- data.frame(Test, Cutoff, N = NA,
@@ -914,7 +910,7 @@ summary(d6$nt1_result)
 
 #   Empty table with diagnostic accuracy parameters
 Test <- rep(c("nt1_result"), times = 3)
-# TEMP replacing 2000 with 400
+# TEMP 
 #Cutoff <- c(125,400,2000)
 Cutoff <- c(125,125,125)
 tab1 <- data.frame(Test, Cutoff, N = NA,

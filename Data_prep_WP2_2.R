@@ -98,12 +98,12 @@ df7 <- df
 df <- bind_rows(df, df2, df3, df4, df5, df6, df7)
 nrow(df)
 table(df$imd_quintile)
-
 df8 <- df
 df8$sex <- "female"
 #df$imd_quintile<-"1 (most deprived)"
 df <- bind_rows(df,df8)
 table(df$imd_quintile)
+rm(df2,df3,df4,df5,df6,df7,df8)
 
 # END OF TEMP CODE #############################################################
 
