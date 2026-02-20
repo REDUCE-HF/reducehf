@@ -4,13 +4,68 @@ from functions.lib import *
 # Health Service Use
 ####################
 
-def fn(dataset, earliest_date, index_date):
+def hsu(dataset, earliest_date, index_date):
 
     '''
-    add variables measuring health service use
-    only needed for WP3 (?)
+    Purpose
+    =======
+    Add variables measuring health service use.
 
+    **Parameters**
+
+        - ``dataset`` : dataset object initialised using ehrql.create_dataset()
+        - `earliest_date` : str, the earliest date to look back in a patient's EHR data
+        - ``index_date`` : str, the date that a patient enters the cohort (defined in `demog`)
+
+    **Variables added**
+
+    *COPD specific*
+
+        - ``copd_ed_attendances_pre_*`` : Number of ED attendances with primary diagnosis of COPD exacerbation in time period before HF diagnosis
+        - ``copd_ed_attendances_post_*`` : Number of ED attendances with primary diagnosis of COPD exacerbation in time period after HF diagnosis
+        
+        - ``copd_primary_care_attendances_pre_*`` : Number of primary care attendances with primary diagnosis of COPD exacerbation in time period before HF diagnosis
+        - ``copd_primary_care_attendances_post_*`` : Number of primary care attendances with primary diagnosis of COPD exacerbation in time period after HF diagnosis
+
+        - ``copd_hospital_admissions_pre_*`` : Number of inpatient admissions with primary diagnosis of COPD exacerbation in time period before HF diagnosis
+        - ``copd_hospital_admissions_post_*`` : Number of inpatient admissions with primary diagnosis of COPD exacerbation in time period after HF diagnosis
+
+        - ``copd_prescriptions_pre_*`` : Number of prescriptions for COPD medications in time period before HF diagnosis
+        - ``copd_prescriptions_post_*`` : Number of prescriptions for COPD medications in time period after HF diagnosis
+
+    *General*
+
+        - ``ed_attendances_pre_*`` : Number of ED attendances in time period before HF diagnosis
+        - ``ed_attendances_post_*`` : Number of ED attendancesin time period after HF diagnosis
+        
+        - ``primary_care_attendances_pre_*`` : Number of primary care attendances in time period before HF diagnosis
+        - ``primary_care_attendances_post_*`` : Number of primary care attendances in time period after HF diagnosis
+
+        - ``hospital_admissions_pre_*`` : Number of inpatient admissions in time period before HF diagnosis
+        - ``hospital_admissions_post_*`` : Number of inpatient admissions in time period after HF diagnosis
+
+        - ``prescriptions_pre_*`` : Number of prescriptions in time period before HF diagnosis
+        - ``prescriptions_post_*`` : Number of prescriptions in time period after HF diagnosis
+
+    *WP 3.1*
+
+    In wp3.1, health service use variables are for time periods ``3m``, ``6m``, and ``12m``. For each variable, ``*`` represents any of these time periods.
+
+    *WP 3.2*
+
+    In wp3.2, health service use variables are for time periods ``0_3m``, ``3_6m``, ``6_9m`` and ``9_12m``. For each variable under ``General``, ``*`` represents any of these time periods. Wp3.2 doesn't include COPD specific health service use.
+
+    **Annual reviews**
+
+        - ``asthma_review_date`` : date of most recent asthma review prior to HF diagnosis
+        - ``copd_review_date`` : date of most recent COPD review prior to HF diagnosis
+        - ``med_review_date`` : date of most recent medication review prior to HF diagnosis
+
+    **Returns**
+
+        - ``dataset`` : input dataset modified to include variables added
     '''
+
 
     # Filter datasets for better efficiency
     before_gp_events = filter_gp_events(earliest_date, index_date)
@@ -39,25 +94,25 @@ def fn(dataset, earliest_date, index_date):
 
         #use in time period after index_date - COPD specific
         dataset.add_column('copd_ed_attendances_post_'+time_name,
-            ed_attendances(
+            count_ed_attendances(
                 ed_events_1, index_date, index_date + time,
                 where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_primary_care_attendances_post_'+time_name,
-            primary_care_attendances(
+            count_primary_care_attendances(
                 gp_events_1, index_date, index_date + time,
                 where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_hospital_admissions_post_'+time_name,
-            hospital_admissions(
+            count_hospital_admissions(
                 apc_events_1, index_date, index_date + time,
                 where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
                 )
             )
         dataset.add_column('copd_prescriptions_post_' + time_name,
-            prescriptions_count(
+            count_prescriptions(
                 med_events_1, index_date, index_date + time,
                 where=medications.dmd_code.is_in(copd_medications)
                 )
@@ -65,59 +120,59 @@ def fn(dataset, earliest_date, index_date):
 
         #use in time period after index_date - general
         dataset.add_column('ed_attendances_post_'+time_name, 
-            ed_attendances(
+            count_ed_attendances(
                 ed_events_1, index_date, index_date + time
                 )
             )
         dataset.add_column('primary_care_attendances_post_'+time_name, 
-            primary_care_attendances(
+            count_primary_care_attendances(
                 gp_events_1, index_date, index_date + time
                 )
             )
         dataset.add_column('hospital_admissions_post_'+time_name, 
-            hospital_admissions(
+            count_hospital_admissions(
                 apc_events_1, index_date, index_date + time
                 )
             )
 
         #use in time period before index_date - general
         dataset.add_column('ed_attendances_pre_'+time_name, 
-            ed_attendances(
+            count_ed_attendances(
                 ed_events_2, index_date - time, index_date
                 )
             )
         dataset.add_column('primary_care_attendances_pre_'+time_name, 
-            primary_care_attendances(
+            count_primary_care_attendances(
                 gp_events_2, index_date - time, index_date
                 )
             )
         dataset.add_column('hospital_admissions_pre_'+time_name, 
-            hospital_admissions(
+            count_hospital_admissions(
                 apc_events_2, index_date - time, index_date
                 )
             )
 
         #use in time period before index_date - COPD specific
         dataset.add_column('copd_ed_attendances_pre_'+time_name,
-            ed_attendances(
+            count_ed_attendances(
                 ed_events_2, index_date - time, index_date,
                 where=eca.diagnosis_01.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_primary_care_attendances_pre_'+time_name,
-            primary_care_attendances(
+            count_primary_care_attendances(
                 gp_events_2, index_date - time, index_date,
                 where=clinical_events.snomedct_code.is_in(copd_exacerbations_snomed)
                 )
             )
         dataset.add_column('copd_hospital_admissions_pre_'+time_name,
-            hospital_admissions(
+            count_hospital_admissions(
                 apc_events_2, index_date - time, index_date,
                 where=apcs.primary_diagnosis.is_in(copd_exacerbations_icd10)
                 )
             )
         dataset.add_column('copd_prescriptions_pre' + time_name,
-            prescriptions_count(
+            count_prescriptions(
                 med_events_2, index_date - time, index_date,
                 where=medications.dmd_code.is_in(copd_medications)
                 )
@@ -141,31 +196,31 @@ def fn(dataset, earliest_date, index_date):
         if time_name.split('_')[0] == 'post':
             #use in time period after index_date
             dataset.add_column('ed_attendances_'+time_name, 
-                ed_attendances(ed_events_2, start, end)
+                count_ed_attendances(ed_events_2, start, end)
                 )
             dataset.add_column('primary_care_attendances_'+time_name, 
-                primary_care_attendances(gp_events_2, start,end)
+                count_primary_care_attendances(gp_events_2, start,end)
                 )
             dataset.add_column('hospital_admissions_'+time_name,
-                hospital_admissions(apc_events_2, start,end)
+                count_hospital_admissions(apc_events_2, start,end)
                 )
             dataset.add_column('prescriptions_' + time_name, 
-                prescriptions_count(med_events_2, start, end)
+                count_prescriptions(med_events_2, start, end)
                 )
             
         else:
             #use in time period before index date
             dataset.add_column('ed_attendances_'+time_name, 
-                ed_attendances(ed_events_1, start, end)
+                count_ed_attendances(ed_events_1, start, end)
                 )
             dataset.add_column('primary_care_attendances_'+time_name, 
-                primary_care_attendances(gp_events_1, start,end)
+                count_primary_care_attendances(gp_events_1, start,end)
                 )
             dataset.add_column('hospital_admissions_'+time_name,
-                hospital_admissions(apc_events_1, start,end)
+                count_hospital_admissions(apc_events_1, start,end)
                 )
             dataset.add_column('prescriptions_' + time_name, 
-                prescriptions_count(med_events_1, start, end)
+                count_prescriptions(med_events_1, start, end)
                 )
             
     ## annual reviews

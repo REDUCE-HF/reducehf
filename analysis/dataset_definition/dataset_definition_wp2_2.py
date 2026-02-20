@@ -28,7 +28,7 @@ dataset = create_dataset()
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
-earliest_date = config.earliest
+earliest_date = config.earliest_date
 
 #NOTE: when running from terminal, increase the memory allocation (-m flag)
 #or decrease population_size. Default memory is 4G. This will run with 8G.
@@ -41,16 +41,16 @@ dataset.configure_dummy_data(
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #demographic variables derived based on start_date
-dataset = demog.fn(dataset, start_date, end_date)
+dataset = demog(dataset, start_date, end_date)
 
 #quality assurance
-dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
+dataset = quality_assurance(dataset, earliest_date, dataset.patient_index_date)
 
 #hf exclusion
-dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
+dataset = hf_exclude(dataset, earliest_date, dataset.patient_index_date)
 
 #exclusion vars for WP2 only
-dataset = wp2_exclude.fn(dataset, earliest_date, dataset.patient_index_date, end_date, objective=2)
+dataset = wp2_exclude(dataset, earliest_date, dataset.patient_index_date, end_date, objective=2)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -95,14 +95,14 @@ dataset.define_population(
 # ADD VARIABLES NEEDED FOR WP2_2
 
 #hf diagnosis
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
+dataset = hf_diagnosis(dataset, dataset.patient_index_date, end_date)
 
-dataset = np_vars.fn(dataset, dataset.patient_index_date, end_date, objective=2)
+dataset = np_vars(dataset, dataset.patient_index_date, end_date, objective=2)
 
-dataset = location.fn(dataset, dataset.nt1_date)
+dataset = location(dataset, dataset.nt1_date)
 
-dataset = comorbidities.fn(dataset, earliest_date, dataset.nt1_date)
+dataset = comorbidities(dataset, earliest_date, dataset.nt1_date)
 
-dataset = time_dependent.fn(dataset, dataset.nt1_date)
+dataset = time_dependent(dataset, dataset.nt1_date)
 
-dataset = underserved.fn(dataset, earliest_date, dataset.nt1_date, end_date)
+dataset = underserved(dataset, earliest_date, dataset.nt1_date, end_date)

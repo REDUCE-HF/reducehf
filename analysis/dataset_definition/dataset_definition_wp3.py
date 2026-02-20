@@ -28,7 +28,7 @@ dataset = create_dataset()
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
-earliest_date = config.earliest
+earliest_date = config.earliest_date
 
 dataset.configure_dummy_data(
     population_size=10000,
@@ -39,16 +39,16 @@ dataset.configure_dummy_data(
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #demographic variables derived based on start_date
-dataset = demog.fn(dataset, start_date, end_date)
+dataset = demog(dataset, start_date, end_date)
 
 #quality assurance
-dataset = quality_assurance.fn(dataset, earliest_date, dataset.patient_index_date)
+dataset = quality_assurance(dataset, earliest_date, dataset.patient_index_date)
 
 #hf exclude
-dataset = hf_exclude.fn(dataset, earliest_date, dataset.patient_index_date)
+dataset = hf_exclude(dataset, earliest_date, dataset.patient_index_date)
 
 #hf diagnosis
-dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
+dataset = hf_diagnosis(dataset, dataset.patient_index_date, end_date)
 
 #DEFINE POPULATION (inclusion/exclusion criteria)
 #note: this will be different for each WP
@@ -89,12 +89,12 @@ dataset.define_population(
 
 # ADD VARIABLES NEEDED FOR WP3
 
-dataset = location.fn(dataset, dataset.hf_diagnosis_date)
+dataset = location(dataset, dataset.hf_diagnosis_date)
 
-dataset = time_dependent.fn(dataset, dataset.hf_diagnosis_date)
+dataset = time_dependent(dataset, dataset.hf_diagnosis_date)
 
-dataset = hsu.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+dataset = hsu(dataset, earliest_date, dataset.hf_diagnosis_date)
 
-dataset = comorbidities.fn(dataset, earliest_date, dataset.hf_diagnosis_date)
+dataset = comorbidities(dataset, earliest_date, dataset.hf_diagnosis_date)
 
-dataset = underserved.fn(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)
+dataset = underserved(dataset, earliest_date, dataset.hf_diagnosis_date, end_date)

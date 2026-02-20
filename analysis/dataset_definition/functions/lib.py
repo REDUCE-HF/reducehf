@@ -1,4 +1,4 @@
-from ehrql import (
+from ehrql.query_language import (
     case,
     when,
     years,
@@ -21,7 +21,11 @@ from ehrql.tables.tpp import (
     
 )
 
-from .helper_functions import *
+from .ehrql_helpers.first import *
+from .ehrql_helpers.last import *
+from .ehrql_helpers.count import *
+from .ehrql_helpers.ranges import *
+from .ehrql_helpers.filter import *
 
 from .codelists import *
 

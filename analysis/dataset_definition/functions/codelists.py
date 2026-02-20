@@ -305,7 +305,7 @@ hf_ecds = codelist_from_csv(
     column = "code"
 )
 
-hf_exclude = codelist_from_csv(
+hf_exclude_ = codelist_from_csv(
     "codelists/reducehf-heart-failure-broad-for-excluding-people.csv",
     column = "code"
 )
@@ -437,10 +437,17 @@ housebound = codelist_from_csv(
     column="code"
 )
 
+'''
+housebound: primary care
+'''
+
 no_longer_housebound = codelist_from_csv(
     "codelists/opensafely-not-house-bound.csv",
     column="code"
 )
+'''
+housebound resolved: primary care
+'''
 
 homeless = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-homeless_cod.csv",
@@ -448,9 +455,6 @@ homeless = codelist_from_csv(
 )
 
 '''
-Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
--  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
--  oedema: not currently available - need to create
--  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
+homeless: primary care
 '''
 
