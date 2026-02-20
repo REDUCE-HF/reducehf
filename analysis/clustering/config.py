@@ -7,6 +7,12 @@ import os
 import numpy as np
 
 # -------------------
+# OpenSafely disclosure threshold
+# -------------------
+
+DISCLOSURE_THRESHOLD = 7
+
+# -------------------
 # Paths
 # -------------------
 # Project root directory (3 levels up from this file: analysis/clustering/config.py -> reducehf/)
@@ -193,5 +199,6 @@ FEATURE_RANGES = {
     "prescriptions_pre_6_9m": (0, 10),
     "prescriptions_pre_9_12m": (0, 10),
 }
+
 
 

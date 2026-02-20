@@ -313,8 +313,10 @@ def train_ovr(X, labels, output_dir, random_state=42):
     all_results = []
 
     for k in clusters:
+        if k == -1:
+            continue  # Skip noise cluster
         y = make_ovr_labels(labels, k)
-
+        print(f"{labels.value_counts()[k]} samples in cluster {k}")
         grid = fit_decision_tree_cv(X, y, param_grid, random_state)
         best_model = grid.best_estimator_
 
