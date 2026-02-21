@@ -16,10 +16,11 @@ from ehrql import (
 
 from functions.core import(
     location,
-    hf_exclude,
     time_dependent,
     underserved,
     )
+
+from functions.hf import hf_exclude
 
 dataset = create_dataset()
 

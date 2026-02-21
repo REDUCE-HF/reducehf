@@ -13,8 +13,9 @@ from ehrql import (
 from functions.core import(
     demog,
     quality_assurance,
-    hf_exclude,
     )
+
+from functions.hf import hf_exclude
 
 dataset = create_dataset()
 

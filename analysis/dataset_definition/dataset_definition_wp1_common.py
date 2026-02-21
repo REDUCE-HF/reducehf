@@ -14,12 +14,12 @@ from functions.core import(
     demog,
     location,
     quality_assurance,
-    hf_exclude,
-    hf_diagnosis,
     time_dependent,
     underserved,
     comorbidities
     )
+
+from functions.hf import hf_diagnosis, hf_exclude
 
 dataset = create_dataset()
 
@@ -36,7 +36,7 @@ dataset.configure_dummy_data(
 #ADD VARIABLES NEEDED FOR INCLUSION/EXCLUSION
 
 #demographic variables derived based on start_date
-dataset = demog(dataset, start_date, end_date)
+dataset = demog(dataset, start_date)
 
 #quality assurance
 dataset = quality_assurance(dataset, earliest_date, end_date)

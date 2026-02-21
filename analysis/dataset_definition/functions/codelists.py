@@ -1,5 +1,8 @@
-from ehrql import codelist_from_csv
+'''
+Codelists as variables
+'''
 
+from ehrql import codelist_from_csv
 
 # Ethnicity
 ethnicity_codes = codelist_from_csv(
@@ -341,12 +344,40 @@ breathless_snomed = codelist_from_csv(
     "codelists/reducehf-beathlessness4all.csv",
     column="code"
 )   
+
+'''
+breathlessness: primary care
+
+codelist : reducehf-beathlessness4all
+
+.. python::
+
+    breathless_snomed = codelist_from_csv(
+        "codelists/reducehf-beathlessness4all.csv",
+        column="code"
+    )   
+'''
+
 # HF-related oedema
 
 oedema_snomed = codelist_from_csv(
     "codelists/reducehf-oedema4all.csv",
     column="code"
 ) 
+
+'''
+oedema: primary care
+
+codelist : rreducehf-oedema4all
+
+.. python::
+
+    oedema_snomed = codelist_from_csv(
+        "codelists/reducehf-oedema4all.csv",
+        column="code"
+    ) 
+'''
+
 # HF-related fatigue
 
 fatigue_snomed = codelist_from_csv(
@@ -354,17 +385,57 @@ fatigue_snomed = codelist_from_csv(
     column="code"
 ) 
 
+'''
+fatigue: primary care
+
+codelist : reducehf-fatigue4all
+
+.. python::
+
+    fatigue_snomed = codelist_from_csv(
+        "codelists/reducehf-fatigue4all.csv",
+        column="code"
+    ) 
+'''
+
 # NP testing 
 
 NTpro_snomed = codelist_from_csv(
     "codelists/reducehf-ntpro-num-only.csv",
     column="code"
 )
+'''
+NTpro-BNP test: primary care
+
+codelist : reducehf-ntpro-num-only
+
+.. python::
+
+    NTpro_snomed = codelist_from_csv(
+        "codelists/reducehf-ntpro-num-only.csv",
+        column="code"
+    )
+
+'''
+
 
 NP_snomed = codelist_from_csv(
     "codelists/reducehf-np-any.csv",
     column="code"
 ) 
+
+'''
+NP test: primary care
+
+codelist : reducehf-np-any
+
+.. python::
+
+    NP_snomed = codelist_from_csv(
+        "codelists/reducehf-np-any.csv",
+        column="code"
+    ) 
+'''
 
 #Echocardiography referral
 
@@ -372,12 +443,38 @@ echo_ref=codelist_from_csv(
     "codelists/reducehf-echocardiography-referral.csv",
     column="code"
 )
+
+'''
+ECG referral: primary care
+
+codelist : reducehf-echocardiography-referral
+
+.. python::
+    echo_ref=codelist_from_csv(
+        "codelists/reducehf-echocardiography-referral.csv",
+        column="code"
+    )
+
+'''
+
 #Echocardiography has been completed
 echo_done=codelist_from_csv(
     "codelists/reducehf-echocardiography-result.csv",
     column="code"
 )
 
+'''
+ECG done: primary care
+
+codelist: reducehf-echocardiography-result
+
+.. python::
+    echo_done=codelist_from_csv(
+        "codelists/reducehf-echocardiography-result.csv",
+        column="code"
+    )
+
+'''
 
 #BP
 
@@ -386,10 +483,36 @@ systolic_bp = codelist_from_csv(
     column="code"
 )
 
+'''
+systolic BP: primary care
+
+codelist: opensafely-systolic-blood-pressure-qof
+
+.. python::
+
+    systolic_bp = codelist_from_csv(
+        "codelists/opensafely-systolic-blood-pressure-qof.csv",
+        column="code"
+    )
+'''
+
 diastolic_bp = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-diabp_cod.csv",
     column="code"
 )
+
+'''
+diastolic BP: primary care
+
+codelist: nhsd-primary-care-domain-refsets-diabp_cod
+
+.. python::
+
+    diastolic_bp = codelist_from_csv(
+        "codelists/nhsd-primary-care-domain-refsets-diabp_cod.csv",
+        column="code"
+    )
+'''
 
 # Annual reviews
 
@@ -398,15 +521,54 @@ asthma_review = codelist_from_csv(
     column="code"
 )
 
+'''
+asthma annual review: primary care
+
+codelist: opensafely-asthma-annual-review-qof
+
+.. python::
+
+    asthma_review = codelist_from_csv(
+        "codelists/opensafely-asthma-annual-review-qof.csv",
+        column="code"
+    )
+'''
+
 copd_review = codelist_from_csv(
     "codelists/opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof.csv",
     column="code"
 )
+'''
+COPD annual review: primary care
+
+codelist: opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof
+
+.. python::
+    copd_review = codelist_from_csv(
+        "codelists/opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof.csv",
+        column="code"
+    )
+
+'''
 
 med_review = codelist_from_csv(
     "codelists/opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv",
     column="code"
 )
+
+'''
+medication annual review: primary care
+
+codelist: opensafely-care-planning-medication-review-simple-reference-set-nhs-digital
+
+.. python::
+
+    med_review = codelist_from_csv(
+        "codelists/opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv",
+        column="code"
+    )
+
+'''
 
 
 # Myocardial infarction - secondary care
@@ -415,6 +577,20 @@ mi_icd10 = codelist_from_csv(
     column="code"
 )
 
+'''
+myocardial infarcation: secondary care
+
+codelist: reducehf-myocardial-infarction-icd10
+
+.. python::
+
+    mi_icd10 = codelist_from_csv(
+        "codelists/reducehf-myocardial-infarction-icd10.csv",
+        column="code"
+    )
+
+'''
+
 
 #underserved
 migrant = codelist_from_csv(
@@ -422,15 +598,55 @@ migrant = codelist_from_csv(
     column="code"
 )
 
+'''
+migrant: primary care
+
+codelist: user-YaminaB-migration-status
+
+.. python::
+
+    migrant = codelist_from_csv(
+        "codelists/user-YaminaB-migration-status.csv",
+        column="code"
+    )
+'''
+
 non_english_speaking = codelist_from_csv(
     "codelists/reducehf-non-english-speaking.csv",
     column="code"
 )
 
+'''
+non english speaking: primary care
+
+codelist: reducehf-non-english-speaking
+
+.. python::
+
+    non_english_speaking = codelist_from_csv(
+        "codelists/reducehf-non-english-speaking.csv",
+        column="code"
+    )
+
+'''
+
 substance_abuse = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-illsub_cod.csv",
     column="code"
 )
+
+'''
+substance abuse: primary care
+
+codelist: nhsd-primary-care-domain-refsets-illsub_cod
+
+.. python::
+
+    substance_abuse = codelist_from_csv(
+        "codelists/nhsd-primary-care-domain-refsets-illsub_cod.csv",
+        column="code"
+    )
+'''
 
 housebound = codelist_from_csv(
     "codelists/opensafely-house-bound.csv",
@@ -439,6 +655,16 @@ housebound = codelist_from_csv(
 
 '''
 housebound: primary care
+
+codelist: opensafely-house-bound
+
+.. python::
+
+    housebound = codelist_from_csv(
+        "codelists/opensafely-house-bound.csv",
+        column="code"
+    )
+
 '''
 
 no_longer_housebound = codelist_from_csv(
@@ -447,6 +673,15 @@ no_longer_housebound = codelist_from_csv(
 )
 '''
 housebound resolved: primary care
+
+codelist: opensafely-not-house-bound
+
+.. python::
+
+    no_longer_housebound = codelist_from_csv(
+        "codelists/opensafely-not-house-bound.csv",
+        column="code"
+    )
 '''
 
 homeless = codelist_from_csv(
@@ -456,5 +691,14 @@ homeless = codelist_from_csv(
 
 '''
 homeless: primary care
+
+codelist: nhsd-primary-care-domain-refsets-homeless_cod
+
+.. python::
+
+    homeless = codelist_from_csv(
+        "codelists/nhsd-primary-care-domain-refsets-homeless_cod.csv",
+        column="code"
+    )
 '''
 
