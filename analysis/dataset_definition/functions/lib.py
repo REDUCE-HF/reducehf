@@ -30,10 +30,10 @@ Library imports
 
 
     from .ehrql_helpers import (first,
-                                last,
-                                count,
-                                filter
-                                )
+        last,
+        count,
+        filter
+     )
 
     from .codelists import *
 
@@ -65,10 +65,10 @@ from ehrql.tables.tpp import (
 
 
 from .ehrql_helpers import (first,
-                            last,
-                            count,
-                            filter
-                            )
+    last,
+    count,
+    filter
+)
 
 from .codelists import *
 
