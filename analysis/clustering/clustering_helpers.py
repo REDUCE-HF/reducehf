@@ -1,10 +1,14 @@
 import os
 import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import roc_auc_score
 import gower_exp as gower
 from config import (
     RAW_PATH, SCALED_PATH,
@@ -218,6 +222,8 @@ def build_membership_features(df):
     out.loc[hs_numeric.isna() | (hs_numeric <= 0), "cat_household_size"] = "unknown"
 
     for col in CATEGORICAL_COLS:
+        if col=="cat_household_size":
+            continue
         out[col] = df[col].astype("object")
     
     # Create pre_existing and new conditions based on time window before hf diagnosis
@@ -248,3 +254,86 @@ def build_membership_features(df):
         out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
     
     return out
+
+def make_ovr_labels(labels, cluster_id):
+    """Binary labels: 1 = in cluster, 0 = outside."""
+    return (labels == cluster_id).astype(int)
+
+def fit_decision_tree_cv(X, y, param_grid, random_state=42):
+    """GridSearchCV for a decision tree using ROC AUC."""
+    model = DecisionTreeClassifier(random_state=random_state)
+
+    grid = GridSearchCV(
+        estimator=model,
+        param_grid=param_grid,
+        scoring="roc_auc",
+        cv=5,
+        n_jobs=-1,#
+        return_train_score=True
+    )
+    grid.fit(X, y)
+    return grid
+
+def evaluate_best_model(model, X, y):
+    """Compute training AUC for the best estimator."""
+    y_pred = model.predict_proba(X)[:, 1]
+    return roc_auc_score(y, y_pred)
+
+def summarise_cluster_features(X, y, model, cluster_id):
+    """Combine Gini importance with mean differences."""
+    gini = pd.Series(model.feature_importances_, index=X.columns)
+
+    mean_in  = X[y == 1].mean(axis=0)
+    mean_out = X[y == 0].mean(axis=0)
+
+    df = pd.DataFrame({
+        "cluster": cluster_id,
+        "feature": X.columns,
+        "gini_importance": gini.values,
+        "mean_in_cluster": mean_in.values,
+        "mean_outside_cluster": mean_out.values,
+    })
+
+    df["mean_difference"] = df["mean_in_cluster"] - df["mean_outside_cluster"]
+    df["distinguishing_feature"] = np.where(
+        df["mean_difference"] > 0, "presence",
+        np.where(df["mean_difference"] < 0, "absence", "equal")
+    )
+    return df
+
+def train_ovr(X, labels, output_dir, random_state=42):
+    """Train OvR decision trees and return interpretability table."""
+
+    clusters = sorted(labels.unique())
+    param_grid = {
+        "max_depth": [5, 10, 50, 100],
+        "min_samples_leaf": [5, 10, 50]
+    }
+
+    all_results = []
+
+    for k in clusters:
+        if k == -1:
+            continue  # Skip noise cluster
+        y = make_ovr_labels(labels, k)
+        print(f"{labels.value_counts()[k]} samples in cluster {k}")
+        grid = fit_decision_tree_cv(X, y, param_grid, random_state)
+        best_model = grid.best_estimator_
+
+        train_auc = evaluate_best_model(best_model, X, y)
+
+        print(
+            f"Cluster {k}: "
+            f"Best params={grid.best_params_}, "
+            f"CV AUC={grid.best_score_:.3f}, "
+            f"Train AUC={train_auc:.3f}"
+        )
+
+        summary = summarise_cluster_features(X, y, best_model, k)
+        all_results.append(summary)
+
+    return (
+        pd.concat(all_results, ignore_index=True)
+          .sort_values(["cluster", "gini_importance"], ascending=[True, False])
+    )
+

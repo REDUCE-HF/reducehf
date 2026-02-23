@@ -7,6 +7,12 @@ import os
 import numpy as np
 
 # -------------------
+# OpenSafely disclosure threshold
+# -------------------
+
+DISCLOSURE_THRESHOLD = 7
+
+# -------------------
 # Paths
 # -------------------
 # Project root directory (3 levels up from this file: analysis/clustering/config.py -> reducehf/)
@@ -59,8 +65,15 @@ SYNTHETIC_VALIDATION_RESULTS_PATH = os.path.join(SYNTHETIC_OUTPUT_DIR, "syntheti
 
 # path to variance of means table
 VARIANCE_OF_MEANS_PATH = os.path.join(OUTPUT_DIR, "variance_of_means.csv")
+# path to membership features (non-encoded)
+MEMBERSHIP_PATH = os.path.join(OUTPUT_DIR, "membership_features.csv")
 # path to one-hot encoded membership features
 ENCODED_MEMBERSHIP_PATH = os.path.join(OUTPUT_DIR, "membership_features_encoded.csv")
+# step 09 OVR outputs
+OVR_GRIDSEARCH_CV_RESULTS_PATH = os.path.join(OUTPUT_DIR, "ovr_gridsearch_cv_results.csv")
+OVR_FEATURE_IMPORTANCE_ALL_PATH = os.path.join(OUTPUT_DIR, "ovr_feature_importance_all.csv")
+# Plots directory
+PLOTS_DIR = os.path.join(OUTPUT_DIR, "plots")
 
 def labels_path(config_name: str) -> str:
     return os.path.join(OUTPUT_DIR, f"labels_{config_name}.csv.gz")
@@ -102,7 +115,7 @@ HOUSEHOLD_LABELS = ["1", "2", ">=3"]
 
 # Categorical columns to preserve as-is
 CATEGORICAL_COLS = ["sex", "ethnicity_cat", "imd_quintile", "region", 
-                    "rural_urban", "cat_diabetes", "smoking", "cat_household_size"]
+                    "rural_urban", "cat_diabetes", "smoking","cat_household_size"]
 
 # Date-based conditions: map condition name to its date columns
 DATE_BASED_CONDITIONS = {
@@ -186,3 +199,6 @@ FEATURE_RANGES = {
     "prescriptions_pre_6_9m": (0, 10),
     "prescriptions_pre_9_12m": (0, 10),
 }
+
+
+
