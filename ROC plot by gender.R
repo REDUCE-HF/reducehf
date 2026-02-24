@@ -1,5 +1,5 @@
 # ROC plot by gender.R
-
+# KTaylor
 rm(list=ls()) 
 
 #   Load the librairies incl "epitools" package to calculate ratios and 95% CIs

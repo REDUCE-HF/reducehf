@@ -1,4 +1,4 @@
-#Rate_WP2_1.R
+# Rate_WP2_1.R
 # Script to plot rates of near NP testing for WP2_1 of the REDUCE HF project
 # KS Taylor
 
