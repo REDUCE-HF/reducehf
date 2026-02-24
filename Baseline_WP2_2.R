@@ -1,6 +1,6 @@
 # Baseline_WP2_1.R
 # Script to analyse data for WP2_2 of the REDUCE HF project
-# KS Taylor
+# KSTaylor
 
 rm(v)
 rm(list=ls()) 
