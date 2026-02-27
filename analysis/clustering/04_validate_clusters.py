@@ -18,6 +18,7 @@ from config import (
     SCALED_PATH,
     VALIDATION_RESULTS_PATH,
     X_PCA_PATH,
+    DISCLOSURE_THRESHOLD,
     labels_path,
 )
 from clustering_helpers import (
@@ -36,6 +37,8 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
 X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
+raw_df = pd.read_csv(RAW_PATH)  
+patient_ids = raw_df["patient_id"].values  
 
 # -----------------------------
 # Load optimal K values
@@ -107,22 +110,28 @@ for cfg, data, fn in configs:
         else:
             print(f"Evaluating {cfg} (OPTICS, no k)")
             labels = fn(data)
-
-        # Save cluster labels for later visualization (OpenSAFELY compatible format)
-        labels_df = pd.DataFrame({"cluster": labels})
+        
+        # Relabel small clusters (<=DISCLOSURE_THRESHOLD = 7) as -1
+        counts = pd.Series(labels).value_counts()
+        small_clusters = counts[counts <= DISCLOSURE_THRESHOLD].index
+        labels[np.isin(labels, small_clusters)] = -1
+        
+        # Save cluster labels 
+        labels_df = pd.DataFrame({"patient_id": patient_ids, "cluster": labels})
         labels_file = labels_path(cfg)
         labels_df.to_csv(labels_file, index=False, compression="gzip")
         print(f"Saved labels to {labels_file}")
 
-        # Evaluate clustering quality with appropriate metric
+        # Evaluate clustering quality (excluding -1 noise clusters)
+        labels_eval = labels[labels != -1]  # Filter out noise
         if "raw" in cfg:
-            X_eval = D_gower
+            X_eval = D_gower[labels != -1][:, labels != -1]  # Filter distance matrix
             metric = "precomputed"
         else:
-            X_eval = X_pca
+            X_eval = X_pca[labels != -1]
             metric = "euclidean"
         
-        res = evaluate(cfg, X_eval, labels, metric=metric)
+        res = evaluate(cfg, X_eval, labels_eval, metric=metric)
         if res:
             results.append(res)
 
@@ -138,3 +147,4 @@ df.to_csv(VALIDATION_RESULTS_PATH, index=False)
 print("\n Validation results saved to:", VALIDATION_RESULTS_PATH)
 print(df)
 print("\n Validation complete.")
+print(DISCLOSURE_THRESHOLD)

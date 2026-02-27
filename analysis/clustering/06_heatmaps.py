@@ -19,7 +19,7 @@ from config import (
     labels_path,
     heatmap_path,
 )
-from clustering_helpers import load_data, load_feature_names
+from clustering_helpers import load_data, load_feature_names, get_best_config
 
 # -----------------------------------------
 # Setup
@@ -39,12 +39,13 @@ raw_df = pd.DataFrame(X_raw, columns=feature_names)
 val_df = pd.read_csv(VALIDATION_RESULTS_PATH)
 # opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
 
-print("Selecting best configuration...")
-# Rank by silhouette + CH
-val_df["rank"] = val_df["silhouette"].rank(ascending=False) + \
-                 val_df["calinski_harabasz"].rank(ascending=False)
+# -----------------------------------------
+# Select best configuration
+# -----------------------------------------
+from clustering_helpers import get_best_config
 
-best_config = val_df.sort_values("rank").iloc[0]["config"]
+print("Selecting best configuration...")
+best_config = get_best_config(VALIDATION_RESULTS_PATH)
 print(f"Best configuration: {best_config}")
 
 # -----------------------------------------
