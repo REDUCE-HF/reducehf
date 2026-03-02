@@ -26,10 +26,9 @@ df = pd.read_csv(INPUT_DATA_PATH)
 # ## 2. Select Variables
 
 keep_cols = ["patient_id"] + HS_COLS + REVIEW_COLS
-available_cols = [c for c in keep_cols if c in df.columns]
-print(f" Found {len(available_cols)} variables to keep.")
+print(f" Found {len(keep_cols)} variables to keep.")
 
-df = df[available_cols]
+df = df[keep_cols]
 
 # ## 3. Data Quality Check
 summary = {
@@ -45,7 +44,7 @@ for review_col in REVIEW_COLS:
     binary_col = review_col.replace("_date", "_bin")
     df[binary_col] = np.where(df[review_col].notna(), 1, 0)
 
-df.drop(columns=REVIEW_COLS, inplace=True, errors="ignore")
+df.drop(columns=REVIEW_COLS, inplace=True)
 
 print(df.loc[:, df.columns.str.contains("_bin")].describe().T)
 for col in df.filter(like="_bin").columns:
