@@ -5,6 +5,7 @@ Codelists as variables
 from ehrql import codelist_from_csv
 
 # Ethnicity
+
 ethnicity_codes = codelist_from_csv(
     "codelists/opensafely-ethnicity-snomed-0removed.csv",
     column="code",
@@ -12,6 +13,7 @@ ethnicity_codes = codelist_from_csv(
 )
 
 # Smoking
+
 smoking_current = codelist_from_csv(
     "codelists/reducehf-current-smoker.csv",
     column="code"
@@ -22,11 +24,12 @@ smoking_former = codelist_from_csv(
 )
 smoking_ever = smoking_current + smoking_former
 
+#BMI
 
-weight_snomed = codelist_from_csv(
+bmi_weight_snomed = codelist_from_csv(
     "codelists/opensafely-weight-snomed.csv", column="code"
 )
-height_snomed = codelist_from_csv(
+bmi_height_snomed = codelist_from_csv(
     "codelists/opensafely-height-snomed.csv",  column="code"
 )
 bmi_obesity_icd10 = codelist_from_csv(
@@ -37,22 +40,19 @@ bmi_obesity_snomed = codelist_from_csv(
     "codelists/user-elsie_horne-bmi_obesity_snomed.csv", column="code"
 )
 
-
-# BMI
-bmi_cod = codelist_from_csv(
+bmi_code = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
     column="code"
 )
 
-
 # Total Cholesterol
-cholesterol_snomed = codelist_from_csv(
+cholesterol_total_snomed = codelist_from_csv(
     "codelists/opensafely-cholesterol-tests-numerical-value.csv",
     column="code"
 )
 
 # HDL Cholesterol
-hdl_cholesterol_snomed = codelist_from_csv(
+cholesterol_hdl_snomed = codelist_from_csv(
     "codelists/bristol-hdl-cholesterol.csv",
     column="code"
 )
@@ -63,48 +63,6 @@ learndis_primis = codelist_from_csv(
     column="code"
 )
 
-## All BMI coded terms
-bmi_stage_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-bmi_stage.csv",
-    column="code"
-)
-
-## BMI numeric value
-bmi_numeric = codelist_from_csv(
-    "codelists/reducehf-body-mass-index-numeric-value.csv",
-    column = "code"
-)
-
-## Severe Obesity code recorded
-sev_obesity_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-sev_obesity.csv",
-    column="code"
-)
-
-## Chronic Respiratory Disease
-resp_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-resp_cov.csv",
-    column="code"
-)
-
-## Chronic Neurological Disease including Significant Learning Disorder
-cns_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-cns_cov.csv",
-    column="code"
-)
-
-## Diabetes diagnosis codes
-diab_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-diab.csv",
-    column="code"
-)
-
-## Diabetes resolved codes
-dmres_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-dmres.csv",
-    column="code"
-)
-
 ## Severe Mental Illness codes
 sev_mental_primis = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-sev_mental.csv",
@@ -112,49 +70,8 @@ sev_mental_primis = codelist_from_csv(
 )
 
 ## Remission codes relating to Severe Mental Illness
-smhres_primis = codelist_from_csv(
+sev_mental_res_primis = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-smhres.csv",
-    column="code"
-)
-
-## Chronic heart disease codes
-chd_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-chd_cov.csv",
-    column="code"
-)
-
-## Chronic kidney disease diagnostic codes
-ckd_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd_cov.csv",
-    column="code"
-)
-
-## Chronic kidney disease codes - all stages
-ckd15_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd15.csv",
-    column="code"
-)
-
-## Chronic kidney disease codes-stages 3 - 5
-ckd35_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd35.csv",
-    column="code"
-)
-
-## Chronic Liver disease codes
-cld_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-cld.csv",
-    column="code"
-)
-
-# Stroke Ischaemic (Ischaemic Stroke)
-stroke_isch_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-stroke_isch_snomed.csv",
-    column="code"
-)
-
-stroke_isch_icd10 = codelist_from_csv(
-    "codelists/user-RochelleKnight-stroke_isch_icd10.csv",
     column="code"
 )
 
@@ -273,25 +190,24 @@ diabetes_diagnostic_snomed = codelist_from_csv(
                                              )
 
 # HbA1c
-hba1c_snomed = codelist_from_csv(
+test_hba1c_snomed = codelist_from_csv(
     "codelists/opensafely-glycated-haemoglobin-hba1c-tests-numerical-value.csv",column="code"
                                  )
 
 # Antidiabetic drugs
-insulin_dmd = codelist_from_csv(
+diabetes_insulin_dmd = codelist_from_csv(
     "codelists/opensafely-insulin-medication.csv",column="id"
                                 )
 
-antidiabetic_drugs_dmd = codelist_from_csv(
+diabetes_antidiabetic_drugs_dmd = codelist_from_csv(
     "codelists/opensafely-antidiabetic-drugs.csv",column="id"
                                            )
 
-non_metformin_dmd = codelist_from_csv(
+diabetes_non_metformin_dmd = codelist_from_csv(
     "codelists/user-r_denholm-non-metformin-antidiabetic-drugs_bristol.csv",column="id"
                                       )
 
-# HF (for script development)
-
+# HF 
 hf_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-hf_cod.csv",
     column = "code"
@@ -339,8 +255,7 @@ hrt_dmd = codelist_from_csv(
 
 # HF-related breathlessness
 
-
-breathless_snomed = codelist_from_csv(
+symptom_breathless_snomed = codelist_from_csv(
     "codelists/reducehf-beathlessness4all.csv",
     column="code"
 )   
@@ -360,7 +275,7 @@ codelist : reducehf-beathlessness4all
 
 # HF-related oedema
 
-oedema_snomed = codelist_from_csv(
+symptom_oedema_snomed = codelist_from_csv(
     "codelists/reducehf-oedema4all.csv",
     column="code"
 ) 
@@ -380,7 +295,7 @@ codelist : rreducehf-oedema4all
 
 # HF-related fatigue
 
-fatigue_snomed = codelist_from_csv(
+symptom_fatigue_snomed = codelist_from_csv(
     "codelists/reducehf-fatigue4all.csv",
     column="code"
 ) 
@@ -400,7 +315,7 @@ codelist : reducehf-fatigue4all
 
 # NP testing 
 
-NTpro_snomed = codelist_from_csv(
+test_NTpro_snomed = codelist_from_csv(
     "codelists/reducehf-ntpro-num-only.csv",
     column="code"
 )
@@ -419,7 +334,7 @@ codelist : reducehf-ntpro-num-only
 '''
 
 
-NP_snomed = codelist_from_csv(
+test_NP_snomed = codelist_from_csv(
     "codelists/reducehf-np-any.csv",
     column="code"
 ) 
@@ -478,7 +393,7 @@ codelist: reducehf-echocardiography-result
 
 #BP
 
-systolic_bp = codelist_from_csv(
+bp_systolic = codelist_from_csv(
     "codelists/opensafely-systolic-blood-pressure-qof.csv",
     column="code"
 )
@@ -496,7 +411,7 @@ codelist: opensafely-systolic-blood-pressure-qof
     )
 '''
 
-diastolic_bp = codelist_from_csv(
+bp_diastolic = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-diabp_cod.csv",
     column="code"
 )
@@ -516,7 +431,7 @@ codelist: nhsd-primary-care-domain-refsets-diabp_cod
 
 # Annual reviews
 
-asthma_review = codelist_from_csv(
+review_asthma = codelist_from_csv(
     "codelists/opensafely-asthma-annual-review-qof.csv",
     column="code"
 )
@@ -534,7 +449,7 @@ codelist: opensafely-asthma-annual-review-qof
     )
 '''
 
-copd_review = codelist_from_csv(
+review_copd = codelist_from_csv(
     "codelists/opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof.csv",
     column="code"
 )
@@ -551,7 +466,7 @@ codelist: opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof
 
 '''
 
-med_review = codelist_from_csv(
+review_med = codelist_from_csv(
     "codelists/opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv",
     column="code"
 )
@@ -571,28 +486,8 @@ codelist: opensafely-care-planning-medication-review-simple-reference-set-nhs-di
 '''
 
 
-# Myocardial infarction - secondary care
-mi_icd10 = codelist_from_csv(
-    "codelists/reducehf-myocardial-infarction-icd10.csv",
-    column="code"
-)
+#Underserved
 
-'''
-myocardial infarcation: secondary care
-
-codelist: reducehf-myocardial-infarction-icd10
-
-.. python::
-
-    mi_icd10 = codelist_from_csv(
-        "codelists/reducehf-myocardial-infarction-icd10.csv",
-        column="code"
-    )
-
-'''
-
-
-#underserved
 migrant = codelist_from_csv(
     "codelists/user-YaminaB-migration-status.csv",
     column="code"

@@ -18,6 +18,10 @@ def demog(dataset, start_date):
         - ``dataset`` : dataset object initialised using ehrql.create_dataset()
         - `start_date` : str (e.g.'01-02-2019'), project start date
     
+    **Codelists**
+
+        - `ethnicity_codes` 
+
     **Variables added**
 
         - ``sex`` : patient sex (male / female)
@@ -272,6 +276,20 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
         - ``dataset`` : dataset object initialised using ``ehrql.create_dataset()``
         - ``index_date`` : str, the date that a patient enters the cohort (defined in `demog`)
 
+    **Codelists**
+
+        - `smoking_former`
+        - `smoking_current`
+        - `bp_systolic`
+        - `bp_diastolic`
+        - `bmi_code`
+        - `cholesterol_hdl_snomed`
+        - `cholesterol_total_snomed`
+        - `bmi_obesity_snomed`
+        - `bmi_obesity_icd10`
+        - `bmi_weight_snomed`
+        - `bmi_height_snomed`
+
     **Variables added**
 
         - ``smoking`` : patient's smoking status. Categorical (S: current smoker, E: ex-smoker, N: never)
@@ -512,7 +530,7 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
     # systolic BP
     sysbp = last.matching_event_snomed(
         gp_events,
-        systolic_bp)
+        bp_systolic)
 
     dataset.add_column('sysbp_date' + suffix, sysbp.date)
     dataset.add_column('sysbp_value' + suffix, sysbp.numeric_value)
@@ -520,7 +538,7 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
     # diastolic bp
     diasbp = last.matching_event_snomed(
         gp_events,
-        diastolic_bp)
+        bp_diastolic)
     
     dataset.add_column('diasbp_date' + suffix, diasbp.date)
     dataset.add_column('diasbp_value' + suffix, diasbp.numeric_value)
@@ -528,7 +546,7 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
     # BMI
     bmi = last.matching_event_snomed(
         gp_events, 
-        bmi_cod)
+        bmi_code)
 
     dataset.add_column('bmi_date' + suffix, bmi.date)
     dataset.add_column('bmi_value' + suffix, bmi.numeric_value)
@@ -536,7 +554,7 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
     # HDL cholesterol 
     hdl_cholesterol = last.matching_event_snomed(
         gp_events,
-        hdl_cholesterol_snomed)
+        cholesterol_hdl_snomed)
     
     dataset.add_column('last_hdl_cholesterol_date' + suffix, 
         hdl_cholesterol.date
@@ -548,7 +566,7 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
     #Total cholesterol
     cholesterol = last.matching_event_snomed(
         gp_events,
-        cholesterol_snomed)
+        cholesterol_total_snomed)
 
     dataset.add_column('last_cholesterol_date' + suffix, cholesterol.date)
     dataset.add_column('last_cholesterol_value' + suffix, cholesterol.numeric_value)
@@ -570,17 +588,17 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
     # weight
     weight = last.matching_event_snomed(
         gp_events,
-        weight_snomed
+        bmi_weight_snomed
         ).numeric_value
     weight_date  = last.matching_event_snomed(
         gp_events,
-        weight_snomed
+        bmi_weight_snomed
         ).date
   
     # height
     height = last.matching_event_snomed(
         gp_events,
-        height_snomed
+        bmi_height_snomed
         ).numeric_value
 
     dataset.add_column('weight' + suffix, weight)
@@ -597,7 +615,7 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
         # Hba1c latest for pcp-hf
         last_hba1c = last.matching_event_snomed(
             gp_events_2,
-            hba1c_snomed)
+            test_hba1c_snomed)
         dataset.last_hba1c_value = last_hba1c.numeric_value
         dataset.last_hba1c_date = last_hba1c.date
 
@@ -610,15 +628,15 @@ def time_dependent(dataset, index_date, suffix='', wp=None, earliest_date = None
         # latest diabetes medications date for pcp-hf 
         last_insulin_dmd_date = last.matching_med_dmd(
             med_events_2,
-            insulin_dmd
+            diabetes_insulin_dmd
             ).date
         last_antidiabetic_drugs_dmd_date = last.matching_med_dmd(
             med_events_2,
-            antidiabetic_drugs_dmd
+            diabetes_antidiabetic_drugs_dmd
             ).date
         last_nonmetform_drugs_dmd_date = last.matching_med_dmd(
             med_events_2,
-            non_metformin_dmd
+            diabetes_non_metformin_dmd
             ).date
 
         # Identify last date  that any diabetes medication was prescribed
@@ -644,6 +662,18 @@ def underserved(dataset, earliest_date, index_date, end_date, suffix='', iter=0)
         - `earliest_date` : str, the earliest date to look back in a patient's EHR data  
         - ``index_date`` : str, the date that a patient enters the cohort (defined in `demog`)
         - `end_date` : str, project / follow-up end date
+
+    **Codelists**
+
+        - `migrant`
+        - `non_english_speaking`
+        - `learndis_primis`
+        - `sev_mental_primis`
+        - `sev_mental_res_primis`
+        - `substance_abuse`
+        - `homeless`
+        - `housebound`
+        - `no_longer_housebound`
 
     **Variables added**
 
@@ -807,7 +837,7 @@ def underserved(dataset, earliest_date, index_date, end_date, suffix='', iter=0)
 
     smi_code_remission = last.matching_event_snomed(
             gp_events,
-            smhres_primis 
+            sev_mental_res_primis 
             ).date
 
     smi_ = (
@@ -864,19 +894,34 @@ def underserved(dataset, earliest_date, index_date, end_date, suffix='', iter=0)
     return dataset
 
 
-def comorbidities(dataset, earliest_date, index_date):
+def diabetes_algorithm(dataset, earliest_date, index_date):
+
 
     '''
     Purpose
     =======
-    Derive variables for presence of comorbidities that were 
-    diagnosed prior to ``index_date``
+    Derive variables needed for diabetes algorithm reusable action
 
     **Parameters**
 
         - ``dataset`` : dataset object initialised using ``ehrql.create_dataset()``
         - `earliest_date` : str, the earliest date to look back in a patient's EHR data
         - ``index_date`` : str, the date that a patient enters the cohort (defined in `demog`)
+
+    **Codelists**
+
+        - `diabetes_type1_snomed`
+        - `diabetes_type1_icd10`
+        - `diabetes_type2_snomed`
+        - `diabetes_type2_icd10`
+        - `diabetes_other_snomed`
+        - `diabetes_gestational_snomed`
+        - `diabetes_gestational_icd10`
+        - `diabetes_diagnostic_snomed`
+        - `hba1c_snomed`
+        - `insulin_dmd`
+        - `antidiabetic_drugs_dmd`
+        - `non_metformin_dmd`
 
     **Variables added**
 
@@ -888,7 +933,7 @@ def comorbidities(dataset, earliest_date, index_date):
 
     .. python::
 
-        def comorbidities(dataset, earliest_date, index_date):
+        def diabetes_algorithm(dataset, earliest_date, index_date):
 
             # Filter data for efficiency - extract everything before index date
             before_gp_events = filter.gp_events(earliest_date, index_date)
@@ -1041,73 +1086,10 @@ def comorbidities(dataset, earliest_date, index_date):
                 dataset.tmp_diabetes_medication_date,
                 dataset.tmp_nonmetform_drugs_dmd_date
                 )
-            
-            ### COPD     
-            dataset.tmp_copd_date_primary = first.matching_event_snomed(
-                before_gp_events,
-                copd_snomed
-                ).date
-            dataset.tmp_copd_date_sus = first.matching_event_apc(
-                before_apc_events,
-                copd_icd10
-                ).admission_date
-            # Combine to earliest date
-            dataset.first_copd_date = minimum_of(
-                dataset.tmp_copd_date_primary,
-                dataset.tmp_copd_date_sus
-                )
-
-            ### Hypertension
-            dataset.hypertension_date_primary = first.matching_event_snomed(
-                before_gp_events,
-                hypertension_snomed
-                ).date
-            dataset.hypertension_date_med = first.matching_med_dmd(
-                before_med_events,
-                hypertension_drugs_dmd
-                ).date
-            dataset.hypertension_date_sus = first.matching_event_apc(
-                before_apc_events,
-                hypertension_icd10
-                ).admission_date
-            #systolic BP* diastolic BP* will be defined in time dependent variables
-
-            ### Atrial fibrillation
-            dataset.af_date_primary = first.matching_event_snomed(
-                before_gp_events,
-                af_snomed
-                ).date
-            dataset.af_date_sus = first.matching_event_apc(
-                before_apc_events,
-                af_icd10
-                ).admission_date
-
-            ### Ischeamic heart disease
-            dataset.ihd_date_primary = first.matching_event_snomed(
-                before_gp_events,
-                ihd_snomed
-                ).date
-            dataset.ihd_date_sus = first.matching_event_apc(
-                before_apc_events,
-                ihd_icd10
-                ).admission_date
-
-            ### CKD
-            dataset.ckd_date_primary = first.matching_event_snomed(
-                before_gp_events,
-                ckd_snomed
-                ).date
-            dataset.ckd_date_sus = first.matching_event_apc(
-                before_apc_events,
-                ckd_icd10
-                ).admission_date
-
+        
             return dataset
 
     '''
-
-
-
     # Filter data for efficiency - extract everything before index date
     before_gp_events = filter.gp_events(earliest_date, index_date)
     before_apc_events = filter.apc_events(earliest_date, index_date)
@@ -1221,7 +1203,7 @@ def comorbidities(dataset, earliest_date, index_date):
     # Date of first maximum HbA1c measure
     dataset.tmp_max_hba1c_date = ( 
         before_gp_events.where(
-            before_gp_events.snomedct_code.is_in(hba1c_snomed))
+            before_gp_events.snomedct_code.is_in(test_hba1c_snomed))
         .where(before_gp_events.numeric_value == dataset.tmp_max_hba1c_mmol_mol_num)
         .sort_by(before_gp_events.date)
         .first_for_patient() 
@@ -1232,15 +1214,15 @@ def comorbidities(dataset, earliest_date, index_date):
     # First dates
     dataset.tmp_insulin_dmd_date = first.matching_med_dmd(
         before_med_events,
-        insulin_dmd
+        diabetes_insulin_dmd
         ).date
     dataset.tmp_antidiabetic_drugs_dmd_date = first.matching_med_dmd(
         before_med_events,
-        antidiabetic_drugs_dmd
+        diabetes_antidiabetic_drugs_dmd
         ).date
     dataset.tmp_nonmetform_drugs_dmd_date = first.matching_med_dmd(
         before_med_events,
-        non_metformin_dmd
+        diabetes_non_metformin_dmd
         ).date
 
     # Identify first date (in same period) that any diabetes medication was prescribed
@@ -1260,12 +1242,131 @@ def comorbidities(dataset, earliest_date, index_date):
         dataset.tmp_nonmetform_drugs_dmd_date
         )
     
-    ### COPD
+    return dataset
+
+
+def comorbidities(dataset, earliest_date, index_date):
+
     '''
-    Shall we just derive primary and sus dates ? 
-    or take the earliest and tag them as tmp to remove them from 
-    the dataset later ? 
-    '''     
+    Purpose
+    =======
+    Derive variables for presence of comorbidities that were 
+    diagnosed prior to ``index_date``
+
+    **Parameters**
+
+        - ``dataset`` : dataset object initialised using ``ehrql.create_dataset()``
+        - `earliest_date` : str, the earliest date to look back in a patient's EHR data
+        - ``index_date`` : str, the date that a patient enters the cohort (defined in `demog`)
+
+    **Codelists**
+
+        - `copd_snomed`
+        - `copd_icd10`
+        - `hypertension_snomed`
+        - `hypertension_drugs_dmd`
+        - `hypertension_icd10`
+        - `af_snomed`
+        - `af_icd10`
+        - `ihd_snomed`
+        - `ihd_icd10`
+        - `ckd_snomed`
+        - `ckd_icd10`
+
+    **Variables added**
+
+    complete
+
+    **Returns**
+
+        - ``dataset`` : input dataset modified to include variables added
+
+    .. python::
+
+        def comorbidities(dataset, earliest_date, index_date):
+
+
+            #add variables for diabetes algorithm
+            dataset = diabetes_algorithm(dataset, earliest_date, index_date)
+
+            # Filter data for efficiency - extract everything before index date
+            before_gp_events = filter.gp_events(earliest_date, index_date)
+            before_apc_events = filter.apc_events(earliest_date, index_date)
+            before_med_events = filter.med_events(earliest_date, index_date)
+       
+            ### COPD     
+            dataset.tmp_copd_date_primary = first.matching_event_snomed(
+                before_gp_events,
+                copd_snomed
+                ).date
+            dataset.tmp_copd_date_sus = first.matching_event_apc(
+                before_apc_events,
+                copd_icd10
+                ).admission_date
+            # Combine to earliest date
+            dataset.first_copd_date = minimum_of(
+                dataset.tmp_copd_date_primary,
+                dataset.tmp_copd_date_sus
+                )
+
+            ### Hypertension
+            dataset.hypertension_date_primary = first.matching_event_snomed(
+                before_gp_events,
+                hypertension_snomed
+                ).date
+            dataset.hypertension_date_med = first.matching_med_dmd(
+                before_med_events,
+                hypertension_drugs_dmd
+                ).date
+            dataset.hypertension_date_sus = first.matching_event_apc(
+                before_apc_events,
+                hypertension_icd10
+                ).admission_date
+            #systolic BP* diastolic BP* will be defined in time dependent variables
+
+            ### Atrial fibrillation
+            dataset.af_date_primary = first.matching_event_snomed(
+                before_gp_events,
+                af_snomed
+                ).date
+            dataset.af_date_sus = first.matching_event_apc(
+                before_apc_events,
+                af_icd10
+                ).admission_date
+
+            ### Ischeamic heart disease
+            dataset.ihd_date_primary = first.matching_event_snomed(
+                before_gp_events,
+                ihd_snomed
+                ).date
+            dataset.ihd_date_sus = first.matching_event_apc(
+                before_apc_events,
+                ihd_icd10
+                ).admission_date
+
+            ### CKD
+            dataset.ckd_date_primary = first.matching_event_snomed(
+                before_gp_events,
+                ckd_snomed
+                ).date
+            dataset.ckd_date_sus = first.matching_event_apc(
+                before_apc_events,
+                ckd_icd10
+                ).admission_date
+
+            return dataset
+
+    '''
+
+    dataset = diabetes_algorithm(dataset, earliest_date, index_date)
+
+    # Filter data for efficiency - extract everything before index date
+    before_gp_events = filter.gp_events(earliest_date, index_date)
+    before_apc_events = filter.apc_events(earliest_date, index_date)
+    before_med_events = filter.med_events(earliest_date, index_date)
+    
+    ### COPD
+    
     dataset.tmp_copd_date_primary = first.matching_event_snomed(
         before_gp_events,
         copd_snomed
@@ -1293,7 +1394,6 @@ def comorbidities(dataset, earliest_date, index_date):
         before_apc_events,
         hypertension_icd10
         ).admission_date
-    #systolic BP* diastolic BP* will be defined in time dependent variables
 
     ### Atrial fibrillation
     dataset.af_date_primary = first.matching_event_snomed(
@@ -1340,6 +1440,14 @@ def quality_assurance(dataset, earliest_date, end_date):
         - ``dataset`` : dataset object initialised using ``ehrql.create_dataset()``
         - `earliest_date` : str, the earliest date to look back in a patient's EHR data
         - `end_date` : str, project / follow-up end date
+
+    **Codelists**
+
+        - `prostate_cancer_snomed`
+        - `prostate_cancer_icd10`
+        - `pregnancy_snomed`
+        - `cocp_dmd`
+        - `hrt_dmd`
 
     **Variables added**
 

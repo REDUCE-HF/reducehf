@@ -21,6 +21,12 @@ def hsu(dataset, earliest_date, index_date):
         - `earliest_date` : str, the earliest date to look back in a patient's EHR data
         - ``index_date`` : str, the date that a patient enters the cohort (defined in `demog`)
 
+    **Codelists**
+
+        - `copd_exacerbations_snomed`
+        - `copd_exacerbations_icd10`
+        - `copd_medications`
+
     **Variables added**
 
     *COPD specific*
@@ -226,21 +232,21 @@ def hsu(dataset, earliest_date, index_date):
             # Asthma
             asthma_review_ = last_matching_event_clinical_snomed(
                 before_gp_events,
-                asthma_review
+                review_asthma
                 )
             dataset.asthma_review_date = asthma_review_.date
             
             # COPD
             copd_review_ = last_matching_event_clinical_snomed(
                 before_gp_events,
-                copd_review
+                review_copd
                 )
             dataset.copd_review_date = copd_review_.date
 
             # Medications (any)
             med_review_ = last_matching_event_clinical_snomed(
                 before_gp_events,
-                med_review
+                review_med
                 )
             dataset.med_review_date = med_review_.date
 

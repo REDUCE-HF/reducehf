@@ -33,7 +33,7 @@ def np_vars(dataset, index_date, end_date, objective):
             if objective==1:
 
                 #Subset data once to use in downstream cod (more efficient)
-                gp_events = filter_gp_events(
+                gp_events = filter.gp_events(
                     dataset.first_hfsymptom_date-days(31),
                     dataset.first_hfsymptom_date+days(93)
                     )
@@ -64,7 +64,7 @@ def np_vars(dataset, index_date, end_date, objective):
             elif objective==2:
 
                 #Subset data once to use in downstream cod (more efficient)
-                after_range_events = filter_range_events(index_date, end_date)
+                after_range_events = filter.range_events(index_date, end_date)
 
                 #First NTProBNP test following index date and using SNOMED codes
                 first_nt = first.matching_event_ranges_snomed(
@@ -77,6 +77,9 @@ def np_vars(dataset, index_date, end_date, objective):
                 dataset.nt1_lower_bound = first_nt.lower_bound
                 dataset.nt1_upper_bound = first_nt.upper_bound
 
+            else:
+
+                raise ValueError ('Unknown objective')
 
             return dataset
 
@@ -95,7 +98,7 @@ def np_vars(dataset, index_date, end_date, objective):
         # or followed first hf-related symptoms (near symptoms)
         np_near_symptom_ = first.matching_event_snomed(
             gp_events,
-            NP_snomed
+            test_NP_snomed
             )
         dataset.np_near_symptom = np_near_symptom_.exists_for_patient()
         dataset.np_near_symptom_first = np_near_symptom_.date
@@ -122,13 +125,17 @@ def np_vars(dataset, index_date, end_date, objective):
         #First NTProBNP test following index date and using SNOMED codes
         first_nt = first.matching_event_ranges_snomed(
             after_range_events,
-            NTpro_snomed)
+            test_NTpro_snomed)
 
         dataset.nt1_date_ranges = first_nt.date
         dataset.nt1_result_ranges = first_nt.numeric_value
         dataset.nt1_comparator = first_nt.comparator
         dataset.nt1_lower_bound = first_nt.lower_bound
         dataset.nt1_upper_bound = first_nt.upper_bound
+
+    else:
+
+        raise ValueError ('Unknown objective')
 
 
     return dataset
@@ -259,17 +266,17 @@ def wp2_exclude(dataset, earliest_date, index_date, end_date, objective):
         #date of first incidence of any of the three HF-related symptoms prior to index date
         tmp_breathless_date_primary = first.matching_event_snomed(
             before_gp_events,
-            breathless_snomed
+            symptom_breathless_snomed
             ).date
 
         tmp_oedema_date_primary = first.matching_event_snomed(
             before_gp_events,
-            oedema_snomed
+            symptom_oedema_snomed
             ).date
 
         tmp_fatigue_date_primary = first.matching_event_snomed(
             before_gp_events,
-            fatigue_snomed
+            symptom_fatigue_snomed
             ).date
 
         #add indicator which is true if any symptom reported before index date
@@ -282,19 +289,19 @@ def wp2_exclude(dataset, earliest_date, index_date, end_date, objective):
         #date of first incidence of any of the three HF-related symptoms
         tmp_breathless_date_primary = first.matching_event_snomed(
             after_gp_events,
-            breathless_snomed,
+            symptom_breathless_snomed,
             ).date
         dataset.breathless_date = tmp_breathless_date_primary
 
         tmp_oedema_date_primary = first.matching_event_snomed(
             after_gp_events,
-            oedema_snomed,
+            symptom_oedema_snomed,
             ).date
         dataset.oedema_date = tmp_oedema_date_primary
 
         tmp_fatigue_date_primary = first.matching_event_snomed(
             after_gp_events,
-            fatigue_snomed,
+            symptom_fatigue_snomed,
             ).date
         dataset.fatigue_date = tmp_fatigue_date_primary
 
@@ -310,20 +317,20 @@ def wp2_exclude(dataset, earliest_date, index_date, end_date, objective):
         #evidence of NP test prior to index date
         np_pre = first.matching_event_snomed(
             before_gp_events,
-            NP_snomed,
+            test_NP_snomed,
             ).exists_for_patient()
 
         dataset.np_pre_index = np_pre
 
         first_np = first.matching_event_snomed(
             after_gp_events,
-            NP_snomed
+            test_NP_snomed
             )
         dataset.np_date=first_np.date
 
         first_nt = first.matching_event_snomed(
             after_gp_events,
-            NTpro_snomed
+            test_NTpro_snomed
             )
 
         dataset.nt1_date = first_nt.date
