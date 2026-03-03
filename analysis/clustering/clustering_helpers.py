@@ -132,9 +132,8 @@ def run_optics(X):
     Returns:
         Cluster labels (-1 for noise points)
     """
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=RuntimeWarning)
-        optics = OPTICS(min_samples=10, xi=0.05, metric="euclidean").fit(X)
+    
+    optics = OPTICS(min_samples=10, xi=0.05, metric="euclidean").fit(X)
     return optics.labels_
 
 

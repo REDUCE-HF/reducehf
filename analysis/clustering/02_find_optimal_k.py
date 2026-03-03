@@ -97,8 +97,8 @@ summary = []
 THRESHOLD = 0.8  # PS + SE rule
 
 for cfg in results_df["config"].unique():
-    sub = results_df[results_df["config"] == cfg].dropna()
-    if sub.empty or "optics" in cfg:
+    sub = results_df[results_df["config"] == cfg]
+    if "optics" in cfg:
         summary.append({"config": cfg, "k_opt": np.nan, "ps_opt": np.nan, "se_opt": np.nan})
         continue
 
