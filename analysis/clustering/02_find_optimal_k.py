@@ -102,8 +102,8 @@ for cfg in results_df["config"].unique():
         continue
 
     # Apply PS + SE >= 0.8 rule
-    sub["ps_plus_se"] = sub["ps"] + sub["se"]
-    eligible = sub[sub["ps_plus_se"] >= THRESHOLD] 
+    eligible = sub[(sub["ps"] + sub["se"]) >= THRESHOLD]
+
     
     if not eligible.empty:
         # Find the largest k satisfying the rule

@@ -179,8 +179,8 @@ def ps_for_split(labels_half2, nearest):
         idx_c = np.where(labels_half2 == c)[0]
         if len(idx_c) < 2:
             continue
-        pairs = [(i, j) for i in idx_c for j in idx_c if i < j]
-        same = sum(nearest[i] == nearest[j] for i, j in pairs)
+        pairs = [(i, j) for i in idx_c for j in idx_c if i < j] #unique pair of points in cluster 
+        same = sum(nearest[i] == nearest[j] for i, j in pairs) #count pairs that are assigned to the same centroid/medoid in the other half
         ps_k.append(same / len(pairs))
     return min(ps_k) 
 
