@@ -140,96 +140,166 @@ def run_optics(X):
 # -------------------
 # Prediction Strength (PS) Calculation
 # -------------------
-def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False, n_splits=5, random_state=42):
-    np.random.seed(random_state)
-    ps_values = []
+def split_indices(n_samples, rng):
+    """Return two shuffled index arrays of equal size."""
+    idx = rng.permutation(n_samples)
+    mid = len(idx) // 2
+    return idx[:mid], idx[mid:]
+
+def compute_representatives(X, labels, precomputed): 
+    """ medoids if precomputed or centroids otherwise."""
+    if precomputed: #X is a distance matrix 
+        medoids = []
+        for c in np.unique(labels):
+            members = np.where(labels == c)[0]
+            cluster_dist = X[np.ix_(members, members)]
+            medoids.append(members[np.argmin(cluster_dist.sum(axis=1))])
+        return np.array(medoids)          
+    else: # X is the data (feature matrix)
+        centroids = []
+        for c in np.unique(labels):
+            cluster_points = X[labels == c]
+            centroid = cluster_points.mean(axis=0)
+            centroids.append(centroid)
+        return np.vstack(centroids)
     
-    # number of patients
-    n_samples = X.shape[0]
+def assign_to_nearest(X_full, idx_half2, medoid_global_idx, X_half2, representatives, precomputed):
+    """Return nearest-representative index for each test point."""
+    if precomputed:
+        distances = X_full[np.ix_(idx_half2, medoid_global_idx)]
+        return np.argmin(distances, axis=1)
+    else:
+        return np.argmin(pairwise_distances(X_half2, representatives, metric="euclidean"), axis=1)
+
+
+def ps_for_split(labels_half2, nearest):
+    """Compute min co-membership fraction across clusters for one split."""
+    ps_k = []
+    for c in np.unique(labels_half2):
+        idx_c = np.where(labels_half2 == c)[0]
+        if len(idx_c) < 2:
+            continue
+        pairs = [(i, j) for i in idx_c for j in idx_c if i < j]
+        same = sum(nearest[i] == nearest[j] for i, j in pairs)
+        ps_k.append(same / len(pairs))
+    return min(ps_k) 
+
+
+def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5, random_state=42):
+    rng = np.random.default_rng(random_state)
+    ps_values = []
+
     for split_i in range(n_splits):
-        # Generate indices for the entire dataset
-        idx = np.arange(n_samples)
-        np.random.shuffle(idx)
-        split_point = len(idx) // 2
-        
-        # Split the data into two halves
-        idx_half1, idx_half2 = idx[:split_point], idx[split_point:]
-        
-        # --- 1. Prepare Data for Clustering and Prediction ---
-        # Precomputed indicates if X is a distance matrix (Gower) or feature matrix (PCA)
+        idx_half1, idx_half2 = split_indices(X.shape[0], rng)
+
         if precomputed:
-            # subset distance matrix for half1 and half2
             D_half1 = X[np.ix_(idx_half1, idx_half1)]
             D_half2 = X[np.ix_(idx_half2, idx_half2)]
-            # Cluster each half separately
             labels_half1 = cluster_fn(D_half1, k)
             labels_half2 = cluster_fn(D_half2, k)
-            
-            # For Gower (precomputed), centroids are computed in raw space
-            X_half1_centroid_space = X_raw[idx_half1]
-            X_half2_centroid_space = X_raw[idx_half2]
-            distance_metric = "gower"
+            medoid_local_idx = compute_representatives(D_half1, labels_half1, precomputed=True)# positions within D_half1
+            medoid_global_idx = idx_half1[medoid_local_idx]#full data space
+            nearest = assign_to_nearest(X, idx_half2, medoid_global_idx, None, None, precomputed=True)
         else:
-            # Clustering input (X_half1, X_half2) is a subset of the feature matrix (X_pca)
-            X_half1 = X[idx_half1]
-            X_half2 = X[idx_half2]
+            X_half1, X_half2 = X[idx_half1], X[idx_half2]
             labels_half1 = cluster_fn(X_half1, k)
             labels_half2 = cluster_fn(X_half2, k)
-            
-            # For PCA (euclidean), centroids are computed in PCA space
-            X_half1_centroid_space = X_half1
-            X_half2_centroid_space = X_half2
-            distance_metric = "euclidean"
-            
-        # 1. Compute Centroids/Medoids from training data 
-        if distance_metric == "gower":
-            # For Gower, use medoids (actual data points) instead of centroids (means)
-            medoids = []
-            # For each cluster, find the medoid: the point with minimum average distance to all other cluster members
-            for c in np.unique(labels_half1):
-                # Get indices of points in the cluster
-                cluster_members = np.where(labels_half1 == c)[0] 
-                # Use precomputed D_half1 instead of recomputing Gower distances
-                cluster_dist = D_half1[np.ix_(cluster_members, cluster_members)]
-                medoid_idx = np.argmin(cluster_dist.sum(axis=1))
-                medoids.append(cluster_members[medoid_idx])
-            representatives = X_half1_centroid_space[medoids]
-        else:
-            # For Euclidean (PCA), use centroids (mean points)
-            representatives = np.vstack([X_half1_centroid_space[labels_half1 == c].mean(axis=0) for c in np.unique(labels_half1)])
+            representatives = compute_representatives(X_half1, labels_half1, precomputed=False)
+            nearest = assign_to_nearest(None, None, None, X_half2, representatives, precomputed=False)
 
-        # 2. Assign test points to nearest representatives using appropriate distance metric
-        if distance_metric == "gower":
-            # Use precomputed D_half1 and D_half2 instead of recomputing Gower distances
-            # medoids are indices in idx_half1, so get their distances to all half2 points from full Gower matrix
-            medoid_indices_in_half1 = np.array(medoids)
-            medoid_indices_global = idx_half1[medoid_indices_in_half1]
-            # Extract distances from half2 points to medoids using full D_gower
-            distances = X[np.ix_(idx_half2, medoid_indices_global)]
-            nearest = np.argmin(distances, axis=1)
-        else:
-            # Use euclidean distance to centroids
-            nearest = np.argmin(pairwise_distances(X_half2_centroid_space, representatives, metric="euclidean"), axis=1)
-
-        # Calculate minimum co-membership
-        ps_k = []
-        for c in np.unique(labels_half2):
-            idx_c = np.where(labels_half2 == c)[0]
-            if len(idx_c) < 2: continue
-            
-            pairs = [(i, j) for i in idx_c for j in idx_c if i < j]
-            
-            # Check prediction co-membership
-            same = sum(nearest[i] == nearest[j] for i, j in pairs)
-            
-            if pairs: ps_k.append(same / len(pairs))
+        ps = ps_for_split(labels_half2, nearest)
         
-        if ps_k: ps_values.append(min(ps_k))
+        ps_values.append(ps)
 
-    # Calculate mean PS and SE
-    if not ps_values:
-        return np.nan, np.nan
     return np.mean(ps_values), np.std(ps_values) / np.sqrt(n_splits)
+
+# def compute_prediction_strength(X, cluster_fn, k, X_raw=None, precomputed=False, n_splits=5, random_state=42):
+#     np.random.seed(random_state)
+#     ps_values = []
+#     # number of patients
+#     n_samples = X.shape[0]
+#     for split_i in range(n_splits):
+#         # Generate indices for the entire dataset
+#         idx = np.arange(n_samples)
+#         np.random.shuffle(idx)
+#         split_point = len(idx) // 2
+        
+#         # Split the data into two halves
+#         idx_half1, idx_half2 = idx[:split_point], idx[split_point:]
+        
+#         # --- 1. Prepare Data for Clustering and Prediction ---
+#         # Precomputed indicates if X is a distance matrix (Gower) or feature matrix (PCA)
+#         if precomputed:
+#             # subset distance matrix for half1 and half2
+#             D_half1 = X[np.ix_(idx_half1, idx_half1)]
+#             D_half2 = X[np.ix_(idx_half2, idx_half2)]
+#             # Cluster each half separately
+#             labels_half1 = cluster_fn(D_half1, k)
+#             labels_half2 = cluster_fn(D_half2, k)
+            
+#             # For Gower (precomputed), centroids are computed in raw space
+#             X_half1_centroid_space = X_raw[idx_half1]
+#             X_half2_centroid_space = X_raw[idx_half2]
+#             distance_metric = "gower"
+#         else:
+#             # Clustering input (X_half1, X_half2) is a subset of the feature matrix (X_pca)
+#             X_half1 = X[idx_half1]
+#             X_half2 = X[idx_half2]
+#             labels_half1 = cluster_fn(X_half1, k)
+#             labels_half2 = cluster_fn(X_half2, k)
+            
+#             # For PCA (euclidean), centroids are computed in PCA space
+#             X_half1_centroid_space = X_half1
+#             X_half2_centroid_space = X_half2
+#             distance_metric = "euclidean"
+            
+#         # 1. Compute Centroids/Medoids from training data 
+#         if distance_metric == "gower":
+#             # For Gower, use medoids (actual data points) instead of centroids (means)
+#             medoids = []
+#             # For each cluster, find the medoid: the point with minimum average distance to all other cluster members
+#             for c in np.unique(labels_half1):
+#                 # Get indices of points in the cluster
+#                 cluster_members = np.where(labels_half1 == c)[0] 
+#                 # Use precomputed D_half1 instead of recomputing Gower distances
+#                 cluster_dist = D_half1[np.ix_(cluster_members, cluster_members)]
+#                 medoid_idx = np.argmin(cluster_dist.sum(axis=1))
+#                 medoids.append(cluster_members[medoid_idx])
+#             representatives = X_half1_centroid_space[medoids]
+#         else:
+#             # For Euclidean (PCA), use centroids (mean points)
+#             representatives = np.vstack([X_half1_centroid_space[labels_half1 == c].mean(axis=0) for c in np.unique(labels_half1)])
+
+#         # 2. Assign test points to nearest representatives using appropriate distance metric
+#         if distance_metric == "gower":
+#             # Use precomputed D_half1 and D_half2 instead of recomputing Gower distances
+#             # medoids are indices in idx_half1, so get their distances to all half2 points from full Gower matrix
+#             medoid_indices_in_half1 = np.array(medoids)
+#             medoid_indices_global = idx_half1[medoid_indices_in_half1]
+#             # Extract distances from half2 points to medoids using full D_gower
+#             distances = X[np.ix_(idx_half2, medoid_indices_global)]
+#             nearest = np.argmin(distances, axis=1)
+#         else:
+#             # Use euclidean distance to centroids
+#             nearest = np.argmin(pairwise_distances(X_half2_centroid_space, representatives, metric="euclidean"), axis=1)
+
+#         # Calculate minimum co-membership
+#         ps_k = []
+#         for c in np.unique(labels_half2):
+#             idx_c = np.where(labels_half2 == c)[0]
+#             if len(idx_c) < 2: continue
+            
+#             pairs = [(i, j) for i in idx_c for j in idx_c if i < j]
+            
+#             # Check prediction co-membership
+#             same = sum(nearest[i] == nearest[j] for i, j in pairs)
+            
+#             if pairs: ps_k.append(same / len(pairs))
+        
+#         if ps_k: ps_values.append(min(ps_k))
+
+   
+#     return np.mean(ps_values), np.std(ps_values) / np.sqrt(n_splits)
 
 
 

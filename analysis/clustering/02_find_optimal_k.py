@@ -78,7 +78,6 @@ for cfg, (X, cluster_fn, precomputed) in configs.items():
             X,
             cluster_fn,
             k,
-            X_raw=X_raw,
             precomputed=precomputed,
         )
         
@@ -94,7 +93,7 @@ print(f"\nSaved detailed PS results to: {OPTIMAL_K_RESULTS_PATH}")
 
 # Determine optimal k
 summary = []
-THRESHOLD = 0.8  # PS + SE rule
+THRESHOLD = 0.8  
 
 for cfg in results_df["config"].unique():
     sub = results_df[results_df["config"] == cfg]
