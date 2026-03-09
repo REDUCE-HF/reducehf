@@ -1,6 +1,12 @@
 code,term
 102572006,Edema of lower extremity
+102573001,Edema of thigh
 102576009,Edema of foot
+10678191000119105,Localized swelling of bilateral lower legs
+10678231000119101,Localized swelling of toe of bilateral feet
+10678511000119108,Localized swelling of bilateral feet
+10678591000119104,Localized swelling of bilateral lower limbs
+1304272004,Edema of bilateral thighs
 139241006,Oedema (& [symptom] or [swelling symptom])
 139243009,Ankle swelling (& [symptom])
 139248000,Pitting oedema
@@ -19,6 +25,7 @@ code,term
 162782003,On examination - edema of feet
 162783008,On examination - edema of legs
 162785001,On examination - edema of thighs
+233706004,Drug-induced acute pulmonary edema
 248477007,Swelling or edema
 248478002,Swelling - edema - symptom
 248480008,Leg swelling symptom
@@ -32,7 +39,16 @@ code,term
 284521000,Pitting edema
 297142003,Foot swelling
 299414004,Swelling of ankle joint
+360371003,Acute cardiac pulmonary edema
+40541001,Acute pulmonary edema
+420829009,1+ pitting edema
+421129002,4+ pitting edema
+421346005,3+ pitting edema
+421605005,2+ pitting edema
+443111006,Edema of calf
+444956007,Edema of all toes
 445126005,Edema of entire limb
+445256008,Edema of buttock
 445281006,Soft pitting edema
 445341001,Firm pitting edema
 449614009,Swelling of lower limb
@@ -43,16 +59,22 @@ code,term
 504711000000109,Oedema of calf 
 517811000000107,Firm pitting oedema
 517831000000104,Soft pitting oedema
+517881000000100,Limb oedema of sudden onset
 517961000000103,Oedema of toes
 58692005,Dependent edema
-762896009,Swelling of left lower limb
+711384005,Reduction of peripheral edema
+721181006,Localized edema due to fluid overload
+721210009,Edema due to fluid overload
 762897000,Swelling of right lower limb
 762898005,Swelling of bilateral lower limbs
-762915008,Swelling of right foot
-762916009,Swelling of left foot
 762917000,Swelling of bilateral feet
 763511000000102,Worsening peripheral oedema
+764851000000102,Worsening pulmonary oedema
 79654002,Edema
 816181009,Edema of bilateral lower limbs
 816190002,Edema of bilateral lower legs
 829986000,Edema of bilateral feet
+840521002,Acute pulmonary edema caused by fume
+840522009,Acute pulmonary edema caused by vapor
+860797003,Generalized edema due to fluid overload
+89555002,Cardiac edema

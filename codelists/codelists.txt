@@ -49,7 +49,7 @@ opensafely/insulin-medication/2020-04-26
 opensafely/antidiabetic-drugs/2020-07-16
 user/r_denholm/non-metformin-antidiabetic-drugs_bristol/7207eb58
 opensafely/glycated-haemoglobin-hba1c-tests-numerical-value/5134e926
-reducehf/heart-failure-secondary-care/7eadc7d2/
+reducehf/heart-failure-secondary-care/64d82c75/
 reducehf/heart-failure-broad-for-excluding-people/17bd3b08/
 reducehf/current-smoker/0285e0a1/
 reducehf/former-smoker/37578701/
@@ -61,12 +61,12 @@ user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3/
 user/elsie_horne/cocp_dmd/1666a7a3/
 user/elsie_horne/hrt_dmd/19196799/
 user/RochelleKnight/prostate_cancer_snomed/0437497e/
-reducehf/oedema4all/2efcdccd/
+reducehf/oedema4all/27d17fd5/
 opensafely/systolic-blood-pressure-qof/3572b5fb/
 opensafely/asthma-annual-review-qof/33eeb7da/
 opensafely/chronic-obstructive-pulmonary-disease-copd-review-qof/01cfd170/
 opensafely/care-planning-medication-review-simple-reference-set-nhs-digital/61b13c39/
-reducehf/fatigue4all/7cddf662/
+reducehf/fatigue/383a7587/
 reducehf/beathlessness4all/2a386c7c/
 reducehf/ntpro-num-only/65364657/
 reducehf/np-any/33175fed/
