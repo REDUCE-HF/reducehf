@@ -180,8 +180,8 @@ actions:
     needs: [diabetes_algo_wp3]
     outputs:
       highly_sensitive:
-        raw_data: output/clustering/clustering_raw.csv.gz
-        scaled_data: output/clustering/clustering_scaled.csv.gz
+        raw_data: output/clustering/real/clustering_raw.csv.gz
+        scaled_data: output/clustering/real/clustering_scaled.csv.gz
   
   # These actions don't run because some libraries are not available in opensafely
   # find_optimal_k:
