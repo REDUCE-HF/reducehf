@@ -350,7 +350,7 @@ oedema_snomed = codelist_from_csv(
 # HF-related fatigue
 
 fatigue_snomed = codelist_from_csv(
-    "codelists/reducehf-fatigue4all.csv",
+    "codelists/reducehf-fatigue.csv",
     column="code"
 ) 
 

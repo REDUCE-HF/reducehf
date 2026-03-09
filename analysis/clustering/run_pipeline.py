@@ -49,7 +49,6 @@ def main():
         print("PREPARING REAL DATA")
         print("=" * 70)
         run("python3 analysis/clustering/01_prepare_data.py", env=env)
-
     # Core pipeline (uses real or synthetic paths based on USE_SYNTHETIC_INPUTS env var)
     print("\n" + "=" * 70)
     print("RUNNING CORE PIPELINE")
