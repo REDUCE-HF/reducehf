@@ -215,8 +215,6 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
 
 
 
-
-
 def get_best_config(validation_results_path):
     """
     Load validation results and return the best configuration name.
