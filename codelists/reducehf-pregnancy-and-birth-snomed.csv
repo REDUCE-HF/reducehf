@@ -22,15 +22,20 @@ code,term
 10809101000119109,Hypothyroidism in childbirth
 1109951000000101,Pregnancy insufficiently advanced for reliable antenatal screening
 1109971000000105,Pregnancy too advanced for reliable antenatal screening
+1142044000,Pre-existing malnutrition-related diabetes mellitus in pregnancy
 1148801000000108,Monochorionic monoamniotic triplet pregnancy
 1148811000000105,Trichorionic triamniotic triplet pregnancy
 1148821000000104,Dichorionic triamniotic triplet pregnancy
 1148841000000106,Dichorionic diamniotic triplet pregnancy
+1148848009,Multiple pregnancy following assisted fertilization
+1148970006,Higher order multiple pregnancy due to and following medically assisted reproduction
 1149411000000103,Monochorionic diamniotic triplet pregnancy
 1149421000000109,Monochorionic triamniotic triplet pregnancy
 11687002,Gestational diabetes mellitus
 118781000119108,Pre-existing hypertensive chronic kidney disease in mother complicating pregnancy
 12275071000119109,Conjoined twin pregnancy
+1268535008,Obstructed labor due to interlocked twins
+1269273000,Malignancy diagnosed during pregnancy
 127363001,"Number of pregnancies, currently pregnant"
 127365008,Gravida 2
 127366009,Gravida 3
@@ -42,6 +47,9 @@ code,term
 127372009,Gravida 9
 127373004,Gravida 10
 127374005,Gravida more than 10
+1290152008,Singleton pregnancy
+1300203003,Pregnancy resulting from natural conception
+1303255001,Medium risk pregnancy
 134781000119106,High risk pregnancy due to recurrent miscarriage
 14418008,Precocious pregnancy
 1474004,Hypertensive heart AND renal disease complicating AND/OR reason for care during childbirth
@@ -71,6 +79,7 @@ code,term
 171055003,Pregnancy smoking education
 171057006,Pregnancy alcohol education
 17618008,Previous pregnancies 9
+176886009,Manual manipulation of non-pregnant uterus
 18416000,Essential hypertension complicating AND/OR reason for care during childbirth
 198942000,"Benign essential hypertension complicating pregnancy, childbirth and the puerperium"
 198944004,"Benign essential hypertension complicating pregnancy, childbirth and the puerperium - delivered"
@@ -100,30 +109,46 @@ code,term
 199380003,Multiple pregnancy with malpresentation - delivered
 199381004,Multiple pregnancy with malpresentation with antenatal problem
 20753005,Hypertensive heart disease complicating AND/OR reason for care during pregnancy
+21987001,Delayed delivery of second of multiple births
+2256007,Monozygotic twins
 22966008,Hypertensive heart AND renal disease complicating AND/OR reason for care during pregnancy
 23717007,Benign essential hypertension complicating AND/OR reason for care during pregnancy
 237227006,Congenital heart disease in pregnancy
 237236005,Undiagnosed multiple pregnancy
-237237001,Undiagnosed twin
+237237001,Undiagnosed twin pregnancy
 237238006,Pregnancy with uncertain dates
 237239003,Low risk pregnancy
+237245006,Vanishing twin syndrome
 237247003,Continuing pregnancy after abortion of sibling fetus
+237321009,Delayed delivery of triplet
 237627000,Pregnancy and type 2 diabetes mellitus
 240154002,Idiopathic osteoporosis in pregnancy
+249014005,Finding of shape of pregnant abdomen
+249015006,Girth of pregnant abdomen
+249017003,Pregnant uterus displaced laterally
 26078007,Hypertension secondary to renal disease complicating AND/OR reason for care during childbirth
+275429002,Delayed delivery of second twin
 276367008,Wanted pregnancy
 288259000,Born after multiple pregnancy
+289686004,Ovoid pregnant abdomen
+289687008,Rounded pregnant abdomen
+289688003,Transversely enlarged pregnant abdomen
+289691003,Gravid uterus deviated to left
+289692005,Gravid uterus deviated to right
 29259002,Malignant hypertension complicating AND/OR reason for care during pregnancy
+313107007,Pre-pregnancy folic acid education
 314204000,Early stage of pregnancy
 31601007,Combined pregnancy
 34694006,Pre-existing hypertension complicating AND/OR reason for care during childbirth
 35381000119101,Quadruplet pregnancy with loss of one or more fetuses
+364266002,Shape of pregnant abdomen
 36801000119105,Continuing triplet pregnancy after spontaneous abortion of one or more fetuses
 37618003,Chronic hypertension complicating AND/OR reason for care during pregnancy
 38720006,Septuplet pregnancy
 40791000119105,Postpartum gestational diabetes mellitus
 40801000119106,Gestational diabetes mellitus complicating pregnancy
 413567003,Aplastic anemia associated with pregnancy
+417006004,Twin reversal arterial perfusion syndrome
 417570003,Gestational choriocarcinoma
 428165003,Hypothyroidism in pregnancy
 428511009,Multiple pregnancy with one fetal loss
@@ -134,6 +159,7 @@ code,term
 442478007,Multiple pregnancy involving intrauterine pregnancy and tubal pregnancy
 443460007,Multigravida of advanced maternal age
 444661007,High risk pregnancy due to history of preterm labor
+448401007,Choriocarcinoma of placenta
 449345000,Smoked before confirmation of pregnancy
 449368009,Stopped smoking during pregnancy
 449369001,Stopped smoking before pregnancy
@@ -144,16 +170,20 @@ code,term
 459169002,Monochorionic diamniotic twin pregnancy with similar amniotic fluid volumes
 459170001,Monochorionic diamniotic twin pregnancy with dissimilar amniotic fluid volumes
 459171002,Monochorionic monoamniotic twin pregnancy
-46894009,"Gestational diabetes mellitus, class A>2<"
+46894009,Gestational diabetes mellitus class A2
 47200007,High risk pregnancy
 472321009,Continuing pregnancy after intrauterine death of one twin with intrauterine retention of dead twin
+472699005,Uncontrolled gestational diabetes mellitus
 4783006,Maternal diabetes mellitus with hypoglycemia affecting fetus OR newborn
 48552006,Hypertension secondary to renal disease complicating AND/OR reason for care during pregnancy
 526961000000105,Pregnancy advice for patients with epilepsy
 527041000000108,Pregnancy advice for patients with epilepsy not indicated
 527131000000100,Pregnancy advice for patients with epilepsy declined
+568141000005106,Pregnancy following cone biopsy of uterine cervix
 58532003,Unwanted pregnancy
 59733002,Hypertensive heart disease complicating AND/OR reason for care during childbirth
+598071000005103,Stopped smoking in first trimester
+598081000005100,Stopped smoking after first trimester
 60810003,Quadruplet pregnancy
 609515005,Epithelioid trophoblastic tumor
 609563008,Pre-existing diabetes mellitus in pregnancy
@@ -165,28 +195,36 @@ code,term
 65402008,Pre-existing hypertension complicating AND/OR reason for care during pregnancy
 65727000,Intrauterine pregnancy
 6867004,Previous pregnancies more than 10
+69777007,Interlocked twins
 699240001,Combined intrauterine and ovarian pregnancy
+70651004,Calkin's sign
 713575004,Dizygotic twin pregnancy
 713576003,Monozygotic twin pregnancy
 71874008,Benign essential hypertension complicating AND/OR reason for care during childbirth
 721166000,Human immunodeficiency virus complicating pregnancy childbirth and the puerperium
+721567004,Primary malignant neoplasm of placenta
 72301000119103,Asthma in pregnancy
 72892002,Normal pregnancy
-75022004,"Gestational diabetes mellitus, class A>1<"
+72957006,Diamniotic-monochorionic twins
+73621009,Monoamniotic twins
+75022004,Gestational diabetes mellitus class A1
 76751001,"Diabetes mellitus in mother complicating pregnancy, childbirth AND/OR puerperium"
-77386006,Pregnant
+77386006,Pregnancy
 78808002,Essential hypertension complicating AND/OR reason for care during pregnancy
 80224003,Multiple gestation with one OR more fetal malpresentations
 80856001,Previous pregnancies 8
 80997009,Quintuplet pregnancy
+813541000000100,Pregnancy resulting from assisted conception
 8218002,Chronic hypertension complicating AND/OR reason for care during childbirth
 82634006,Previous pregnancies 10
 83074005,Unplanned pregnancy
 866641000000105,Pertussis vaccination in pregnancy declined
 88144003,Removal of ectopic interstitial uterine pregnancy requiring total hysterectomy
 890096007,Pregnancy with implant contraceptive
+89244003,Entanglement of cords of twins in monoamniotic sac
 91923005,Acquired immunodeficiency syndrome virus infection associated with pregnancy
 91948008,Asymptomatic human immunodeficiency virus infection in pregnancy
 9279009,Extra-amniotic pregnancy
+94492000,Metastatic malignant neoplasm to placenta
 956951000000104,Pertussis vaccination in pregnancy
 956971000000108,Pertussis vaccination in pregnancy given by other healthcare provider

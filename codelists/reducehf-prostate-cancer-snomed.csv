@@ -1,5 +1,18 @@
 code,term
 1098981000119101,Recurrent malignant neoplasm of prostate
+1208457007,Small cell neuroendocrine carcinoma of prostate
+1237422007,Metastatic carcinoma to prostate
+1240353009,Metastatic squamous cell carcinoma to prostate
+1240359008,Metastatic small cell carcinoma to prostate
+1251485006,Metastatic adenocarcinoma to prostate
+1259388006,Primary carcinoma of prostate
+1259666003,Primary acinar cell cystadenocarcinoma of prostate
+1259669005,Primary infiltrating duct carcinoma of prostate
+1259672003,Primary adenocarcinoma of prostate
+1259674002,Primary endometrioid carcinoma of prostate
+1259710009,Primary small cell neuroendocrine carcinoma of prostate
+1260182007,Phyllodes tumor of prostate
+1264500002,Metastatic infiltrating duct carcinoma to prostate
 126906006,Neoplasm of prostate
 16294321000119104,Atypical small acinar proliferation of prostate
 176106009,Radical cystoprostatourethrectomy
@@ -15,7 +28,7 @@ code,term
 254901000,Prostatic intraepithelial neoplasia
 255149000,Carcinoma in situ of prostatic ducts
 278060005,Endometrioid carcinoma of prostate
-314969001,Local recurrence of malignant tumor of prostate
+314969001,Local recurrence of malignant neoplasm of prostate
 33013007,Gleason grade score 8 out of 10
 369485004,Malignant tumor involving prostate by direct extension from bladder
 369486003,Malignant tumor involving prostate by separate metastasis from bladder
@@ -31,7 +44,7 @@ code,term
 385412008,Gleason Score 7-10: Poorly differentiated
 394932008,Gleason prostate grade 5-7 (medium)
 396198006,Small cell carcinoma of prostate
-399068003,Malignant tumor of prostate
+399068003,Malignant neoplasm of prostate
 399490008,Adenocarcinoma of prostate
 399590005,Squamous cell carcinoma of prostate
 427492003,Hormone refractory prostate cancer
@@ -66,5 +79,5 @@ code,term
 92308005,Benign neoplasm of prostate
 92691004,Carcinoma in situ of prostate
 93974005,Primary malignant neoplasm of prostate
-94503003,Secondary malignant neoplasm of prostate
+94503003,Metastatic malignant neoplasm to prostate
 95014000,Neoplasm of uncertain behavior of prostate
