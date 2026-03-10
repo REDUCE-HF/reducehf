@@ -238,7 +238,7 @@ diabetes_type1_snomed = codelist_from_csv(
     )
 
 diabetes_type1_icd10 = codelist_from_csv(
-    "codelists/reducehf-type-1-diabetes-icd10",column="code"
+    "codelists/reducehf-type-1-diabetes-icd10.csv",column="code"
     )
 
 # T2DM
