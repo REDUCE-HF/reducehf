@@ -60,11 +60,6 @@ learndis_primis = codelist_from_csv(
     column="code"
 )
 
-## All BMI coded terms
-bmi_stage_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-bmi_stage.csv",
-    column="code"
-)
 
 ## BMI numeric value
 bmi_numeric = codelist_from_csv(
@@ -72,35 +67,6 @@ bmi_numeric = codelist_from_csv(
     column = "code"
 )
 
-## Severe Obesity code recorded
-sev_obesity_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-sev_obesity.csv",
-    column="code"
-)
-
-## Chronic Respiratory Disease
-resp_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-resp_cov.csv",
-    column="code"
-)
-
-## Chronic Neurological Disease including Significant Learning Disorder
-cns_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-cns_cov.csv",
-    column="code"
-)
-
-## Diabetes diagnosis codes
-diab_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-diab.csv",
-    column="code"
-)
-
-## Diabetes resolved codes
-dmres_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-dmres.csv",
-    column="code"
-)
 
 ## Severe Mental Illness codes
 sev_mental_primis = codelist_from_csv(
@@ -114,35 +80,6 @@ smhres_primis = codelist_from_csv(
     column="code"
 )
 
-## Chronic heart disease codes
-chd_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-chd_cov.csv",
-    column="code"
-)
-
-## Chronic kidney disease diagnostic codes
-ckd_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd_cov.csv",
-    column="code"
-)
-
-## Chronic kidney disease codes - all stages
-ckd15_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd15.csv",
-    column="code"
-)
-
-## Chronic kidney disease codes-stages 3 - 5
-ckd35_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd35.csv",
-    column="code"
-)
-
-## Chronic Liver disease codes
-cld_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-cld.csv",
-    column="code"
-)
 
 # Stroke Ischaemic (Ischaemic Stroke)
 stroke_isch_snomed = codelist_from_csv(
