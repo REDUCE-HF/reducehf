@@ -343,7 +343,7 @@ hrt_dmd = codelist_from_csv(
 
 
 breathless_snomed = codelist_from_csv(
-    "codelists/reducehf-beathlessness.csv",
+    "codelists/reducehf-breathlessness.csv",
     column="code"
 )   
 # HF-related oedema
