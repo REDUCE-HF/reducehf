@@ -3,12 +3,10 @@
 # using Prediction Strength (Tibshirani & Walther, 2005)
 # ============================================
 
-from ast import main
 import os
-import gower
+import gower_exp as gower
 import numpy as np
 import pandas as pd
-from sklearn.metrics import pairwise_distances
 from config import (
     D_GOWER_PATH,
     OPTIMAL_K_RESULTS_PATH,
