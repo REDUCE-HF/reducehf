@@ -8,8 +8,8 @@ from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import pairwise_distances
 from sklearn.metrics import roc_auc_score
-import gower_exp as gower
 from config import (
     RAW_PATH, SCALED_PATH,
     MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
@@ -24,20 +24,12 @@ from config import (
 
 def load_data(raw_path=RAW_PATH, scaled_path=SCALED_PATH):
     """Load raw and scaled datasets and return both DataFrames and feature arrays."""
-    if not os.path.exists(raw_path):
-        raise FileNotFoundError(f"Missing file: {raw_path}")
-    if not os.path.exists(scaled_path):
-        raise FileNotFoundError(f"Missing file: {scaled_path}")
-
+    
     raw_df = pd.read_csv(raw_path)
     scaled_df = pd.read_csv(scaled_path)
     
-    id_col = "patient_id"
-    
-    # Extract feature matrices (NumPy arrays)
-    # The feature columns are all columns except the 'patient_id'
-    X_raw = raw_df.drop(columns=[id_col]).astype(float).values
-    X_scaled = scaled_df.drop(columns=[id_col]).values
+    X_raw = raw_df.drop(columns=["patient_id"]).values.astype(object) 
+    X_scaled = scaled_df.drop(columns=["patient_id"]).values
     
     # Return all four expected variables
     return X_raw, X_scaled
@@ -47,22 +39,11 @@ def load_feature_names(raw_path=RAW_PATH):
     Load the list of feature names (column names) from the raw data file.
 
     """
-    if not os.path.exists(raw_path):
-        raise FileNotFoundError(f"Missing file: {raw_path}")
-
     raw_df = pd.read_csv(raw_path)
     id_col = "patient_id"
     # Return column names, excluding the patient ID
     return raw_df.drop(columns=[id_col], errors='ignore').columns.tolist()
 
-
-
-
-
-def compute_gower(X):
-    """Compute Gower distance matrix ."""
-    X_float = X.astype(np.float64)
-    return gower.gower_matrix(X_float)
 
 
 def run_pca(X_scaled, var_threshold=0.8):
@@ -72,7 +53,7 @@ def run_pca(X_scaled, var_threshold=0.8):
         X_pca: Transformed data in reduced PCA space
         var_explained: Total variance explained
     """
-    pca = PCA(n_components=var_threshold, svd_solver="full", random_state=42)
+    pca = PCA(n_components=var_threshold, random_state=42)
     X_pca = pca.fit_transform(X_scaled)
     var_explained = pca.explained_variance_ratio_.sum()
     return X_pca, var_explained
@@ -150,10 +131,88 @@ def run_optics(X):
     Returns:
         Cluster labels (-1 for noise points)
     """
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=RuntimeWarning)
-        optics = OPTICS(min_samples=10, xi=0.05, metric="euclidean").fit(X)
+    
+    optics = OPTICS(min_samples=10, xi=0.05, metric="euclidean").fit(X)
     return optics.labels_
+
+
+# -------------------
+# Prediction Strength (PS) Calculation
+# -------------------
+def split_indices(n_samples, rng):
+    """Return two shuffled index arrays of equal size."""
+    idx = rng.permutation(n_samples)
+    mid = len(idx) // 2
+    return idx[:mid], idx[mid:]
+
+def compute_representatives(X, labels, precomputed): 
+    """ medoids if precomputed or centroids otherwise."""
+    if precomputed: #X is a distance matrix 
+        medoids = []
+        for c in np.unique(labels):
+            members = np.where(labels == c)[0]
+            cluster_dist = X[np.ix_(members, members)]
+            medoids.append(members[np.argmin(cluster_dist.sum(axis=1))])
+        return np.array(medoids)          
+    else: # X is the data (feature matrix)
+        centroids = []
+        for c in np.unique(labels):
+            cluster_points = X[labels == c]
+            centroid = cluster_points.mean(axis=0)
+            centroids.append(centroid)
+        return np.vstack(centroids)
+    
+def assign_to_nearest(X_full, idx_half2, medoid_global_idx, X_half2, representatives, precomputed):
+    """Return nearest-representative index for each test point."""
+    if precomputed:
+        distances = X_full[np.ix_(idx_half2, medoid_global_idx)]
+        return np.argmin(distances, axis=1)
+    else:
+        return np.argmin(pairwise_distances(X_half2, representatives, metric="euclidean"), axis=1)
+
+
+def ps_for_split(labels_half2, nearest):
+    """Compute min co-membership fraction across clusters for one split."""
+    ps_k = []
+    for c in np.unique(labels_half2):
+        idx_c = np.where(labels_half2 == c)[0]
+        if len(idx_c) < 2:
+            continue
+        pairs = [(i, j) for i in idx_c for j in idx_c if i < j] #unique pair of points in cluster 
+        same = sum(nearest[i] == nearest[j] for i, j in pairs) #count pairs that are assigned to the same centroid/medoid in the other half
+        ps_k.append(same / len(pairs))
+    return min(ps_k) 
+
+
+def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5, random_state=42):
+    rng = np.random.default_rng(random_state)
+    ps_values = []
+
+    for split_i in range(n_splits):
+        idx_half1, idx_half2 = split_indices(X.shape[0], rng)
+
+        if precomputed:
+            D_half1 = X[np.ix_(idx_half1, idx_half1)]
+            D_half2 = X[np.ix_(idx_half2, idx_half2)]
+            labels_half1 = cluster_fn(D_half1, k)
+            labels_half2 = cluster_fn(D_half2, k)
+            medoid_local_idx = compute_representatives(D_half1, labels_half1, precomputed=True)# positions within D_half1
+            medoid_global_idx = idx_half1[medoid_local_idx]#full data space
+            nearest = assign_to_nearest(X, idx_half2, medoid_global_idx, None, None, precomputed=True)
+        else:
+            X_half1, X_half2 = X[idx_half1], X[idx_half2]
+            labels_half1 = cluster_fn(X_half1, k)
+            labels_half2 = cluster_fn(X_half2, k)
+            representatives = compute_representatives(X_half1, labels_half1, precomputed=False)
+            nearest = assign_to_nearest(None, None, None, X_half2, representatives, precomputed=False)
+
+        ps = ps_for_split(labels_half2, nearest)
+        
+        ps_values.append(ps)
+
+    return np.mean(ps_values), np.std(ps_values) / np.sqrt(n_splits)
+
+
 
 def get_best_config(validation_results_path):
     """
