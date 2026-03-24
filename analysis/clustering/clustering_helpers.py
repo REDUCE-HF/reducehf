@@ -9,7 +9,7 @@ from sklearn_extra.cluster import KMedoids
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import pairwise_distances
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, silhouette_score, calinski_harabasz_score
 from config import (
     RAW_PATH, SCALED_PATH,
     MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
@@ -313,6 +313,18 @@ def build_membership_features(df):
         out[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
     
     return out
+
+
+def evaluate_clustering(config, X, labels, metric="euclidean"):
+    n_clusters = len(np.unique(labels))
+    if n_clusters < 2:
+        print(f"Warning: {config}: only one cluster — skipping.")
+        return None
+    sil = silhouette_score(X, labels, metric=metric)
+    ch = calinski_harabasz_score(X, labels)  
+    print(f"{config}: silhouette={sil:.3f}, calinski_harabasz={ch:.1f}")
+    return {"config": config, "silhouette": sil, "calinski_harabasz": ch}
+
 
 def make_ovr_labels(labels, cluster_id):
     """Binary labels: 1 = in cluster, 0 = outside."""
