@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # ============================================
 # 04_validate_clusters.py
 # Validate clustering results using silhouette and CH scores
@@ -9,7 +8,6 @@
 import os
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from config import (
     D_GOWER_PATH,
     OUTPUT_DIR,
@@ -23,9 +21,9 @@ from config import (
 )
 from clustering_helpers import (
     load_data,
+    
     evaluate_clustering,
 )
-
 # -----------------------------
 # Setup
 # -----------------------------
@@ -33,15 +31,13 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
 X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
-raw_df = pd.read_csv(RAW_PATH)
-patient_ids = raw_df["patient_id"].values
-
+raw_df = pd.read_csv(RAW_PATH)  
+patient_ids = raw_df["patient_id"].values  
 # -----------------------------
 # Load optimal K values
 # -----------------------------
 opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
 print(f"Loaded optimal k values from {OPTIMAL_K_SUMMARY_PATH}")
-
 # -----------------------------
 # Load distances and PCA
 # -----------------------------
@@ -54,8 +50,9 @@ print("Loading PCA transformation...")
 X_pca = pd.read_csv(X_PCA_PATH, compression="gzip").values
 print(f"Loaded X_pca from {X_PCA_PATH}")
 
+
 # -----------------------------
-# Evaluate all clustering configurations
+# Run all clustering configurations
 # -----------------------------
 results = []
 
@@ -87,7 +84,6 @@ for cfg, data in configs:
 
     res = evaluate_clustering(cfg, X_eval, labels_eval, metric=metric)
     results.append(res)
-
 # -----------------------------
 # Save validation results
 # -----------------------------
@@ -98,10 +94,10 @@ print("\n Validation results saved to:", VALIDATION_RESULTS_PATH)
 print(df)
 print("\n Validation complete.")
 print(DISCLOSURE_THRESHOLD)
+#TODO test on synthetic data
+import matplotlib.pyplot as plt
+import numpy as np
 
-# -----------------------------
-# Plot Silhouette and Calinski-Harabasz Scores
-# -----------------------------
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
 # --- Silhouette (sort descending) ---
@@ -111,7 +107,7 @@ axes[0].set_xlabel("Silhouette Score")
 axes[0].set_title("Silhouette Score by Config")
 axes[0].invert_yaxis()
 for i, v in enumerate(sil_sorted["silhouette"]):
-    axes[0].text(v, i, f" {v:.3f}", va="center", fontsize=8)
+        axes[0].text(v, i, f" {v:.3f}", va="center", fontsize=8)
 
 # --- Calinski-Harabasz (log scale, sort descending) ---
 ch_sorted = df.sort_values("calinski_harabasz", ascending=False)
@@ -122,6 +118,7 @@ axes[1].set_xlabel("Calinski-Harabasz Score (log scale)")
 axes[1].set_title("Calinski-Harabasz Score by Config")
 axes[1].invert_yaxis()
 for i, v in enumerate(ch_vals):
+    
     axes[1].text(v, i, f" {v:.1f}", va="center", fontsize=8)
 
 plt.suptitle("Clustering Validation Scores", fontsize=13, fontweight="bold")

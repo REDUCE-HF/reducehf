@@ -1,4 +1,4 @@
-# ============================================
+## ============================================
 # 03_tune_optics.py
 # Grid search tuning for OPTICS parameters
 # ============================================
@@ -7,7 +7,6 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.cluster import OPTICS
-from sklearn.metrics import silhouette_score, calinski_harabasz_score
 import matplotlib.pyplot as plt
 from config import (
     D_GOWER_PATH,
@@ -36,7 +35,6 @@ print("Loading precomputed PCA transformation...")
 X_pca = pd.read_csv(X_PCA_PATH, compression="gzip").values
 print(f"Loaded X_pca from {X_PCA_PATH}")
 
-
 # -------------------
 # Dynamic parameter grid
 # -------------------
@@ -48,7 +46,6 @@ xi_list = [0.02, 0.05, 0.1]
 max_eps_list = [np.inf, 2.0, 5.0]  
 #If this is too much we can run on sample of the data or restrict to max(min_samples_list)??
 results = []
-
 # -------------------
 # Run grid for both data types
 # -------------------
@@ -67,11 +64,8 @@ for distance_name, X, metric in [
                 n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
                 noise_frac = np.mean(labels == -1)
 
-                # Pass the distance matrix for precomputed metrics for Silhouette Score
-                score_input = X if metric == "precomputed" else X_pca
-                sil = silhouette_score(score_input, labels, metric=metric)
-                ch = calinski_harabasz_score(X_pca, labels) 
-                
+                cfg_name = f"{distance_name}_ms{min_s}_xi{xi}_eps{eps}"
+                metrics = evaluate_clustering(cfg_name, X, labels, metric=metric)
 
                 results.append({
                     "data": distance_name,
@@ -80,9 +74,11 @@ for distance_name, X, metric in [
                     "max_eps": eps,
                     "n_clusters": n_clusters,
                     "noise_fraction": round(noise_frac, 3),
-                    "silhouette": sil,
-                    "calinski_harabasz": ch
+                    "silhouette": metrics["silhouette"] ,
+                    "calinski_harabasz": metrics["calinski_harabasz"],
+                    "config": cfg_name,
                 })
+
 
                
                 
@@ -97,13 +93,14 @@ print(f"\nSaved results to: {OPTICS_TUNING_RESULTS_PATH}")
 # -------------------
 # Best parameters summary
 # -------------------
-best_rows = df.loc[df.groupby("data")["silhouette"].idxmax()]
-print("\nBest parameters per dataset:")
-print(best_rows[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette"]])
+best_silhouette = df.loc[df.groupby("data")["silhouette"].idxmax()]
+best_ch = df.loc[df.groupby("data")["calinski_harabasz"].idxmax()]
 
-# -------------------
-# Reachibility Plots
-# -------------------
+print("\nBest config per dataset by Silhouette:")
+print(best_silhouette[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette", "calinski_harabasz"]])
+
+print("\nBest config per dataset by Calinski-Harabasz:")
+print(best_ch[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette", "calinski_harabasz"]])
 #TODO test on synthetic data
 data_map = {
     "raw_gower":     (D_gower, "precomputed"),
@@ -111,10 +108,10 @@ data_map = {
 }
 
 cluster_colors = ["g.", "r.", "b.", "y.", "c.", "m."]
-TOP_N = 3  # number of top results to show 
+TOP_N = 1  # number of top results to show 
 
 top_rows = (
-    df.dropna(subset=["silhouette"])
+    df
     .groupby("data", group_keys=False)
     .apply(lambda g: g.nlargest(TOP_N, "silhouette"))
     .reset_index(drop=True)
