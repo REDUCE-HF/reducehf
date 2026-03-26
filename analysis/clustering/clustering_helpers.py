@@ -26,13 +26,15 @@ def load_data(raw_path=RAW_PATH, scaled_path=SCALED_PATH):
     """Load raw and scaled datasets and return both DataFrames and feature arrays."""
     
     raw_df = pd.read_csv(raw_path)
+    patient_ids = raw_df["patient_id"].values
+
     scaled_df = pd.read_csv(scaled_path)
     
     X_raw = raw_df.drop(columns=["patient_id"]).values.astype(object) 
     X_scaled = scaled_df.drop(columns=["patient_id"]).values
     
     # Return all four expected variables
-    return X_raw, X_scaled
+    return X_raw, X_scaled, patient_ids
 
 def load_feature_names(raw_path=RAW_PATH):
     """

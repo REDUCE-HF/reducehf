@@ -16,7 +16,6 @@ from config import (
     SCALED_PATH,
     VALIDATION_RESULTS_PATH,
     X_PCA_PATH,
-    DISCLOSURE_THRESHOLD,
     labels_path,
 )
 from clustering_helpers import (
@@ -30,9 +29,8 @@ from clustering_helpers import (
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading datasets...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
-raw_df = pd.read_csv(RAW_PATH)  
-patient_ids = raw_df["patient_id"].values  
+X_raw, X_scaled,patient_ids = load_data(RAW_PATH, SCALED_PATH)
+
 # -----------------------------
 # Load optimal K values
 # -----------------------------
@@ -93,7 +91,6 @@ df.to_csv(VALIDATION_RESULTS_PATH, index=False)
 print("\n Validation results saved to:", VALIDATION_RESULTS_PATH)
 print(df)
 print("\n Validation complete.")
-print(DISCLOSURE_THRESHOLD)
 #TODO test on synthetic data
 import matplotlib.pyplot as plt
 import numpy as np

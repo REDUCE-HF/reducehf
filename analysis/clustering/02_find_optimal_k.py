@@ -14,7 +14,7 @@ from config import (
     OUTPUT_DIR,
     RAW_PATH,
     SCALED_PATH,
-    X_PCA_PATH,
+    X_PCA_PATH,labels_path
 )
 from clustering_helpers import (
     load_data,
@@ -35,7 +35,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # Load data and prepare feature matrices
 # -------------------
 print("Loading clustering datasets...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
+X_raw, X_scaled,patient_ids = load_data(RAW_PATH, SCALED_PATH)
 
 print("Computing Gower distance for raw data...")
 D_gower = gower.gower_matrix(X_raw)
@@ -120,6 +120,25 @@ for cfg in results_df["config"].unique():
 summary_df = pd.DataFrame(summary)
 summary_df.to_csv(OPTIMAL_K_SUMMARY_PATH, index=False)
 print("\nSaved optimal k summary.")
+
+# -------------------
+# Save Labels
+# -------------------
+
+for _, row in summary_df.iterrows():
+    cfg = row["config"]
+    k = row["k_opt"]
+
+    if pd.isna(k):
+        print(f"  Skipping {cfg} (no optimal k)")
+        continue
+
+    k = int(k)
+    X, cluster_fn, _ = configs[cfg]
+    labels = cluster_fn(X, k)
+
+    labels_df = pd.DataFrame({"patient_id": patient_ids, "cluster": labels})
+    labels_df.to_csv(labels_path(cfg), index=False, compression="gzip")
 
 # -------------------
 # Save D_gower and X_pca for downstream use

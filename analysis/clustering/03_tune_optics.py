@@ -14,9 +14,9 @@ from config import (
     OUTPUT_DIR,
     RAW_PATH,
     SCALED_PATH,
-    X_PCA_PATH,
+    X_PCA_PATH,labels_path
 )
-from clustering_helpers import load_data
+from clustering_helpers import load_data,evaluate_clustering
 
 # -------------------
 # Load data
@@ -24,7 +24,7 @@ from clustering_helpers import load_data
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading dataset...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
+X_raw, X_scaled,patient_ids = load_data(RAW_PATH, SCALED_PATH)
 
 print("Loading precomputed Gower distance matrix...")
 D_gower = pd.read_csv(D_GOWER_PATH, compression="gzip").values
@@ -101,12 +101,37 @@ print(best_silhouette[["data", "min_samples", "xi", "max_eps", "n_clusters", "si
 
 print("\nBest config per dataset by Calinski-Harabasz:")
 print(best_ch[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette", "calinski_harabasz"]])
-#TODO test on synthetic data
+
+# -------------------
+# Save best labels. 
+# -------------------
 data_map = {
     "raw_gower":     (D_gower, "precomputed"),
     "pca_euclidean": (X_pca,   "euclidean"),
 }
+for _, row in best_silhouette.iterrows():
+    data_name = row["data"]
+    X, metric = data_map[data_name]
+    cfg_key = "raw_optics" if "raw" in data_name else "pca_optics"
 
+    best_optics = OPTICS(
+        min_samples=int(row["min_samples"]),
+        xi=row["xi"],
+        max_eps=row["max_eps"],
+        metric=metric,
+    ).fit(X)
+
+    (
+        pd.DataFrame({"patient_id": patient_ids, "cluster": best_optics.labels_})
+        .to_csv(labels_path(cfg_key), index=False, compression="gzip")
+    )
+    print(f"  {cfg_key} -> saved to {labels_path(cfg_key)}")
+
+
+
+# -------------------
+# Reachability plot
+# -------------------
 cluster_colors = ["g.", "r.", "b.", "y.", "c.", "m."]
 TOP_N = 1  # number of top results to show 
 
