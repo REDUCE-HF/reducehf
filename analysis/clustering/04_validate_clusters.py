@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from config import (
     D_GOWER_PATH,
+    DISCLOSURE_THRESHOLD,
     OUTPUT_DIR,
     OPTIMAL_K_SUMMARY_PATH,
     RAW_PATH,
@@ -70,7 +71,13 @@ for cfg, data in configs:
     labels_df = pd.read_csv(labels_file, compression="gzip")
     labels = labels_df["cluster"].values
     print(f"Loaded labels for {cfg}")
+    
+    # Relabel small clusters (<=DISCLOSURE_THRESHOLD = 7) as -1
+    counts = pd.Series(labels).value_counts()
+    small_clusters = counts[counts <= DISCLOSURE_THRESHOLD].index
+    labels[np.isin(labels, small_clusters)] = -1
 
+   
     # Evaluate clustering quality (excluding -1 noise clusters)
     labels_eval = labels[labels != -1]
     if "raw" in cfg:
@@ -82,6 +89,11 @@ for cfg, data in configs:
 
     res = evaluate_clustering(cfg, X_eval, labels_eval, metric=metric)
     results.append(res)
+     # Save cluster labels 
+    labels_df = pd.DataFrame({"patient_id": patient_ids, "cluster": labels})
+    labels_file = labels_path(cfg)
+    labels_df.to_csv(labels_file, index=False, compression="gzip")
+    print(f"Saved labels to {labels_file}")
 # -----------------------------
 # Save validation results
 # -----------------------------
