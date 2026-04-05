@@ -100,16 +100,16 @@ def fn(dataset, earliest_date, index_date):
             ).admission_date
         )
 
-    ## Diabetes diagnostic codes
+    ## Diabetes non-diagnostic codes
     # First date
-    dataset.tmp_poccdm_date = first_matching_event_clinical_snomed(
+    dataset.tmp_poccdm_date = first_matching_event_clinical_ctv3(
         before_gp_events,
-        diabetes_diagnostic_snomed
+        diabetes_nondiagnostic_ctv3
         ).date
     # Count codes
-    dataset.tmp_poccdm_ctv3_count_num = count_matching_event_clinical_snomed(
+    dataset.tmp_poccdm_ctv3_count_num = count_matching_event_clinical_ctv3(
         before_gp_events,
-        diabetes_diagnostic_snomed
+        diabetes_nondiagnostic_ctv3
         )
 
     ### Other variables needed to define diabetes
