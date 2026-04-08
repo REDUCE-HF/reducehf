@@ -1,4 +1,4 @@
-# ============================================
+## ============================================
 # 03_tune_optics.py
 # Grid search tuning for OPTICS parameters
 # ============================================
@@ -7,18 +7,16 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.cluster import OPTICS
-from sklearn.metrics import silhouette_score, calinski_harabasz_score
 import matplotlib.pyplot as plt
-import warnings
 from config import (
     D_GOWER_PATH,
     OPTICS_TUNING_RESULTS_PATH,
     OUTPUT_DIR,
     RAW_PATH,
     SCALED_PATH,
-    X_PCA_PATH,
+    X_PCA_PATH,labels_path
 )
-from clustering_helpers import load_data
+from clustering_helpers import load_data,evaluate_clustering
 
 # -------------------
 # Load data
@@ -26,98 +24,64 @@ from clustering_helpers import load_data
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("Loading dataset...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
+X_raw, X_scaled,patient_ids = load_data(RAW_PATH, SCALED_PATH)
 
 print("Loading precomputed Gower distance matrix...")
-D_gower_path = D_GOWER_PATH
-if os.path.exists(D_gower_path):
-    D_gower = pd.read_csv(D_gower_path, compression="gzip").values
-    print(f"Loaded D_gower from {D_gower_path}")
-else:
-    raise FileNotFoundError(f"Gower distance matrix not found. Run find_optimal_k.py first.")
+D_gower = pd.read_csv(D_GOWER_PATH, compression="gzip").values
+print(f"Loaded D_gower from {D_GOWER_PATH}")
+
 
 print("Loading precomputed PCA transformation...")
-X_pca_path = X_PCA_PATH
-if os.path.exists(X_pca_path):
-    X_pca = pd.read_csv(X_pca_path, compression="gzip").values
-    print(f"Loaded X_pca from {X_pca_path}")
-else:
-    raise FileNotFoundError(f"PCA data not found. Run find_optimal_k.py first.")
+X_pca = pd.read_csv(X_PCA_PATH, compression="gzip").values
+print(f"Loaded X_pca from {X_PCA_PATH}")
 
 # -------------------
 # Dynamic parameter grid
 # -------------------
 n, d = X_scaled.shape
-base_min = int(np.log(n))
-all_min_samples_candidates = list(set([
-    2*d,
-    base_min,
-    base_min*2,
-    int(0.01*n),
-    int(0.02*n)
-]))
 
-# --- FIX: Only use the maximum calculated candidate for min_samples ---
-min_samples_list_full = [m for m in all_min_samples_candidates if m <= 500]
-min_samples_list = [max(min_samples_list_full)] if min_samples_list_full else [5]
-# -------------------------------------------------------------------
+min_samples_list= [d+1, 2*d,  3*d] #  heuristcs  (d+1, 2d–3d)
 
 xi_list = [0.02, 0.05, 0.1]
-max_eps_list = [np.inf, 2.0, 5.0]  # new param
-
+max_eps_list = [np.inf, 2.0, 5.0]  
+#If this is too much we can run on sample of the data or restrict to max(min_samples_list)??
 results = []
-
 # -------------------
 # Run grid for both data types
 # -------------------
-for data_name, X, metric in [
+for distance_name, X, metric in [
     ("raw_gower", D_gower, "precomputed"),
     ("pca_euclidean", X_pca, "euclidean")
 ]:
-    print(f"\nTuning OPTICS on {data_name}...")
+    print(f"\nTuning OPTICS on {distance_name}...")
     for min_s in min_samples_list:
         for xi in xi_list:
             for eps in max_eps_list:
                 print(f"  min_samples={min_s}, xi={xi}, max_eps={eps}")
-                try:
-                    with warnings.catch_warnings():
-                        warnings.filterwarnings("ignore", category=RuntimeWarning)
-                        optics = OPTICS(min_samples=min_s, xi=xi, max_eps=eps, metric=metric).fit(X)
-                    labels = optics.labels_
-                    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
-                    noise_frac = np.mean(labels == -1)
 
-                    if n_clusters > 1:
-                        # FIX: Pass the distance matrix for precomputed metrics for Silhouette Score
-                        score_input = X if metric == "precomputed" else X_pca
-                        sil = silhouette_score(score_input, labels, metric=metric)
-                        ch = calinski_harabasz_score(X_pca, labels) # CH always uses features (X_pca)
-                    else:
-                        sil, ch = np.nan, np.nan
+                optics = OPTICS(min_samples=min_s, xi=xi, max_eps=eps, metric=metric).fit(X)
+                labels = optics.labels_
+                n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+                noise_frac = np.mean(labels == -1)
 
-                    results.append({
-                        "data": data_name,
-                        "min_samples": min_s,
-                        "xi": xi,
-                        "max_eps": eps,
-                        "n_clusters": n_clusters,
-                        "noise_fraction": round(noise_frac, 3),
-                        "silhouette": sil,
-                        "calinski_harabasz": ch
-                    })
+                cfg_name = f"{distance_name}_ms{min_s}_xi{xi}_eps{eps}"
+                metrics = evaluate_clustering(cfg_name, X, labels, metric=metric)
 
-                except Exception as e:
-                    results.append({
-                        "data": data_name,
-                        "min_samples": min_s,
-                        "xi": xi,
-                        "max_eps": eps,
-                        "n_clusters": np.nan,
-                        "noise_fraction": np.nan,
-                        "silhouette": np.nan,
-                        "calinski_harabasz": np.nan
-                    })
-                    print(f" Error with {data_name}: {e}")
+                results.append({
+                    "data": distance_name,
+                    "min_samples": min_s,
+                    "xi": xi,
+                    "max_eps": eps,
+                    "n_clusters": n_clusters,
+                    "noise_fraction": round(noise_frac, 3),
+                    "silhouette": metrics["silhouette"] ,
+                    "calinski_harabasz": metrics["calinski_harabasz"],
+                    "config": cfg_name,
+                })
+
+
+               
+                
 
 # -------------------
 # Save results
@@ -129,20 +93,86 @@ print(f"\nSaved results to: {OPTICS_TUNING_RESULTS_PATH}")
 # -------------------
 # Best parameters summary
 # -------------------
-best_rows = df.loc[df.groupby("data")["silhouette"].idxmax()]
-print("\nBest parameters per dataset:")
-print(best_rows[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette"]])
+best_silhouette = df.loc[df.groupby("data")["silhouette"].idxmax()]
+best_ch = df.loc[df.groupby("data")["calinski_harabasz"].idxmax()]
+
+print("\nBest config per dataset by Silhouette:")
+print(best_silhouette[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette", "calinski_harabasz"]])
+
+print("\nBest config per dataset by Calinski-Harabasz:")
+print(best_ch[["data", "min_samples", "xi", "max_eps", "n_clusters", "silhouette", "calinski_harabasz"]])
 
 # -------------------
-# Plot silhouette vs min_samples
+# Save best labels. 
 # -------------------
-# plt.figure(figsize=(8,5))
-# for xi in xi_list:
-#     subset = df[(df["data"] == "pca_euclidean") & (df["xi"] == xi)]
-#     plt.plot(subset["min_samples"], subset["silhouette"], marker="o", label=f"xi={xi}")
-# plt.xlabel("min_samples")
-# plt.ylabel("Silhouette score")
-# plt.title("OPTICS tuning (PCA-Euclidean)")
-# plt.legend()
-# plt.tight_layout()
-# plt.show()
+data_map = {
+    "raw_gower":     (D_gower, "precomputed"),
+    "pca_euclidean": (X_pca,   "euclidean"),
+}
+for _, row in best_silhouette.iterrows():
+    data_name = row["data"]
+    X, metric = data_map[data_name]
+    cfg_key = "raw_optics" if "raw" in data_name else "pca_optics"
+
+    best_optics = OPTICS(
+        min_samples=int(row["min_samples"]),
+        xi=row["xi"],
+        max_eps=row["max_eps"],
+        metric=metric,
+    ).fit(X)
+
+    (
+        pd.DataFrame({"patient_id": patient_ids, "cluster": best_optics.labels_})
+        .to_csv(labels_path(cfg_key), index=False, compression="gzip")
+    )
+    print(f"  {cfg_key} -> saved to {labels_path(cfg_key)}")
+
+
+
+# -------------------
+# Reachability plot
+# -------------------
+cluster_colors = ["g.", "r.", "b.", "y.", "c.", "m."]
+TOP_N = 1  # number of top results to show 
+
+top_rows = (
+    df
+    .groupby("data", group_keys=False)
+    .apply(lambda g: g.nlargest(TOP_N, "silhouette"))
+    .reset_index(drop=True)
+)
+
+for _, row in top_rows.iterrows():
+    data_name = row["data"]
+    X, metric = data_map[data_name]
+
+    best_optics = OPTICS(
+        min_samples=int(row["min_samples"]),
+        xi=row["xi"],
+        max_eps=row["max_eps"],
+        metric=metric
+    ).fit(X)
+
+    reachability = best_optics.reachability_[best_optics.ordering_]
+    labels_ord   = best_optics.labels_[best_optics.ordering_]
+    space        = np.arange(len(reachability))
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+    fig.suptitle(
+        f"{data_name} | min_samples={int(row['min_samples'])}, xi={row['xi']}, "
+        f"max_eps={row['max_eps']} | n_clusters={int(row['n_clusters'])}, "
+        f"noise={row['noise_fraction']:.1%}, sil={row['silhouette']:.3f}",
+        fontsize=10
+    )
+
+    for klass, color in zip(sorted(set(labels_ord) - {-1}), cluster_colors):
+        mask = labels_ord == klass
+        ax.plot(space[mask], reachability[mask], color, alpha=0.5, label=f"Cluster {klass}")
+    ax.plot(space[labels_ord == -1], reachability[labels_ord == -1], "k.", alpha=0.3, label="Noise")
+    ax.set_xlabel("Points (ordered)")
+    ax.set_ylabel("Reachability (epsilon distance)")
+    ax.set_title("Reachability Plot")
+    ax.legend(loc="upper right", fontsize=8)
+
+    plt.tight_layout()
+    plt.show()
