@@ -40,7 +40,7 @@ X_scaled = pd.read_csv(config.SYNTHETIC_SCALED_PATH, compression="gzip").drop(co
 
 # Load true labels
 y_true = pd.read_csv(config.SYNTHETIC_LABELS_PATH, compression="gzip")["cluster_true"].values
-
+print (len(np.unique(y_true)))
 print(f"Synthetic data shape: {X_raw.shape}")
 print(f"True clusters: {np.unique(y_true)}")
 print(f"Cluster distribution: {np.bincount(y_true)}")
@@ -57,10 +57,10 @@ print(f"PCA transformed to {X_pca.shape[1]} components ({var_explained:.1%} vari
 # Clustering Configurations
 # -------------------
 configs = {
-    "raw_kmedoids_gower": (D_gower, run_kmedoids_gower, config.N_CENTERS),
-    "raw_agglomerative_gower": (D_gower, run_agglomerative_precomputed, config.N_CENTERS),
-    "pca_kmeans_euclidean": (X_pca, run_kmeans, config.N_CENTERS),
-    "pca_agglomerative_euclidean": (X_pca, run_agglomerative_euclidean, config.N_CENTERS),
+    "raw_kmedoids_gower": (D_gower, run_kmedoids_gower, len(np.unique(y_true))),
+    "raw_agglomerative_gower": (D_gower, run_agglomerative_precomputed, len(np.unique(y_true))),
+    "pca_kmeans_euclidean": (X_pca, run_kmeans, len(np.unique(y_true))),
+    "pca_agglomerative_euclidean": (X_pca, run_agglomerative_euclidean, len(np.unique(y_true))),
 }
 
 # -------------------
