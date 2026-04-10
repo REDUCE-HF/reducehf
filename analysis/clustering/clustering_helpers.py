@@ -1,6 +1,7 @@
 import os
 import warnings
 warnings.filterwarnings('ignore')
+import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -215,6 +216,17 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
         ps_values.append(ps)
 
     return np.mean(ps_values), np.std(ps_values) / np.sqrt(n_splits)
+
+# -------------------
+# synthetic data
+# -------------------
+def parse_args():
+    parser = argparse.ArgumentParser(description="Generate synthetic clustering data.")
+    parser.add_argument(
+        "--synthetic-output-dir",
+        help="Write synthetic outputs here instead of the default in config.",
+    )
+    return parser.parse_args()
 
 
 
