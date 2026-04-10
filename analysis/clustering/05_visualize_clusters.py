@@ -77,6 +77,7 @@ print(" plots saved to", OUTPUT_DIR)
 print(summary_df)
 
 # ----HeatMaps-------
+# -------------------
 df = pd.read_csv(RAW_PATH).drop(columns=["patient_id"])
 for file in sorted(label_files):
     cfg = file.replace("labels_", "").replace(".csv.gz", "")

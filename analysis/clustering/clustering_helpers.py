@@ -13,6 +13,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics import roc_auc_score, silhouette_score, calinski_harabasz_score
+
 from config import (
     RAW_PATH, SCALED_PATH,
     MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
@@ -455,3 +456,4 @@ def plot_clusters_umap(umap_values, labels, config_name):
     plt.show()
     plt.close()
     print(f"  Saved {save_path}")
+
