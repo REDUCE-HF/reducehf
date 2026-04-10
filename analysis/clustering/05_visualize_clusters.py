@@ -50,7 +50,7 @@ for file in sorted(label_files):
     n_clusters = len([x for x in np.unique(labels) if x != -1])
     print(f"{cfg}: loaded labels ({n_clusters} clusters)")
 
-    # plot_clusters_umap(umap_values, labels, cfg)
+    plot_clusters_umap(umap_values, labels, cfg)
 
     # summary report
     val_row = val_df[val_df["config"] == cfg]
