@@ -3,6 +3,8 @@ import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
@@ -15,7 +17,7 @@ from config import (
     MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
     CATEGORICAL_COLS, DATE_BASED_CONDITIONS, OBESITY_DATE_COLS, OBESITY_BMI_THRESHOLD,
     LTC_COLS, UNDERSERVED_COLS, CONDITION_TIME_WINDOW_DAYS, DIABETES_UNLIKELY_VALUE,
-    DIAGNOSIS_PRIMARY_COL, DIAGNOSIS_HOSPITAL_COLS
+    DIAGNOSIS_PRIMARY_COL, DIAGNOSIS_HOSPITAL_COLS, umap_path
 )
 
 # ============================================
@@ -410,3 +412,34 @@ def train_ovr(X, labels, output_dir, random_state=42):
           .sort_values(["cluster", "gini_importance"], ascending=[True, False])
     )
 
+
+# ============================================
+# Visualisation helpers
+# ============================================
+
+def plot_clusters_umap(umap_values, labels, config_name):
+    """Plot UMAP embedding coloured by cluster labels and save to disk."""
+    df = pd.DataFrame(umap_values, columns=["UMAP1", "UMAP2"])
+    df["cluster_id"] = labels
+    counts = df["cluster_id"].value_counts()
+
+    names = df["cluster_id"].replace(-1, "Noise").astype(str)
+    sizes = df["cluster_id"].map(counts).astype(str)
+    df["cluster"] = names + " (" + sizes + ")"
+
+    n_clusters = len(counts) - (1 if -1 in counts else 0)
+
+    plt.figure(figsize=(10, 7))
+    sns.scatterplot(
+        data=df.sort_values("cluster_id"),
+        x="UMAP1", y="UMAP2",
+        hue="cluster", palette="tab20", s=50, alpha=0.8
+    )
+    plt.title(f"UMAP: {config_name} | {n_clusters} Clusters")
+    plt.legend(title="Cluster (Size)", bbox_to_anchor=(1.05, 1), loc="upper left")
+
+    save_path = umap_path(config_name)
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.show()
+    plt.close()
+    print(f"  Saved {save_path}")
