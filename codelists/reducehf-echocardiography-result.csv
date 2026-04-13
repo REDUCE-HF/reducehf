@@ -1,10 +1,4 @@
 code,term
-105376000,Transesophageal echocardiography
-1231726001,Transapical transcatheter implantation of bioprosthetic mitral valve prosthesis into mitral annuloplasty ring using fluoroscopic and transoesophageal echocardiographic guidance
-1237589003,Transcatheter repair of leaflet of tricuspid valve using transesophageal echocardiography and fluoroscopic guidance
-1255141008,Transcatheter annuloplasty of tricuspid valve using transesophageal echocardiography and fluoroscopy guidance
-1279870005,Repair of mitral valve using prosthetic chordae tendinae using transesophageal echocardiography guidance
-1339026009,Transesophageal echocardiography of thoracic aorta
 1354543009,Ventricular echocardiography
 146458000,Echocardiography
 169239001,Echocardiography
@@ -12,18 +6,13 @@ code,term
 252418006,Transthoracic echocardiography
 271411000000102,Echocardiography 
 271421000000108,Transthoracic echocardiography 
-271431000000105,Transoesophageal echocardiography 
 271461000000100,Exercise stress echocardiography 
 271491000000106,Diagnostic echocardiography NOS 
-397835000,Transesophageal echocardiographic valvular monitoring
-397986006,Transesophageal echocardiographic monitoring
-398305002,Transesophageal echocardiographic ventricular function monitoring
 399345000,Adult echocardiography procedure report
 40357002,Echocardiography for determining mitral and tricuspid valve motion
 40701008,Echocardiography
 418976004,Ultrasound scan of cardiac vessels
 431343007,Ultrasonography of myocardium for tissue strain rate
-431488007,Doppler ultrasonography of myocardium for tissue strain rate
 433233004,Exercise stress echocardiography
 433236007,Transthoracic echocardiography
 434158009,Transthoracic three dimensional ultrasonography of heart
@@ -32,9 +21,6 @@ code,term
 441090001,Transthoracic echocardiography test interpretation
 441199002,Stress echocardiography test interpretation
 442397008,Monitoring of cardiac output using echocardiography
-442921007,Two dimensional transesophageal echocardiography with spectral display
-445864005,Three dimensional transesophageal ultrasonography of heart
-473197003,Transesophageal echocardiography for congenital heart disease
 473381003,Transthoracic echocardiography for congenital heart disease
 5216004,Three dimensional ultrasound imaging of heart
 53457009,Echocardiography for determining prosthetic valve motion
@@ -43,13 +29,10 @@ code,term
 61982008,Echocardiography for determining pericardial effusion
 62559003,"Echocardiography, real time with image documentation with M-mode, follow-up"
 703338002,Stress echocardiography using dobutamine
-711507002,Doppler transesophageal echocardiography
-719508009,Focused transthoracic echocardiography in intensive care
 74193008,Echocardiography for determining size of ventricular chambers
 753431000000102,Adult echocardiography procedure report
 757531000000105,Adult echocardiography procedure report
 772531000000105,Transthoracic echocardiography for complex congenital heart disease
-772551000000103,Transoesophageal echocardiography for complex congenital heart disease
 78711007,Doppler flow mapping of heart
 8151003,Echocardiography for detecting cardiac output
 816996009,Stress echocardiography

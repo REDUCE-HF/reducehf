@@ -1,4 +1,4 @@
-version: '4.0'
+version: '5.0'
 
 actions:
 
@@ -19,14 +19,13 @@ actions:
 
 
   # Extract population by WP
-  
   #WP1
   generate_dataset_wp1_common:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_common.py --output output/tmp_dataset_wp1_common.csv.gz
     outputs:
       highly_sensitive:
         dataset: output/tmp_dataset_wp1_common.csv.gz
-
+# 
   diabetes_algo_wp1:
     run: diabetes-algo:v0.0.9 --output output/dataset_wp1_common.csv.gz
     config:
@@ -176,7 +175,7 @@ actions:
 
   
   prepare_clustering_data:
-    run: python:latest analysis/clustering/01_prepare_data.py
+    run: python:v2 analysis/clustering/01_prepare_data.py
     needs: [diabetes_algo_wp3]
     outputs:
       highly_sensitive:
@@ -185,7 +184,7 @@ actions:
   
   # These actions don't run because some libraries are not available in opensafely
   # find_optimal_k:
-  #   run: python:latest analysis/clustering/find_optimal_k.py
+  #   run: python:v2 analysis/clustering/find_optimal_k.py
   #   needs: [prepare_clustering_data]
   #   outputs:
   #     moderately_sensitive:
@@ -194,21 +193,21 @@ actions:
   #       pca_data: output/clustering/X_pca.csv
 
   # tune_optics:
-  #   run: python:latest analysis/clustering/03_tune_optics.py
+  #   run: python:v2 analysis/clustering/03_tune_optics.py
   #   needs: [prepare_clustering_data]
   #   outputs:
   #     moderately_sensitive:
   #       optics_tuning_results: output/clustering/optics_tuning_results.csv
 
   # validate_clusters:
-  #   run: python:latest analysis/clustering/04_validate_clusters.py
+  #   run: python:v2 analysis/clustering/04_validate_clusters.py
   #   needs: [find_optimal_k, tune_optics]
   #   outputs:
   #     moderately_sensitive:
   #       validation_results: output/clustering/validation_results.csv
 
   # visualize_clusters:
-  #   run: python:latest analysis/clustering/05_visualize_clusters.py
+  #   run: python:v2 analysis/clustering/05_visualize_clusters.py
   #   needs: [validate_clusters]
   #   outputs:
   #     moderately_sensitive:
