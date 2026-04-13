@@ -141,21 +141,6 @@ def fn(dataset, earliest_date, index_date):
         if time_name.split('_')[0] == 'post':
             #use in time period after index_date
             dataset.add_column('ed_attendances_'+time_name, 
-                ed_attendances(ed_events_2, start, end)
-                )
-            dataset.add_column('primary_care_attendances_'+time_name, 
-                primary_care_attendances(gp_events_2, start,end)
-                )
-            dataset.add_column('hospital_admissions_'+time_name,
-                hospital_admissions(apc_events_2, start,end)
-                )
-            dataset.add_column('prescriptions_' + time_name, 
-                prescriptions_count(med_events_2, start, end)
-                )
-            
-        else:
-            #use in time period before index date
-            dataset.add_column('ed_attendances_'+time_name, 
                 ed_attendances(ed_events_1, start, end)
                 )
             dataset.add_column('primary_care_attendances_'+time_name, 
@@ -166,6 +151,21 @@ def fn(dataset, earliest_date, index_date):
                 )
             dataset.add_column('prescriptions_' + time_name, 
                 prescriptions_count(med_events_1, start, end)
+                )
+            
+        else:
+            #use in time period before index date
+            dataset.add_column('ed_attendances_'+time_name, 
+                ed_attendances(ed_events_2, start, end)
+                )
+            dataset.add_column('primary_care_attendances_'+time_name, 
+                primary_care_attendances(gp_events_2, start,end)
+                )
+            dataset.add_column('hospital_admissions_'+time_name,
+                hospital_admissions(apc_events_2, start,end)
+                )
+            dataset.add_column('prescriptions_' + time_name, 
+                prescriptions_count(med_events_2, start, end)
                 )
             
     ## annual reviews
