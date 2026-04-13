@@ -78,33 +78,53 @@ print(summary_df)
 
 # ----HeatMaps-------
 # -------------------
-df = pd.read_csv(RAW_PATH).drop(columns=["patient_id"])
+raw_df = pd.read_csv(RAW_PATH).drop(columns=["patient_id"])
+
 for file in sorted(label_files):
+    df = raw_df.copy()
     cfg = file.replace("labels_", "").replace(".csv.gz", "")
     labels = pd.read_csv(os.path.join(OUTPUT_DIR, file), compression="gzip")["cluster"].values
-
-    
     df["cluster"] = labels
 
-    
     numeric_cols = df.columns[~df.columns.str.contains("cluster|_bin")]
-    binary_cols = df.columns[df.columns.str.contains("_bin")]
-   # Sort cluster order by size once so both maps match
+    binary_cols  = df.columns[df.columns.str.contains("_bin")]
+
     cluster_order = df["cluster"].value_counts().index
 
-    # Numeric Heatmap 
+    # ---- NUMERIC ----
+    numeric_means  = df.groupby("cluster")[numeric_cols].mean()
+    numeric_counts = (df[numeric_cols] > 0).groupby(df["cluster"]).sum()
+
+    numeric_means = numeric_means.where(
+        numeric_counts[numeric_means.columns] >= DISCLOSURE_THRESHOLD
+    ).loc[cluster_order]
+
+    numeric_counts = numeric_counts.loc[cluster_order]
+
+    numeric_means.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_numeric_means.csv"))
+    numeric_counts.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_numeric_counts.csv"))
+
     plt.figure(figsize=(12, 6))
-    numeric_means = df.groupby("cluster")[numeric_cols].mean().loc[cluster_order]
-    sns.heatmap(numeric_means, cmap="viridis", cbar_kws={'label': 'Average Value'})
+    sns.heatmap(numeric_means, cmap="viridis", cbar_kws={"label": "Average Value"})
     plt.title(f"Numeric Usage Patterns - {cfg}")
     plt.savefig(heatmap_path(f"{cfg}_numeric"))
-    plt.show()
+    plt.close()
 
-    # Binary Heatmap (Percentages)
+    # ---- BINARY ----
+    binary_means  = df.groupby("cluster")[binary_cols].mean()
+    binary_counts = df.groupby("cluster")[binary_cols].sum()
+
+    binary_means = binary_means.where(
+        binary_counts[binary_means.columns] >= DISCLOSURE_THRESHOLD
+    ).loc[cluster_order]
+
+    binary_counts = binary_counts.loc[cluster_order]
+
+    binary_means.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_means.csv"))
+    binary_counts.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_counts.csv"))
+
     plt.figure(figsize=(12, 6))
-    binary_means = df.groupby("cluster")[binary_cols].mean().loc[cluster_order]
-    
     sns.heatmap(binary_means, cmap="Blues", annot=True, fmt=".2f", vmin=0, vmax=1)
     plt.title(f"Binary Feature Prevalence (0.0 - 1.0) - {cfg}")
     plt.savefig(heatmap_path(f"{cfg}_binary"))
-    plt.show()
+    plt.close()
