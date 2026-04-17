@@ -9,6 +9,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import umap
 
 from config import (
@@ -18,6 +19,8 @@ from config import (
     SCALED_PATH,
     VALIDATION_RESULTS_PATH,
     VISUALIZATION_SUMMARY_PATH,
+    DISCLOSURE_THRESHOLD,
+    heatmap_path,
 )
 from clustering_helpers import load_data, plot_clusters_umap,apply_disclosure_control
 
