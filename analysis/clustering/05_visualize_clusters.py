@@ -19,7 +19,7 @@ from config import (
     VALIDATION_RESULTS_PATH,
     VISUALIZATION_SUMMARY_PATH,
 )
-from clustering_helpers import load_data, plot_clusters_umap
+from clustering_helpers import load_data, plot_clusters_umap,apply_disclosure_control
 
 # -----------------------------
 # Setup
@@ -86,45 +86,45 @@ for file in sorted(label_files):
     labels = pd.read_csv(os.path.join(OUTPUT_DIR, file), compression="gzip")["cluster"].values
     df["cluster"] = labels
 
-    numeric_cols = df.columns[~df.columns.str.contains("cluster|_bin")]
-    binary_cols  = df.columns[df.columns.str.contains("_bin")]
+    numeric_cols = df.columns[~df.columns.str.contains("cluster|_bin")] #utilisation
+    binary_cols  = df.columns[df.columns.str.contains("_bin")] # reviews
 
     cluster_order = df["cluster"].value_counts().index
 
-    # ---- NUMERIC ----
-    numeric_means  = df.groupby("cluster")[numeric_cols].mean()
-    numeric_counts = (df[numeric_cols] > 0).groupby(df["cluster"]).sum()
+    cluster_sizes = df.groupby("cluster").size().loc[cluster_order]
+    numeric_counts = df.groupby("cluster")[numeric_cols].sum().loc[cluster_order]
+    binary_counts  = df.groupby("cluster")[binary_cols].sum().loc[cluster_order]
 
-    numeric_means = numeric_means.where(
-        numeric_counts[numeric_means.columns] >= DISCLOSURE_THRESHOLD
-    ).loc[cluster_order]
+    numeric_counts_rounded = numeric_counts.apply(
+        apply_disclosure_control,
+        threshold=DISCLOSURE_THRESHOLD
+    )
+    
+    binary_counts_rounded = binary_counts.apply(
+        apply_disclosure_control,
+        threshold=DISCLOSURE_THRESHOLD
+    )
 
-    numeric_counts = numeric_counts.loc[cluster_order]
+    numeric_means_derived = numeric_counts_rounded.div(cluster_sizes, axis=0).loc[cluster_order]
+    binary_props_derived  = binary_counts_rounded.div(cluster_sizes, axis=0).loc[cluster_order]
 
-    numeric_means.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_numeric_means.csv"))
-    numeric_counts.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_numeric_counts.csv"))
+    
+    numeric_means_derived.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_utilisation_means.csv"))
+    numeric_counts_rounded.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_utilisation_counts.csv"))
 
     plt.figure(figsize=(12, 6))
-    sns.heatmap(numeric_means, cmap="viridis", cbar_kws={"label": "Average Value"})
-    plt.title(f"Numeric Usage Patterns - {cfg}")
+    sns.heatmap(numeric_means_derived, cmap="viridis", cbar_kws={"label": "Average Value"})
+    plt.title(f"Average Health Services Utilisation per patient - {cfg}")
     plt.savefig(heatmap_path(f"{cfg}_numeric"))
     plt.close()
 
-    # ---- BINARY ----
-    binary_means  = df.groupby("cluster")[binary_cols].mean()
-    binary_counts = df.groupby("cluster")[binary_cols].sum()
+    
 
-    binary_means = binary_means.where(
-        binary_counts[binary_means.columns] >= DISCLOSURE_THRESHOLD
-    ).loc[cluster_order]
-
-    binary_counts = binary_counts.loc[cluster_order]
-
-    binary_means.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_means.csv"))
-    binary_counts.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_counts.csv"))
+    binary_props_derived.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_means.csv"))
+    binary_counts_rounded.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_counts.csv"))
 
     plt.figure(figsize=(12, 6))
-    sns.heatmap(binary_means, cmap="Blues", annot=True, fmt=".2f", vmin=0, vmax=1)
-    plt.title(f"Binary Feature Prevalence (0.0 - 1.0) - {cfg}")
+    sns.heatmap(binary_props_derived, cmap="Blues",  fmt=".2f", vmin=0, vmax=1)
+    plt.title(f"Proportion of Patients Having Reviews - {cfg}")
     plt.savefig(heatmap_path(f"{cfg}_binary"))
     plt.close()

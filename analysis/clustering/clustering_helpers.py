@@ -64,6 +64,20 @@ def run_pca(X_scaled, var_threshold=0.8):
     var_explained = pca.explained_variance_ratio_.sum()
     return X_pca, var_explained
 
+# ============================================
+# Disclosure control helper
+# ============================================
+def apply_disclosure_control(column, threshold):
+    """Round all values to nearest 5, 
+    and to 10 if it is below threshold and keep structural zeros."""
+    rounded = column.copy()
+    mask = (column != 0) & (column <= threshold)
+    rounded[mask] = 10
+    rounded[~mask]= (rounded[~mask]/5).round()*5
+    return rounded  
+
+
+
 
 # ============================================
 # Clustering algorithm wrapper functions
