@@ -409,7 +409,7 @@ def train_ovr(X, labels, output_dir, random_state=42):
     clusters = sorted(labels.unique())
     param_grid = {
         "max_depth": [5, 10, 50, 100],
-        "min_samples_leaf": [5, 10, 50]
+        "min_samples_leaf": [5, 10, 50],
     }
 
     all_results = []

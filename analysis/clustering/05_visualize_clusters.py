@@ -20,6 +20,7 @@ from config import (
     VALIDATION_RESULTS_PATH,
     VISUALIZATION_SUMMARY_PATH,
     DISCLOSURE_THRESHOLD,
+    PLOTS_DIR
     heatmap_path,
 )
 from clustering_helpers import load_data, plot_clusters_umap,apply_disclosure_control
@@ -76,7 +77,6 @@ summary_df.to_csv(VISUALIZATION_SUMMARY_PATH, index=False)
 
 print("\n All visualizations complete.")
 print(" Summary saved to:", VISUALIZATION_SUMMARY_PATH)
-print(" plots saved to", OUTPUT_DIR)
 print(summary_df)
 
 # ----HeatMaps-------
@@ -131,3 +131,5 @@ for file in sorted(label_files):
     plt.title(f"Proportion of Patients Having Reviews - {cfg}")
     plt.savefig(heatmap_path(f"{cfg}_binary"))
     plt.close()
+
+print(" plots saved to", PLOTS_DIR)

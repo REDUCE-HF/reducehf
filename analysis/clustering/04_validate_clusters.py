@@ -8,6 +8,8 @@
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
 from config import (
     D_GOWER_PATH,
     DISCLOSURE_THRESHOLD,
@@ -17,17 +19,19 @@ from config import (
     SCALED_PATH,
     VALIDATION_RESULTS_PATH,
     X_PCA_PATH,
+    PLOTS_DIR,
     labels_path,
 )
 from clustering_helpers import (
-    load_data,
-    
+    load_data, 
     evaluate_clustering,
 )
 # -----------------------------
 # Setup
 # -----------------------------
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+# Create plots directory
+os.makedirs(PLOTS_DIR, exist_ok=True)
 
 print("Loading datasets...")
 X_raw, X_scaled,patient_ids = load_data(RAW_PATH, SCALED_PATH)
@@ -103,10 +107,10 @@ df.to_csv(VALIDATION_RESULTS_PATH, index=False)
 print("\n Validation results saved to:", VALIDATION_RESULTS_PATH)
 print(df)
 print("\n Validation complete.")
-#TODO test on synthetic data
-import matplotlib.pyplot as plt
-import numpy as np
 
+# -----------------------
+# Plot
+# -----------------------
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
 # --- Silhouette (sort descending) ---
@@ -132,4 +136,7 @@ for i, v in enumerate(ch_vals):
 
 plt.suptitle("Clustering Validation Scores", fontsize=13, fontweight="bold")
 plt.tight_layout()
+#save
+validation_plot_path = os.path.join(PLOTS_DIR, "validation_figure.png")
+fig.savefig(validation_plot_path, dpi=200, bbox_inches="tight")
 plt.show()
