@@ -66,6 +66,36 @@ def umap_path(config_name: str) -> str:
 def heatmap_path(config_name: str) -> str:
     return os.path.join(PLOTS_DIR, f"heatmap_{config_name}.png")
 
+
+# -------------------
+# Column types
+# -------------------
+
+HS_COLS = [
+    "ed_attendances_pre_0_3m",
+    "ed_attendances_pre_3_6m",
+    "ed_attendances_pre_6_9m",
+    "ed_attendances_pre_9_12m",
+    "primary_care_attendances_pre_0_3m",
+    "primary_care_attendances_pre_3_6m",
+    "primary_care_attendances_pre_6_9m",
+    "primary_care_attendances_pre_9_12m",
+    "hospital_admissions_pre_0_3m",
+    "hospital_admissions_pre_3_6m",
+    "hospital_admissions_pre_6_9m",
+    "hospital_admissions_pre_9_12m",
+    "prescriptions_pre_0_3m",
+    "prescriptions_pre_3_6m",
+    "prescriptions_pre_6_9m",
+    "prescriptions_pre_9_12m",
+]
+
+REVIEW_COLS = [
+    "asthma_review_date",
+    "copd_review_date",
+    "med_review_date",
+]
+
 # -------------------
 # Membership features configuration (for build_membership_features)
 # -------------------
