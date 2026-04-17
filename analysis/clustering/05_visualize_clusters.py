@@ -9,7 +9,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+import seaborn as sns
 import umap
 
 from config import (
@@ -19,10 +19,10 @@ from config import (
     SCALED_PATH,
     VALIDATION_RESULTS_PATH,
     VISUALIZATION_SUMMARY_PATH,
-    labels_path,
-    umap_path,
+    DISCLOSURE_THRESHOLD,
+    heatmap_path,
 )
-from clustering_helpers import load_data
+from clustering_helpers import load_data, plot_clusters_umap,apply_disclosure_control
 
 # -----------------------------
 # Setup
@@ -30,94 +30,15 @@ from clustering_helpers import load_data
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print(" Loading datasets...")
-X_raw, X_scaled = load_data(RAW_PATH, SCALED_PATH)
+X_raw, X_scaled, patient_ids = load_data(RAW_PATH, SCALED_PATH)
 
 # Compute UMAP embedding from raw data
-print(" Computing UMAP embedding...")
-umap_embedding = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1).fit_transform(X_raw)
-print(" UMAP embedding ready.")
+umap_values = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1).fit_transform(X_raw)
+print (umap_values)
 
-# -----------------------------
-# Load metadata
-# -----------------------------
 opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
 val_df = pd.read_csv(VALIDATION_RESULTS_PATH)
 print(f" Loaded {len(opt_k_df)} optimal-k rows and {len(val_df)} validation rows")
-
-# ----------------------------
-# Visualization helper
-# ----------------------------
-def plot_clusters(umap_embedding, labels, config_name):
-    plt.figure(figsize=(10, 7))
-
-    # Count cluster sizes
-    unique, counts = np.unique(labels, return_counts=True)
-    cluster_sizes = dict(zip(unique, counts))
-    n_clusters = len([x for x in unique if x != -1])
-
-    # Masks
-    noise_mask = labels == -1
-    cluster_mask = ~noise_mask
-
-    # Normalize colors across all valid cluster IDs
-    norm = mpl.colors.Normalize(vmin=min(unique), vmax=max(unique))
-    cmap = plt.get_cmap("tab20")
-
-    # Plot noise separately (gray)
-    if np.any(noise_mask):
-        plt.scatter(
-            umap_embedding[noise_mask, 0],
-            umap_embedding[noise_mask, 1],
-            c="lightgray",
-            s=40,
-            alpha=0.6,
-            label="Noise"
-        )
-
-    # Plot clusters
-    scatter = plt.scatter(
-        umap_embedding[cluster_mask, 0],
-        umap_embedding[cluster_mask, 1],
-        c=labels[cluster_mask],
-        cmap=cmap,
-        norm=norm,
-        s=50,
-        alpha=0.8
-    )
-
-    # --- Colorbar with cluster sizes (including noise)
-    unique_labels, counts = np.unique(labels, return_counts=True)
-    cluster_labels = []
-    for l, c in zip(unique_labels, counts):
-        if l == -1:
-            cluster_labels.append(f"Noise ({c})")
-        else:
-            cluster_labels.append(f"{int(l)} ({c})")
-
-    cbar = plt.colorbar(scatter, label="Cluster")
-    cbar.set_ticks(unique_labels)
-    cbar.set_ticklabels(cluster_labels)
-    cbar.ax.tick_params(length=0, labelsize=9)
-
-    # --- Title and layout
-    cluster_info = ", ".join([f"{'Noise' if k == -1 else int(k)}({v})"
-                              for k, v in sorted(cluster_sizes.items())])
-    plt.title(
-        f"UMAP - {config_name}\nClusters={n_clusters} | Sizes={cluster_info}",
-        fontsize=12
-    )
-    plt.xlabel("UMAP 1")
-    plt.ylabel("UMAP 2")
-    plt.tight_layout()
-
-    save_path = umap_path(config_name)
-    plt.savefig(save_path, dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f"  Saved {save_path}")
-
-# -----------------------------
-# Main visualization loop
-# -----------------------------
 summary_out = []
 print("\n Generating visualizations...\n")
 
@@ -129,22 +50,20 @@ for file in sorted(label_files):
     labels_file = os.path.join(OUTPUT_DIR, file)
     labels_df = pd.read_csv(labels_file, compression="gzip")
     labels = labels_df["cluster"].values
-    n_clusters = len(np.unique(labels))
+    n_clusters = len([x for x in np.unique(labels) if x != -1])
     print(f"{cfg}: loaded labels ({n_clusters} clusters)")
 
-    # Plot
-    plot_clusters(umap_embedding, labels, cfg)
+    plot_clusters_umap(umap_values, labels, cfg)
 
-    # Metrics and k_opt
+    # summary report
     val_row = val_df[val_df["config"] == cfg]
-    sil = val_row["silhouette"].values[0] if not val_row.empty else np.nan
-    ch = val_row["calinski_harabasz"].values[0] if not val_row.empty else np.nan
+    sil = val_row["silhouette"].values[0] 
+    ch = val_row["calinski_harabasz"].values[0] 
 
-    k_opt = np.nan
-    if cfg in opt_k_df["config"].values:
-        val = opt_k_df.loc[opt_k_df["config"] == cfg, "k_opt"].values[0]
-        k_opt = int(val) if not pd.isna(val) else np.nan
-
+    k_opt_series = opt_k_df.loc[opt_k_df["config"] == cfg, "k_opt"]
+    k_opt = int(k_opt_series.values[0]) if not k_opt_series.empty and not pd.isna(k_opt_series.values[0]) else np.nan
+    print (k_opt_series)
+    
     summary_out.append({
         "config": cfg,
         "k": k_opt,
@@ -152,13 +71,63 @@ for file in sorted(label_files):
         "silhouette": sil,
         "calinski_harabasz": ch
     })
-
-# -----------------------------
-# Save summary
-# -----------------------------
 summary_df = pd.DataFrame(summary_out)
 summary_df.to_csv(VISUALIZATION_SUMMARY_PATH, index=False)
 
 print("\n All visualizations complete.")
 print(" Summary saved to:", VISUALIZATION_SUMMARY_PATH)
-print(" Check images in:", OUTPUT_DIR)
+print(" plots saved to", OUTPUT_DIR)
+print(summary_df)
+
+# ----HeatMaps-------
+# -------------------
+raw_df = pd.read_csv(RAW_PATH).drop(columns=["patient_id"])
+
+for file in sorted(label_files):
+    df = raw_df.copy()
+    cfg = file.replace("labels_", "").replace(".csv.gz", "")
+    labels = pd.read_csv(os.path.join(OUTPUT_DIR, file), compression="gzip")["cluster"].values
+    df["cluster"] = labels
+
+    numeric_cols = df.columns[~df.columns.str.contains("cluster|_bin")] #utilisation
+    binary_cols  = df.columns[df.columns.str.contains("_bin")] # reviews
+
+    cluster_order = df["cluster"].value_counts().index
+
+    cluster_sizes = df.groupby("cluster").size().loc[cluster_order]
+    numeric_counts = df.groupby("cluster")[numeric_cols].sum().loc[cluster_order]
+    binary_counts  = df.groupby("cluster")[binary_cols].sum().loc[cluster_order]
+
+    numeric_counts_rounded = numeric_counts.apply(
+        apply_disclosure_control,
+        threshold=DISCLOSURE_THRESHOLD
+    )
+    
+    binary_counts_rounded = binary_counts.apply(
+        apply_disclosure_control,
+        threshold=DISCLOSURE_THRESHOLD
+    )
+
+    numeric_means_derived = numeric_counts_rounded.div(cluster_sizes, axis=0).loc[cluster_order]
+    binary_props_derived  = binary_counts_rounded.div(cluster_sizes, axis=0).loc[cluster_order]
+
+    
+    numeric_means_derived.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_utilisation_means.csv"))
+    numeric_counts_rounded.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_utilisation_counts.csv"))
+
+    plt.figure(figsize=(12, 6))
+    sns.heatmap(numeric_means_derived, cmap="viridis", cbar_kws={"label": "Average Value"})
+    plt.title(f"Average Health Services Utilisation per patient - {cfg}")
+    plt.savefig(heatmap_path(f"{cfg}_numeric"))
+    plt.close()
+
+    
+
+    binary_props_derived.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_means.csv"))
+    binary_counts_rounded.to_csv(os.path.join(OUTPUT_DIR, f"{cfg}_binary_counts.csv"))
+
+    plt.figure(figsize=(12, 6))
+    sns.heatmap(binary_props_derived, cmap="Blues",  fmt=".2f", vmin=0, vmax=1)
+    plt.title(f"Proportion of Patients Having Reviews - {cfg}")
+    plt.savefig(heatmap_path(f"{cfg}_binary"))
+    plt.close()

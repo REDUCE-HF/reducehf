@@ -1,8 +1,11 @@
 import os
 import warnings
 warnings.filterwarnings('ignore')
+import argparse
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans, AgglomerativeClustering, OPTICS
 from sklearn_extra.cluster import KMedoids
@@ -10,12 +13,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics import roc_auc_score, silhouette_score, calinski_harabasz_score
+
 from config import (
     RAW_PATH, SCALED_PATH,
     MEMBERSHIP_DATE_COLS, AGE_BINS, AGE_LABELS, HOUSEHOLD_BINS, HOUSEHOLD_LABELS,
     CATEGORICAL_COLS, DATE_BASED_CONDITIONS, OBESITY_DATE_COLS, OBESITY_BMI_THRESHOLD,
     LTC_COLS, UNDERSERVED_COLS, CONDITION_TIME_WINDOW_DAYS, DIABETES_UNLIKELY_VALUE,
-    DIAGNOSIS_PRIMARY_COL, DIAGNOSIS_HOSPITAL_COLS
+    DIAGNOSIS_PRIMARY_COL, DIAGNOSIS_HOSPITAL_COLS, umap_path
 )
 
 # ============================================
@@ -59,6 +63,20 @@ def run_pca(X_scaled, var_threshold=0.8):
     X_pca = pca.fit_transform(X_scaled)
     var_explained = pca.explained_variance_ratio_.sum()
     return X_pca, var_explained
+
+# ============================================
+# Disclosure control helper
+# ============================================
+def apply_disclosure_control(column, threshold):
+    """Round all values to nearest 5, 
+    and to 10 if it is below threshold and keep structural zeros."""
+    rounded = column.copy()
+    mask = (column != 0) & (column <= threshold)
+    rounded[mask] = 10
+    rounded[~mask]= (rounded[~mask]/5).round()*5
+    return rounded  
+
+
 
 
 # ============================================
@@ -213,6 +231,17 @@ def compute_prediction_strength(X, cluster_fn, k, precomputed=False, n_splits=5,
         ps_values.append(ps)
 
     return np.mean(ps_values), np.std(ps_values) / np.sqrt(n_splits)
+
+# -------------------
+# synthetic data
+# -------------------
+def parse_args():
+    parser = argparse.ArgumentParser(description="Generate synthetic clustering data.")
+    parser.add_argument(
+        "--synthetic-output-dir",
+        help="Write synthetic outputs here instead of the default in config.",
+    )
+    return parser.parse_args()
 
 
 
@@ -409,4 +438,36 @@ def train_ovr(X, labels, output_dir, random_state=42):
         pd.concat(all_results, ignore_index=True)
           .sort_values(["cluster", "gini_importance"], ascending=[True, False])
     )
+
+
+# ============================================
+# Visualisation helpers
+# ============================================
+
+def plot_clusters_umap(umap_values, labels, config_name):
+    """Plot UMAP embedding coloured by cluster labels and save to disk."""
+    df = pd.DataFrame(umap_values, columns=["UMAP1", "UMAP2"])
+    df["cluster_id"] = labels
+    counts = df["cluster_id"].value_counts()
+
+    names = df["cluster_id"].replace(-1, "Noise").astype(str)
+    sizes = df["cluster_id"].map(counts).astype(str)
+    df["cluster"] = names + " (" + sizes + ")"
+
+    n_clusters = len(counts) - (1 if -1 in counts else 0)
+
+    plt.figure(figsize=(10, 7))
+    sns.scatterplot(
+        data=df.sort_values("cluster_id"),
+        x="UMAP1", y="UMAP2",
+        hue="cluster", palette="tab20", s=50, alpha=0.8
+    )
+    plt.title(f"UMAP: {config_name} | {n_clusters} Clusters")
+    plt.legend(title="Cluster (Size)", bbox_to_anchor=(1.05, 1), loc="upper left")
+
+    save_path = umap_path(config_name)
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.show()
+    plt.close()
+    print(f"  Saved {save_path}")
 
