@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import umap
+#import umap
 
 from config import (
     OPTIMAL_K_SUMMARY_PATH,
@@ -33,8 +33,8 @@ print(" Loading datasets...")
 X_raw, X_scaled, patient_ids = load_data(RAW_PATH, SCALED_PATH)
 
 # Compute UMAP embedding from raw data
-umap_values = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1).fit_transform(X_raw)
-print (umap_values)
+#umap_values = umap.UMAP(n_components=2, random_state=42, n_neighbors=15, min_dist=0.1).fit_transform(X_raw)
+#print (umap_values)
 
 opt_k_df = pd.read_csv(OPTIMAL_K_SUMMARY_PATH)
 val_df = pd.read_csv(VALIDATION_RESULTS_PATH)
@@ -53,7 +53,7 @@ for file in sorted(label_files):
     n_clusters = len([x for x in np.unique(labels) if x != -1])
     print(f"{cfg}: loaded labels ({n_clusters} clusters)")
 
-    plot_clusters_umap(umap_values, labels, cfg)
+    #plot_clusters_umap(umap_values, labels, cfg)
 
     # summary report
     val_row = val_df[val_df["config"] == cfg]
