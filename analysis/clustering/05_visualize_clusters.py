@@ -20,7 +20,7 @@ from config import (
     VALIDATION_RESULTS_PATH,
     VISUALIZATION_SUMMARY_PATH,
     DISCLOSURE_THRESHOLD,
-    PLOTS_DIR
+    PLOTS_DIR,
     heatmap_path,
 )
 from clustering_helpers import load_data, plot_clusters_umap,apply_disclosure_control
@@ -88,7 +88,9 @@ for file in sorted(label_files):
     cfg = file.replace("labels_", "").replace(".csv.gz", "")
     labels = pd.read_csv(os.path.join(OUTPUT_DIR, file), compression="gzip")["cluster"].values
     df["cluster"] = labels
-
+    # dont plot small clusters / noise
+    df = df.loc[~(df.cluster==-1)]
+    
     numeric_cols = df.columns[~df.columns.str.contains("cluster|_bin")] #utilisation
     binary_cols  = df.columns[df.columns.str.contains("_bin")] # reviews
 
