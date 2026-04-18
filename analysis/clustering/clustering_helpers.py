@@ -350,7 +350,7 @@ def evaluate_clustering(config, X, labels, metric="euclidean"):
     n_clusters = len(np.unique(labels))
     if n_clusters < 2:
         print(f"Warning: {config}: only one cluster — skipping.")
-        return None
+        return {"config": config, "silhouette": np.nan, "calinski_harabasz": np.nan}
     sil = silhouette_score(X, labels, metric=metric)
     ch = calinski_harabasz_score(X, labels)  
     print(f"{config}: silhouette={sil:.3f}, calinski_harabasz={ch:.1f}")
