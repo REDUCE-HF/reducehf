@@ -93,6 +93,7 @@ for cfg, data in configs:
 
     res = evaluate_clustering(cfg, X_eval, labels_eval, metric=metric)
     results.append(res)
+
      # Save cluster labels 
     labels_df = pd.DataFrame({"patient_id": patient_ids, "cluster": labels})
     labels_file = labels_path(cfg)

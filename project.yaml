@@ -188,6 +188,7 @@ actions:
         labels_pca: output/clustering/labels_pca_optics.csv.gz
       moderately_sensitive:
         optics_tuning_results: output/clustering/optics_tuning_results.csv
+        reachability_figure: output/clustering/plots/reachability_figure.png
 
   validate_clusters:
     run: python:v2 analysis/clustering/04_validate_clusters.py

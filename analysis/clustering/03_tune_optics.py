@@ -14,9 +14,11 @@ from config import (
     OUTPUT_DIR,
     RAW_PATH,
     SCALED_PATH,
-    X_PCA_PATH,labels_path
+    X_PCA_PATH,
+    labels_path,
+    PLOTS_DIR
 )
-from clustering_helpers import load_data,evaluate_clustering
+from clustering_helpers import load_data, evaluate_clustering
 
 # -------------------
 # Load data
@@ -43,7 +45,7 @@ n, d = X_scaled.shape
 min_samples_list= [d+1, 2*d,  3*d] #  heuristcs  (d+1, 2d–3d)
 
 xi_list = [0.02, 0.05, 0.1]
-max_eps_list = [np.inf, 2.0, 5.0]  
+max_eps_list = [2.0, 5.0, np.inf]  
 #If this is too much we can run on sample of the data or restrict to max(min_samples_list)??
 results = []
 # -------------------
@@ -175,4 +177,6 @@ for _, row in top_rows.iterrows():
     ax.legend(loc="upper right", fontsize=8)
 
     plt.tight_layout()
+    reachability_plot_path = os.path.join(PLOTS_DIR, "reachability_figure.png")
+    fig.savefig(reachability_plot_path, dpi=200, bbox_inches="tight")
     plt.show()
