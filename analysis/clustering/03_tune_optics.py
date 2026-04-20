@@ -25,6 +25,9 @@ from clustering_helpers import load_data, evaluate_clustering
 # -------------------
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+# Create plots directory
+os.makedirs(PLOTS_DIR, exist_ok=True)
+
 print("Loading dataset...")
 X_raw, X_scaled,patient_ids = load_data(RAW_PATH, SCALED_PATH)
 
