@@ -31,7 +31,8 @@ def fn(dataset, earliest_date, index_date):
     time_periods = {
         '3m': days(90),
         '6m': days(180),
-        '12m': days(360),
+        '9m': days(270),
+        '12m': years(1),
         '24m': years(2)
     }
 
