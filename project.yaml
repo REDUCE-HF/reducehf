@@ -18,15 +18,14 @@ actions:
         dataset: output/consort_diagram_dta.csv
 
 
-  # Actions grouped by WP
-  
+  # Extract population by WP
   #WP1
   generate_dataset_wp1_common:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_common.py --output output/tmp_dataset_wp1_common.csv.gz
     outputs:
       highly_sensitive:
         dataset: output/tmp_dataset_wp1_common.csv.gz
-
+# 
   diabetes_algo_wp1:
     run: diabetes-algo:v0.0.9 --output output/dataset_wp1_common.csv.gz
     config:
@@ -255,7 +254,6 @@ actions:
       highly_sensitive:
         dataset: output/dataset_wp4.csv.gz
   
-
 
   
 # potential other actions to add:

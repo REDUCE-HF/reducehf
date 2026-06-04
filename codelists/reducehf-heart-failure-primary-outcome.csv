@@ -1,0 +1,300 @@
+code,term
+10091002,High output heart failure
+101281000119107,Congestive heart failure due to cardiomyopathy
+10335000,Chronic right-sided heart failure
+10633002,Acute congestive heart failure
+1064941000000106,Heart failure with reduced ejection fraction
+11016261000119104,Nutritional therapy for congestive heart failure done
+1108711000000108,Excepted from heart failure quality indicators - service unavailable
+111000119104,Nonischemic congestive cardiomyopathy
+11104006,Dilated cardiomyopathy due to phytanic acid storage disease
+111283005,Chronic left-sided heart failure
+111285003,Dilated cardiomyopathy due to metabolic disorder
+113901000052102,Heart failure following administration of antineoplastic agent
+1149109001,Dilated cardiomyopathy due to electrolyte imbalance
+1153452008,Dilated cardiomyopathy due to parasitic myocarditis
+1177176009,Intermediate epidermolysis bullosa simplex with cardiomyopathy
+1179293006,Erythrokeratodermia cardiomyopathy syndrome
+1204200007,Left ventricular failure with normal ejection fraction due to valvular heart disease
+1204203009,Left ventricular failure with normal ejection fraction due to coronary arteriosclerosis
+1204204003,Left ventricular failure with normal ejection fraction due to myocarditis
+1204206001,Left ventricular failure with normal ejection fraction due to cardiomyopathy
+1204462004,Left ventricular failure with sepsis
+120851000119104,Systolic heart failure stage D
+120861000119102,Systolic heart failure stage C
+120871000119108,Systolic heart failure stage B
+120881000119106,Diastolic heart failure stage D
+1208846006,Right ventricular failure due to disorder of lung
+1208848007,Right ventricular failure due to disorder of pulmonary circulation
+120891000119109,Diastolic heart failure stage C
+120901000119108,Diastolic heart failure stage B
+1234750000,Dilated cardiomyopathy caused by ethanol
+12563008,Dilated cardiomyopathy caused by radiation
+1264404009,Dilated cardiomyopathy due to scleroderma
+128404006,Right heart failure
+1287376009,Minnesota Living with Heart Failure Questionnaire
+1296659009,Acute exacerbation of chronic heart failure
+134378009,Congestive heart failure monitoring
+134434004,New York Heart Assoc classification heart failure symptoms
+138777006,H/O: heart failure
+138789008,H/O: Heart failure in last year
+153931000119109,Acute combined systolic and diastolic heart failure
+153941000119100,Chronic combined systolic and diastolic heart failure
+153951000119103,Acute on chronic combined systolic and diastolic heart failure
+155374007,Heart failure
+155376009,Left ventricular failure
+155377000,Heart failure NOS
+15629541000119106,Congestive heart failure stage C due to ischemic cardiomyopathy
+15629591000119103,Congestive heart failure stage B due to ischemic cardiomyopathy
+15629641000119107,Systolic heart failure stage B due to ischemic cardiomyopathy
+15629741000119102,Systolic heart failure stage C due to ischemic cardiomyopathy
+15781000119107,Hypertensive heart AND chronic kidney disease with congestive heart failure
+161505003,History of heart failure
+161520009,H/O: Heart failure in last year
+16253001,Dilated peripartum cardiomyopathy
+165468981000119105,Toxic dilated cardiomyopathy
+16838951000119100,Acute on chronic right-sided congestive heart failure
+188151000000107,Admit heart failure emergency
+191651000000108,Admit heart failure emergency
+194753005,Rheumatic left ventricular failure
+194763002,Malignant hypertensive heart disease with congestive cardiac failure
+194767001,Benign hypertensive heart disease with congestive cardiac failure
+194771003,Hypertensive heart disease NOS with congestive cardiac failure
+194779001,Hypertensive heart and renal disease with (congestive) heart failure
+194781004,Hypertensive heart and renal disease with both (congestive) heart failure and renal failure
+195018001,(Congestive obstructive) or (congestive cardiomyopathy)
+195021004,Primary dilated cardiomyopathy
+195035002,Secondary cardiomyopathy: [dilated] or [NOS]
+195108009,Heart failure: [right] or [congestive]
+195109001,Acute congestive heart failure
+195110006,Chronic congestive heart failure
+195111005,Decompensated cardiac failure
+195112003,Compensated cardiac failure
+195113008,(Left ventricular: [failure] or [impaired function]) or (cardiac asthma) or (acute pulmonary oedema)
+195114002,Acute left ventricular failure
+195116000,Acute heart failure
+195117009,Heart: [weak] or [failure NOS]
+195132002,Post cardiac operation heart failure NOS
+1954004,Dilated cardiomyopathy secondary to toxic reaction
+202141000000107,Referral to heart failure exercise programme
+202221000000109,Heart failure monitoring administration
+202251000000104,Heart failure care plan discussed with patient
+2024009,Dilated cardiomyopathy secondary to metazoal myocarditis
+20529002,Secondary dilated cardiomyopathy
+208031000000100,Heart failure monitoring administration
+208041000000109,Heart failure monitoring administration
+208051000000107,Heart failure review completed
+208061000000105,Heart failure review completed
+208091000000104,Heart failure care plan discussed with patient
+208101000000107,Heart failure care plan discussed with patient
+213214001,[Cardiac insufficiency] or [heart failure] as a complication of care
+21430002,Dilated cardiomyopathy due to rheumatoid arthritis
+2180001,Dilated cardiomyopathy secondary to connective tissue disorder
+23341000119109,Congestive heart failure with right heart failure
+233871002,Congestive obstructive cardiomyopathy
+233874005,Secondary dilated cardiomyopathy
+233924009,Heart failure as a complication of care
+233925005,Right ventricular failure
+247361000000100,Heart failure 6 month review
+248381000000108,Heart failure monitoring telephone invitation
+248501000000107,Heart failure monitoring verbal invitation
+248511000000109,Heart failure monitoring first letter
+248521000000103,Heart failure monitoring second letter
+248531000000101,Heart failure monitoring third letter
+248701000000104,Exception reporting: heart failure quality indicators
+249291000000108,Excepted from heart failure quality indicators: Patient unsuitable
+249301000000107,Excepted from heart failure quality indicators: Informed dissent
+250411000000105,Heart failure 6 month review 
+251651000000102,Heart failure monitoring telephone invite 
+251661000000104,Heart failure monitoring verbal invite 
+251671000000106,Heart failure monitoring first letter 
+251681000000108,Heart failure monitoring second letter 
+251691000000105,Heart failure monitoring third letter 
+251951000000108,Exception reporting: heart failure quality indicators 
+251961000000106,Excepted from heart failure quality indicators: Patient unsuitable 
+251971000000104,Excepted from heart failure quality indicators: Informed dissent 
+253041000000107,Heart failure 6 month review 
+25544003,Low output heart failure
+266248006,Heart failure NOS
+274631000000105,Heart failure monitoring telephone invite 
+274641000000101,Heart failure monitoring verbal invite 
+274651000000103,Heart failure monitoring first letter 
+274661000000100,Heart failure monitoring second letter 
+274671000000107,Heart failure monitoring third letter 
+274931000000102,Exception reporting: heart failure quality indicators 
+274941000000106,Excepted from heart failure quality indicators: Patient unsuitable 
+274951000000109,Excepted from heart failure quality indicators: Informed dissent 
+275514001,Impaired left ventricular function
+277638005,Sepsis-associated left ventricular failure
+2816000,Dilated cardiomyopathy due to myotonic dystrophy
+28869005,Dilated cardiomyopathy due to muscular dystrophy
+29201009,Dilated cardiomyopathy secondary to sensitivity
+30496006,Dilated cardiomyopathy due to viral myocarditis
+309634009,History of heart failure in last year
+314206003,Refractory heart failure
+319410000,Vasodilators in heart failure [no drugs here]
+325431000000103,Congestive heart failure due to valvular disease
+338101000000107,Congestive heart failure due to valvular disease
+34342000,Dilated cardiomyopathy secondary to deficiency
+35719004,Dilated cardiomyopathy due to systemic sclerosis
+359617009,Acute right-sided heart failure
+359620001,Acute right heart failure
+364006,Acute left-sided heart failure
+36471000,Dilated cardiomyopathy due to systemic lupus erythematosus
+366743000,New York Heart Association classification of heart failure symptoms
+366746008,New York Heart Association classification of heart failure symptoms
+366784002,Congestive heart failure monitoring
+366862009,Congestive heart failure monitoring
+367363000,Right ventricular failure
+371862006,Depression of left ventricular systolic function
+389838008,Heart failure annual review
+389937002,Heart failure follow-up
+389995008,Congestive cardiomyopathy
+390570006,Heart failure annual review
+390671000,Heart failure follow-up
+390884006,Heart failure follow-up
+390885007,Heart failure annual review
+392748002,Heart failure confirmed
+393703008,Heart failure confirmed
+395105005,Heart failure confirmed
+39693003,Dilated cardiomyopathy due to granuloma
+399020009,Congestive cardiomyopathy
+403298007,Red half-moon nail in congestive heart failure
+40532006,Dilated cardiomyopathy due to protozoan myocarditis
+413994008,Dilated cardiomyopathy with connective tissue disorder
+413995009,Dilated cardiomyopathy due to taurine deficiency
+416683003,Emergency hospital admission for heart failure
+417996009,Systolic heart failure
+418304008,Diastolic heart failure
+42343007,Congestive heart failure
+424404003,Decompensated chronic heart failure
+426012001,Right heart failure due to pulmonary hypertension
+426263006,Congestive heart failure due to left ventricular systolic dysfunction
+426611007,Congestive heart failure due to valvular disease
+426856002,Ischemic congestive cardiomyopathy
+43736008,Rheumatic left ventricular failure
+441481004,Chronic systolic heart failure
+441530006,Chronic diastolic heart failure
+44313006,Right heart failure secondary to left heart failure
+443253003,Acute on chronic systolic heart failure
+443254009,Acute systolic heart failure
+443343001,Acute diastolic heart failure
+443344007,Acute on chronic diastolic heart failure
+446221000,Heart failure with normal ejection fraction
+44630002,Dilated cardiomyopathy due to fungal myocarditis
+45650007,Kyphoscoliotic heart disease
+46113002,Hypertensive heart failure
+46696008,Dilated cardiomyopathy due to dermatomyositis
+46939000,Keshan disease
+471880001,Heart failure due to end stage congenital heart disease
+471890009,Dilated cardiomyopathy with genetic marker
+472100003,Ischemic dilated cardiomyopathy due to coronary artery disease
+473226007,Heart failure medication review
+48447003,Chronic heart failure
+49584005,Acute cor pulmonale
+50270004,Dilated cardiomyopathy due to Friedreich's ataxia
+50781000119109,Nutrition therapy for congestive heart failure
+510701000000100,Heart failure self management plan
+5148006,Hypertensive heart disease with congestive heart failure
+52029003,Primary familial dilated cardiomyopathy
+53043001,Primary idiopathic dilated cardiomyopathy
+5375005,Chronic left-sided congestive heart failure
+54830008,Dilated cardiomyopathy due to bacterial myocarditis
+56675007,Acute heart failure
+58629009,Dilated cardiomyopathy due to amyloidosis
+58911001,Dilated cardiomyopathy due to glycogen storage disease
+599271000000109,Hypertensive heart disease NOS with congestive cardiac failure
+6022005,Dilated cardiomyopathy due to sarcoidosis
+603891000000100,Post cardiac operation heart failure NOS
+60514000,Dilated cardiomyopathy due to familial storage disease
+61783007,Acute right-sided heart failure
+62377009,Postpartum cardiomyopathy
+64749001,Dilated cardiomyopathy due to infiltration
+66989003,Chronic right-sided congestive heart failure
+67431000119105,Congestive heart failure stage D
+67441000119101,Congestive heart failure stage C
+686171000000103,Heart failure NOS
+698296002,Acute exacerbation of chronic congestive heart failure
+698361000,Heart failure self management plan
+698594003,Symptomatic congestive heart failure
+699668009,Secondary nonischemic congestive cardiomyopathy
+702424003,Dilated cardiomyopathy 3B
+703272007,Heart failure with reduced ejection fraction
+703273002,Heart failure with reduced ejection fraction due to coronary artery disease
+703274008,Heart failure with reduced ejection fraction due to myocarditis
+703275009,Heart failure with reduced ejection fraction due to cardiomyopathy
+703276005,Heart failure with reduced ejection fraction due to heart valve disease
+704097008,Referral to heart failure exercise program declined
+711461000000104,Heart failure monitoring invitation
+713791000000101,Heart failure monitoring administration
+715951000000107,Exception reporting - heart failure quality indicators
+716621000000101,Heart failure monitoring third letter
+716971000000109,Heart failure monitoring first letter
+717191000000108,Heart failure monitoring second letter
+717481000000104,Excepted from heart failure quality indicators - patient unsuitable
+717491000000102,Excepted from heart failure quality indicators - informed dissent
+717501000000108,Heart failure monitoring verbal invitation
+717531000000102,Heart failure monitoring telephone invitation
+717840005,Congestive heart failure stage B
+719451006,Dilated cardiomyopathy with hypergonadotropic hypogonadism syndrome
+719824001,Vici syndrome
+719835006,Wooly hair and palmoplantar keratoderma with dilated cardiomyopathy syndrome
+719839000,Tubular renal disease with cardiomyopathy syndrome
+720609003,Cardiomyopathy with cataract and hip spine disease syndrome
+720700006,Congestive heart failure clinical management plan
+721014007,Heart-hand syndrome Slovenian type
+723993005,Sensorineural deafness with dilated cardiomyopathy syndrome
+72481000119103,Congestive heart failure as early postoperative complication
+725416005,Cardiomyopathy due to cirrhosis of liver
+72972005,Dilated cardiomyopathy caused by drug
+735984001,Heart failure self management plan
+737430008,Congestive heart failure clinical management plan
+74249003,Dilated cardiomyopathy due to malignancy
+74368002,Congestive cardiomyopathy
+74960003,Acute left-sided congestive heart failure
+749821000000101,Heart failure with normal ejection fraction
+757101000000106,Heart failure with normal ejection fraction
+766883006,Familial dilated cardiomyopathy with conduction defect due to lamin A/C mutation
+773587008,"X-linked intellectual disability, cardiomegaly, congestive heart failure syndrome"
+776251000000100,Referral to heart failure exercise programme declined
+77737007,Benign hypertensive heart disease with congestive heart failure
+781051000000108,Has heart failure management plan
+781061000000106,Has heart failure management plan 
+788950000,Heart failure with mid range ejection fraction
+789621000000105,Preferred place of care for next exacerbation of heart failure
+789631000000107,Preferred place of care for next exacerbation of heart failure 
+79152002,Dilated cardiomyopathy due to neuromuscular disorder
+79955004,Chronic cor pulmonale
+80479009,Acute right-sided congestive heart failure
+810971000000105,Heart failure self-management plan review
+812001000000102,Heart failure self-management plan agreed
+812011000000100,Heart failure self-management plan agreed 
+8209004,Dilated cardiomyopathy due to hemochromatosis
+82523003,Congestive rheumatic heart failure
+83105008,Malignant hypertensive heart disease with congestive heart failure
+832141000000109,Heart failure self-management plan review
+83291003,Cor pulmonale
+83521008,Dilated cardiomyopathy caused by alcohol
+835981000000108,Rehabilitation for heart failure
+84114007,Heart failure
+84733009,Dilated cardiomyopathy due to nutritional deficiency
+851071000000108,Heart failure initial assessment
+85232009,Left heart failure
+86194008,Dilated cardiomyopathy due to infectious disease
+86995005,Dilated cardiomyopathy due to mucopolysaccharidosis
+871639003,Dilated cardiomyopathy due to mitochondrial disease
+871681000000102,Heart failure monitoring
+879780004,Telehealth monitoring for chronic heart failure
+880014009,Dilated cardiomyopathy due to carnitine deficiency
+880038008,Dilated cardiomyopathy due to lysosomal storage disease
+880042006,Dilated cardiomyopathy caused by anthracycline
+88805009,Chronic congestive heart failure
+898208007,Heart failure due to thyrotoxicosis
+90202001,Dilated cardiomyopathy secondary to electrolyte deficiency
+90727007,Pleural effusion due to congestive heart failure
+915571000000102,On optimal heart failure therapy
+915581000000100,On optimal heart failure therapy 
+91604001,Dilated cardiomyopathy due to polyarteritis nodosa
+92506005,Biventricular congestive heart failure
+939891000000107,Heart failure rehabilitation programme not available 
+96311000119109,Exacerbation of congestive heart failure

@@ -85,6 +85,16 @@ def count_matching_event_clinical_snomed(gp_events, codelist, where=True):
         .count_for_patient()
     )
 
+def count_matching_event_clinical_ctv3(gp_events, codelist, where=True):
+    '''
+    Note - need to define date range for gp_events table using filter_gp_events(start_date, end_date) 
+    '''
+    return(
+        gp_events.where(where)
+        .where(gp_events.ctv3_code.is_in(codelist))
+        .count_for_patient()
+    )
+
 ## Number of coding events in hospital episodes BEFORE index date 
 def count_matching_event_apc(apc_events, codelist, only_prim_diagnoses=False, where=True):
     '''
@@ -110,6 +120,17 @@ def first_matching_event_clinical_snomed(gp_events, codelist, where=True):
     return(
         gp_events.where(where)
         .where(gp_events.snomedct_code.is_in(codelist))
+        .sort_by(gp_events.date)
+        .first_for_patient()
+    )
+
+def first_matching_event_clinical_ctv3(gp_events, codelist, where=True):
+    '''
+    Note - need to define date range for gp_events table using filter_gp_events(start_date, end_date) 
+    '''
+    return(
+        gp_events.where(where)
+        .where(gp_events.ctv3_code.is_in(codelist))
         .sort_by(gp_events.date)
         .first_for_patient()
     )
