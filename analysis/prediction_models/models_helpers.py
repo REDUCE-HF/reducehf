@@ -18,14 +18,17 @@ from clustering.config import (
 from config_models import (
     DATE_COLS,
     CATEGORICAL_COLS,
+    MEASURE_LIMITS,
     MEASURES_COLS,
-    LTC_COLS,
+    MLTC_COLS,
     UNDERSERVED_COLS,
     COPD_HSU_COLS,
+    MEASURE_LIMITS,
+
 )
 
 
-def build_wp4_predictor_features(df):
+def build_predictor_features(df):
     """
     Build predictor features for WP4 prediction models.Primary-care diagnosis only
     """
@@ -78,7 +81,7 @@ def build_wp4_predictor_features(df):
     for col in MEASURES_COLS:
         out[col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Primary-care LTCs
+    # Primary-care MLTCs
     out["copd"] = dates_df["tmp_copd_date_primary"].notna().astype(int)
 
     out["hypertension"] = dates_df["hypertension_date_primary"].notna().astype(int)
@@ -115,7 +118,7 @@ def build_wp4_predictor_features(df):
     )
 
     # Multi-morbidity
-    out["mltc_count"] = out[LTC_COLS].sum(axis=1)
+    out["mltc_count"] = out[MLTC_COLS].sum(axis=1)
     out["has_mltc"] = (out["mltc_count"] >= 2).astype(int)
 
     # Under-served groups
@@ -130,7 +133,7 @@ def build_wp4_predictor_features(df):
 
     out["n_underserved"] = out[UNDERSERVED_COLS].sum(axis=1)
     out["any_underserved"] = (
-        out["n_underserved"] >= 1
+    out["n_underserved"] >= 1
     ).astype(int)
 
     # Review indicators
@@ -152,5 +155,38 @@ def build_wp4_predictor_features(df):
             .fillna(0)
             
         )
+
+    return out
+
+
+def clean_measure_values(df):
+    """
+    Clean unplausible measurement values.
+    https://github.com/Exeter-Diabetes/EHRBiomarkr/blob/main/data-raw/qrisk2_constants.yaml
+    
+    """
+
+    out = df.copy()
+
+    for col, limits in MEASURE_LIMITS.items():
+        
+        lower, upper = limits
+        out[col] = pd.to_numeric(out[col], errors="coerce")
+        out.loc[
+            (out[col] < lower) | (out[col] > upper),
+            col
+        ] = np.nan
+
+    #check if diasbp >sysbp
+    invalid_bp = (
+        out["sysbp_value"].notna()
+        & out["diasbp_value"].notna()
+        & (out["diasbp_value"] > out["sysbp_value"])
+    )
+
+    out.loc[
+        invalid_bp,
+        ["sysbp_value", "diasbp_value"]
+    ] = np.nan
 
     return out
