@@ -190,3 +190,11 @@ def clean_measure_values(df):
     ] = np.nan
 
     return out
+
+def is_binary_column(s):
+    
+    numeric_values = pd.to_numeric(s, errors='coerce')
+    unique_values = set(numeric_values.dropna().unique())
+    
+    # Check if all values are 0 or 1 
+    return len(unique_values) > 0 and all(v in (0, 1) for v in unique_values)
