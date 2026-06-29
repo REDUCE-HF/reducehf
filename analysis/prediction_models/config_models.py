@@ -105,7 +105,7 @@ CATEGORICAL_COLS = [
     "region",
     "rural_urban",
     "practice_stp",#likely to be removed 
-    "msoa",#likely to be removed
+    #"msoa",#likely to be removed
     "cat_diabetes",
     "smoking",
 ]
