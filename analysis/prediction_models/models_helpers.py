@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import sys
+import os
+from pathlib import Path
 
 sys.path.insert(0, '..')
 
@@ -23,8 +25,7 @@ from config_models import (
     MLTC_COLS,
     UNDERSERVED_COLS,
     COPD_HSU_COLS,
-    MEASURE_LIMITS,
-
+    DUMMY_MEASURE_PARAMS,
 )
 
 
@@ -42,7 +43,7 @@ def build_predictor_features(df):
 
     index_date = dates_df["index_date"]
 
-    # Age
+    # Age (Should be no missings)
     age = np.floor(
         (index_date - dates_df["birth_date"]).dt.days / 365.25
     )
@@ -74,8 +75,10 @@ def build_predictor_features(df):
     ] = "unknown"
 
     #  categorical predictors
+    derived_cols = {"age_band", "cat_household_size"}
     for col in CATEGORICAL_COLS:
-        out[col] = df[col].astype("object")
+        if col not in derived_cols:
+            out[col] = df[col].astype("object")
 
     #  clinical measures
     for col in MEASURES_COLS:
@@ -93,20 +96,21 @@ def build_predictor_features(df):
     out["ckd"] = dates_df["ckd_date_primary"].notna().astype(int)
 
     # Diabetes
-    out["has_diabetes"] = (df["cat_diabetes"] != DIABETES_UNLIKELY_VALUE).astype(int)
+    out["has_diabetes"] = ((df["cat_diabetes"] != DIABETES_UNLIKELY_VALUE) & (df["cat_diabetes"].notna())).astype(int)
 
-    # Obesity: primary-care code OR BMI >= 30
+    # Obesity: primary-care code OR BMI >= 30 
     obesity_from_code = dates_df["obesity_primary_date"].notna()
 
+    bmi_numeric = pd.to_numeric(df["bmi_value"], errors="coerce")
+    bmi_lower, bmi_upper = MEASURE_LIMITS["bmi_value"]
+
     obesity_from_bmi = (
-        pd.to_numeric(df["bmi_value"], errors="coerce")
-        .ge(OBESITY_BMI_THRESHOLD)
-        .fillna(False)
+        (bmi_numeric >= OBESITY_BMI_THRESHOLD) & 
+        (bmi_numeric >= bmi_lower) & 
+        (bmi_numeric <= bmi_upper)
     )
 
-    out["obesity"] = (
-        obesity_from_code | obesity_from_bmi
-    ).astype(int)
+    out["obesity"] = (obesity_from_code | obesity_from_bmi).astype(int)
 
     # Medication/treatment flags
     out["bp_treatment"] = (
@@ -129,8 +133,6 @@ def build_predictor_features(df):
             .astype(int)
         )
 
-
-
     out["n_underserved"] = out[UNDERSERVED_COLS].sum(axis=1)
     out["any_underserved"] = (
     out["n_underserved"] >= 1
@@ -148,7 +150,7 @@ def build_predictor_features(df):
                 .fillna(0)
             )
 
-    # COPD-specific pre-index utilisation
+    # COPD-specific utilisation
     for col in COPD_HSU_COLS:
         out[col] = (
             pd.to_numeric(df[col], errors="coerce")
@@ -162,8 +164,6 @@ def build_predictor_features(df):
 def clean_measure_values(df):
     """
     Clean unplausible measurement values.
-    https://github.com/Exeter-Diabetes/EHRBiomarkr/blob/main/data-raw/qrisk2_constants.yaml
-    
     """
 
     out = df.copy()
@@ -198,3 +198,41 @@ def is_binary_column(s):
     
     # Check if all values are 0 or 1 
     return len(unique_values) > 0 and all(v in (0, 1) for v in unique_values)
+
+def fill_dummy_measure_values(df, missing_prop=0.2, seed=42):
+    """ Fill measures values with plausible values + noise + random missing values.
+      Otherwise, they are removed from the dataset. """
+    
+    rng = np.random.default_rng(seed)
+    out = df.copy()
+
+    
+
+    for col, params in DUMMY_MEASURE_PARAMS.items():
+        
+
+        mean, sd, lower, upper = params
+
+        values = rng.normal(mean, sd, len(out))
+        values = np.clip(values, lower, upper)
+
+        missing_mask = rng.random(len(out)) < missing_prop
+        values[missing_mask] = np.nan
+
+        out[col] = values
+
+    if {"sysbp_value", "diasbp_value"}.issubset(out.columns):
+        invalid_bp = (
+            out["sysbp_value"].notna()
+            & out["diasbp_value"].notna()
+            & (out["diasbp_value"] >= out["sysbp_value"])
+        )
+
+        out.loc[invalid_bp, "diasbp_value"] = (
+            out.loc[invalid_bp, "sysbp_value"]
+            - rng.uniform(20, 60, invalid_bp.sum())
+        )
+
+        out["diasbp_value"] = out["diasbp_value"].clip(lower=20, upper=200)
+
+    return out

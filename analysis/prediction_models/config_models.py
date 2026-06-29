@@ -97,16 +97,19 @@ DATE_COLS = [
 
 # Categorical predictors
 CATEGORICAL_COLS = [
+    "age_band",
+    "cat_household_size",
     "sex",
     "ethnicity_cat",
     "imd_quintile",
     "region",
     "rural_urban",
-    "practice_stp",
-    "msoa",
+    "practice_stp",#likely to be removed 
+    "msoa",#likely to be removed
     "cat_diabetes",
     "smoking",
 ]
+
 
 # Clinical measurement columns
 MEASURES_COLS = [
@@ -158,3 +161,16 @@ MEASURE_LIMITS = {
     "last_cholesterol_value": (0.5, 20),
     "last_hba1c_value": (20, 195),
 }
+
+DUMMY_MEASURE_PARAMS = {
+        "sysbp_value": (130, 20, 40, 270),
+        "diasbp_value": (80, 12, 20, 200),
+        "bmi_value": (28, 6, 15, 100),
+        "last_hdl_cholesterol_value": (1.3, 0.4, 0.2, 10),
+        "last_cholesterol_value": (5.0, 1.2, 0.5, 20),
+        "last_hba1c_value": (45, 15, 20, 195),
+    }
+
+# Output paths for prepared datasets
+TEST_DATA_PATH = "../../output/models/test_data.csv.gz"
+TRAIN_DATA_PATH = "../../output/models/train_data.csv.gz" 
