@@ -3,6 +3,7 @@ import config
 from ehrql.tables.tpp import (
     patients,
     practice_registrations,
+    clinical_events,
     )
 
 from ehrql import (
@@ -26,8 +27,6 @@ from functions.core import(
 from functions.wp3 import hsu
 
 dataset = create_dataset()
-
-
 #placeholder dates for now
 start_date = config.start_date
 end_date = config.end_date
@@ -35,7 +34,7 @@ earliest_date = config.earliest
 
 dataset.configure_dummy_data(
     population_size=5000,
-    timeout=500,
+    timeout=800,
     )
 
 
@@ -107,3 +106,4 @@ dataset = hsu.fn(dataset, earliest_date, dataset.index_date)
 dataset = comorbidities.fn(dataset, earliest_date, dataset.index_date)
 
 dataset = underserved.fn(dataset, earliest_date, dataset.index_date, end_date)
+

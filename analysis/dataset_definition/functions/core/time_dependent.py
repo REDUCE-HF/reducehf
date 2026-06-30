@@ -79,6 +79,13 @@ def fn(dataset, index_date, suffix='', wp=None, earliest_date = None):
     dataset.add_column('diasbp_date' + suffix, diasbp.date)
     dataset.add_column('diasbp_value' + suffix, diasbp.numeric_value)
 
+    # fasting blood glucose
+    fasting_blood_glucose = last_matching_event_clinical_snomed(
+        gp_events,
+        fasting_blood_glucose_snomed)
+    dataset.add_column('fasting_blood_glucose_date' + suffix, fasting_blood_glucose.date)
+    dataset.add_column('fasting_blood_glucose_value' + suffix, fasting_blood_glucose.numeric_value)
+
     # BMI
     bmi = last_matching_event_clinical_snomed(
         gp_events, 
