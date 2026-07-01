@@ -7,14 +7,12 @@ from pathlib import Path
 sys.path.insert(0, '..')
 
 from clustering.config import (
-    AGE_BINS,
-    AGE_LABELS,
+    
     HOUSEHOLD_BINS,
     HOUSEHOLD_LABELS,
     HS_COLS,
-    REVIEW_COLS,
     OBESITY_BMI_THRESHOLD,
-    DIABETES_UNLIKELY_VALUE,
+    DIABETES_UNLIKELY_VALUE
 )
 
 from config_models import (
@@ -50,13 +48,6 @@ def build_predictor_features(df):
 
     out["age"] = age
 
-    out["age_band"] = pd.cut(
-        age,
-        bins=AGE_BINS,
-        labels=AGE_LABELS,
-        right=False,
-        include_lowest=True,
-    ).astype("object")
 
     # Household size
     hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
@@ -75,7 +66,7 @@ def build_predictor_features(df):
     ] = "unknown"
 
     #  categorical predictors
-    derived_cols = {"age_band", "cat_household_size"}
+    derived_cols = {"cat_household_size"}
     for col in CATEGORICAL_COLS:
         if col not in derived_cols:
             out[col] = df[col].astype("object")
@@ -121,7 +112,7 @@ def build_predictor_features(df):
         dates_df["last_diabetes_medication_date"].notna().astype(int)
     )
 
-    # Multi-morbidity
+    # Multi-morbidity Keep both for now ? 
     out["mltc_count"] = out[MLTC_COLS].sum(axis=1)
     out["has_mltc"] = (out["mltc_count"] >= 2).astype(int)
 
@@ -158,6 +149,8 @@ def build_predictor_features(df):
             
         )
 
+    out = out.drop(columns=["has_diabetes"])
+
     return out
 
 
@@ -168,20 +161,34 @@ def clean_measure_values(df):
 
     out = df.copy()
 
+    measure_cols = [col for col in MEASURE_LIMITS if col in out.columns]
+
+    
+    swap_bp = (
+        out["sysbp_value"].notna()
+        & out["diasbp_value"].notna()
+        & (out["diasbp_value"] > out["sysbp_value"])
+    )
+
+    out.loc[swap_bp, ["sysbp_value", "diasbp_value"]] = (
+        out.loc[swap_bp, ["diasbp_value", "sysbp_value"]].to_numpy()
+    )
+
     for col, limits in MEASURE_LIMITS.items():
-        
+        if col not in out.columns:
+            continue
+
         lower, upper = limits
-        out[col] = pd.to_numeric(out[col], errors="coerce")
+
         out.loc[
             (out[col] < lower) | (out[col] > upper),
             col
         ] = np.nan
 
-    #check if diasbp >sysbp
     invalid_bp = (
         out["sysbp_value"].notna()
         & out["diasbp_value"].notna()
-        & (out["diasbp_value"] > out["sysbp_value"])
+        & (out["diasbp_value"] == out["sysbp_value"])
     )
 
     out.loc[
