@@ -47,10 +47,10 @@ def build_predictor_features(df):
     )
 
     out["age"] = age
-
+    
 
     # Household size
-    hs_numeric = pd.to_numeric(df["household_size"], errors="coerce")
+    hs_numeric = pd.to_numeric(df["household_size"], errors="coerce") # Remove this one ? 
 
     out["cat_household_size"] = pd.cut(
         hs_numeric,
@@ -162,7 +162,7 @@ def clean_measure_values(df):
     out = df.copy()
 
 
-    
+    # Swap systolic and diastolic BP if diastolic > systolic
     swap_bp = (
         out["sysbp_value"].notna()
         & out["diasbp_value"].notna()
@@ -196,6 +196,11 @@ def clean_measure_values(df):
     return out
 
 def is_binary_column(s):
+    """
+    check if a column is binary"""
+
+    if s.dtype in ['object', 'category']:
+        return False
     
     numeric_values = pd.to_numeric(s, errors='coerce')
     unique_values = set(numeric_values.dropna().unique())
@@ -225,18 +230,18 @@ def fill_dummy_measure_values(df, missing_prop=0.2, seed=42):
 
         out[col] = values
 
-    if {"sysbp_value", "diasbp_value"}.issubset(out.columns):
-        invalid_bp = (
-            out["sysbp_value"].notna()
-            & out["diasbp_value"].notna()
-            & (out["diasbp_value"] >= out["sysbp_value"])
-        )
+    
+    invalid_bp = (
+        out["sysbp_value"].notna()
+        & out["diasbp_value"].notna()
+        & (out["diasbp_value"] >= out["sysbp_value"])
+    )
 
-        out.loc[invalid_bp, "diasbp_value"] = (
-            out.loc[invalid_bp, "sysbp_value"]
-            - rng.uniform(20, 60, invalid_bp.sum())
-        )
+    out.loc[invalid_bp, "diasbp_value"] = (
+        out.loc[invalid_bp, "sysbp_value"]
+        - rng.uniform(20, 60, invalid_bp.sum())
+    )
 
-        out["diasbp_value"] = out["diasbp_value"].clip(lower=20, upper=200)
+    out["diasbp_value"] = out["diasbp_value"].clip(lower=20, upper=200)
 
     return out
