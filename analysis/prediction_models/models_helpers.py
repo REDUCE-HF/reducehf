@@ -161,7 +161,6 @@ def clean_measure_values(df):
 
     out = df.copy()
 
-    measure_cols = [col for col in MEASURE_LIMITS if col in out.columns]
 
     
     swap_bp = (
@@ -175,8 +174,6 @@ def clean_measure_values(df):
     )
 
     for col, limits in MEASURE_LIMITS.items():
-        if col not in out.columns:
-            continue
 
         lower, upper = limits
 
