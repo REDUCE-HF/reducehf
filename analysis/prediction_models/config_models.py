@@ -1,3 +1,6 @@
+import os
+
+
 CORE_COLS = [
     "patient_id",
     "index_date",
@@ -168,5 +171,10 @@ DUMMY_MEASURE_PARAMS = {
 }
 
 # Output paths for prepared datasets
-TEST_DATA_PATH = "../../output/models/test_data.csv.gz"
-TRAIN_DATA_PATH = "../../output/models/train_data.csv.gz" 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "output/models/")
+TEST_DATA_PATH  = os.path.join(OUTPUT_DIR, "test_data.csv.gz")
+
+TRAIN_DATA_PATH = os.path.join(OUTPUT_DIR, "train_data.csv.gz")
+WP4_DATA = os.path.join(PROJECT_ROOT, "output/dataset_wp4.csv.gz")
