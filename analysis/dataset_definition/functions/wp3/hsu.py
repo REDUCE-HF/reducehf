@@ -15,7 +15,7 @@ def fn(dataset, earliest_date, index_date):
     # Filter datasets for better efficiency
     before_gp_events = filter_gp_events(earliest_date, index_date)
 
-    time = years(2)
+    time = years(1)
 
     ed_events_1 = filter_ed_events(index_date, index_date + time)
     apc_events_1 = filter_apc_events(index_date, index_date + time)
@@ -33,7 +33,6 @@ def fn(dataset, earliest_date, index_date):
         '6m': days(180),
         '9m': days(270),
         '12m': years(1),
-        '24m': years(2)
     }
 
     for time_name, time in time_periods.items():
