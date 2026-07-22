@@ -15,7 +15,7 @@ def fn(dataset, earliest_date, index_date):
     # Filter datasets for better efficiency
     before_gp_events = filter_gp_events(earliest_date, index_date)
 
-    time = years(2)
+    time = years(1)
 
     ed_events_1 = filter_ed_events(index_date, index_date + time)
     apc_events_1 = filter_apc_events(index_date, index_date + time)
@@ -31,8 +31,8 @@ def fn(dataset, earliest_date, index_date):
     time_periods = {
         '3m': days(90),
         '6m': days(180),
-        '12m': days(360),
-        '24m': years(2)
+        '9m': days(270),
+        '12m': years(1),
     }
 
     for time_name, time in time_periods.items():
@@ -141,21 +141,6 @@ def fn(dataset, earliest_date, index_date):
         if time_name.split('_')[0] == 'post':
             #use in time period after index_date
             dataset.add_column('ed_attendances_'+time_name, 
-                ed_attendances(ed_events_2, start, end)
-                )
-            dataset.add_column('primary_care_attendances_'+time_name, 
-                primary_care_attendances(gp_events_2, start,end)
-                )
-            dataset.add_column('hospital_admissions_'+time_name,
-                hospital_admissions(apc_events_2, start,end)
-                )
-            dataset.add_column('prescriptions_' + time_name, 
-                prescriptions_count(med_events_2, start, end)
-                )
-            
-        else:
-            #use in time period before index date
-            dataset.add_column('ed_attendances_'+time_name, 
                 ed_attendances(ed_events_1, start, end)
                 )
             dataset.add_column('primary_care_attendances_'+time_name, 
@@ -166,6 +151,21 @@ def fn(dataset, earliest_date, index_date):
                 )
             dataset.add_column('prescriptions_' + time_name, 
                 prescriptions_count(med_events_1, start, end)
+                )
+            
+        else:
+            #use in time period before index date
+            dataset.add_column('ed_attendances_'+time_name, 
+                ed_attendances(ed_events_2, start, end)
+                )
+            dataset.add_column('primary_care_attendances_'+time_name, 
+                primary_care_attendances(gp_events_2, start,end)
+                )
+            dataset.add_column('hospital_admissions_'+time_name,
+                hospital_admissions(apc_events_2, start,end)
+                )
+            dataset.add_column('prescriptions_' + time_name, 
+                prescriptions_count(med_events_2, start, end)
                 )
             
     ## annual reviews
