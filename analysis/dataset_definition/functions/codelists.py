@@ -19,50 +19,29 @@ smoking_former = codelist_from_csv(
 )
 smoking_ever = smoking_current + smoking_former
 
-
+# Weight and height
 weight_snomed = codelist_from_csv(
-    "codelists/opensafely-weight-snomed.csv", column="code"
+    "codelists/opensafely-weight-snomed.csv",
+    column="code"
 )
 height_snomed = codelist_from_csv(
-    "codelists/opensafely-height-snomed.csv",  column="code"
+    "codelists/opensafely-height-snomed.csv",
+    column="code"
 )
+
+# Obesity
 bmi_obesity_icd10 = codelist_from_csv(
-    "codelists/user-elsie_horne-bmi_obesity_icd10.csv", column="code"
+    "codelists/reducehf-obesity-icd10.csv",
+    column="code"
 )
-
 bmi_obesity_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-bmi_obesity_snomed.csv", column="code"
+    "codelists/nhsd-primary-care-domain-refsets-bmiobese_cod.csv",
+    column="code"
 )
 
-
-# BMI
+# Recorded BMI 
 bmi_cod = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-bmival_cod.csv",
-    column="code"
-)
-
-
-# Total Cholesterol
-cholesterol_snomed = codelist_from_csv(
-    "codelists/opensafely-cholesterol-tests-numerical-value.csv",
-    column="code"
-)
-
-# HDL Cholesterol
-hdl_cholesterol_snomed = codelist_from_csv(
-    "codelists/bristol-hdl-cholesterol.csv",
-    column="code"
-)
-
-# Wider Learning Disability
-learndis_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-learndis.csv",
-    column="code"
-)
-
-## All BMI coded terms
-bmi_stage_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-bmi_stage.csv",
     column="code"
 )
 
@@ -72,33 +51,21 @@ bmi_numeric = codelist_from_csv(
     column = "code"
 )
 
-## Severe Obesity code recorded
-sev_obesity_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-sev_obesity.csv",
+# Total Cholesterol
+cholesterol_snomed = codelist_from_csv(
+    "codelists/opensafely-cholesterol-tests-numerical-value.csv",
     column="code"
 )
 
-## Chronic Respiratory Disease
-resp_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-resp_cov.csv",
+# HDL Cholesterol
+hdl_cholesterol_snomed = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-hdlcchol_cod.csv",
     column="code"
 )
 
-## Chronic Neurological Disease including Significant Learning Disorder
-cns_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-cns_cov.csv",
-    column="code"
-)
-
-## Diabetes diagnosis codes
-diab_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-diab.csv",
-    column="code"
-)
-
-## Diabetes resolved codes
-dmres_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-dmres.csv",
+# Wider Learning Disability
+learndis_primis = codelist_from_csv(
+    "codelists/primis-covid19-vacc-uptake-learndis.csv",
     column="code"
 )
 
@@ -114,39 +81,9 @@ smhres_primis = codelist_from_csv(
     column="code"
 )
 
-## Chronic heart disease codes
-chd_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-chd_cov.csv",
-    column="code"
-)
-
-## Chronic kidney disease diagnostic codes
-ckd_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd_cov.csv",
-    column="code"
-)
-
-## Chronic kidney disease codes - all stages
-ckd15_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd15.csv",
-    column="code"
-)
-
-## Chronic kidney disease codes-stages 3 - 5
-ckd35_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-ckd35.csv",
-    column="code"
-)
-
-## Chronic Liver disease codes
-cld_primis = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-cld.csv",
-    column="code"
-)
-
-# Stroke Ischaemic (Ischaemic Stroke)
+# Ischaemic Stroke
 stroke_isch_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-stroke_isch_snomed.csv",
+    "codelists/nhsd-primary-care-domain-refsets-ostr_cod.csv",
     column="code"
 )
 
@@ -156,33 +93,38 @@ stroke_isch_icd10 = codelist_from_csv(
 )
 
 # Chronic Kidney disease
-ckd_snomed = codelist_from_csv(
-    "codelists/user-elsie_horne-ckd_snomed.csv",
+ckd_snomed_12 = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-ckd1and2_cod.csv",
     column="code"
 )
 
+ckd_snomed_345 = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-ckd_cod.csv",
+    column="code"
+)
+
+ckd_snomed = ckd_snomed_12 + ckd_snomed_345
+
 ckd_icd10 = codelist_from_csv(
-    "codelists/user-elsie_horne-ckd_icd10.csv",
+    "codelists/reducehf-ckd-icd10.csv",
     column="code"
 )
 
 # Hypertension
 hypertension_icd10 = codelist_from_csv(
-    "codelists/user-elsie_horne-hypertension_icd10.csv",
+    "codelists/reducehf-hypertension-icd10.csv",
     column="code"
 )
 hypertension_drugs_dmd = codelist_from_csv(
-    "codelists/user-elsie_horne-hypertension_drugs_dmd.csv",
-    column="dmd_id"
+    "codelists/nhs-drug-refsets-antihyp_cod.csv",
+    column="code"
 )
 hypertension_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-hyp_cod.csv",
     column="code"
 )
 
-
 # COPD
-
 copd_snomed = codelist_from_csv(
     "codelists/nhsd-primary-care-domain-refsets-copd_cod.csv",
     column="code"
@@ -209,7 +151,7 @@ copd_exacerbations_icd10 = codelist_from_csv(
     column = "code"
 )
 
-#ischaemic heart diseae (ihd)
+# Ischaemic heart diseae (ihd)
 ihd_snomed = codelist_from_csv(
     "codelists/bristol-ischaemic-heart-disease-snomed.csv",
     column="code"
@@ -227,76 +169,94 @@ af_snomed = codelist_from_csv(
 )
 
 af_icd10 = codelist_from_csv (
-    "codelists/bristol-atrial-fibrillation-icd10.csv",
+    "codelists/reducehf-atrial-fibrillation-and-flutter-icd10.csv",
     column ="code"
 )
 
 # DIABETES
 # T1DM
 diabetes_type1_snomed = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-dmtype1_cod.csv",column="code"
-    )
+    "codelists/nhsd-primary-care-domain-refsets-dmtype1_cod.csv",
+    column="code"
+)
 
 diabetes_type1_icd10 = codelist_from_csv(
-    "codelists/opensafely-type-1-diabetes-secondary-care.csv",column="icd10_code"
-    )
+    "codelists/reducehf-type-1-diabetes-icd10.csv",
+    column="code"
+)
 
 # T2DM
 diabetes_type2_snomed = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-dmtype2_cod.csv",column="code"
-    )
+    "codelists/nhsd-primary-care-domain-refsets-dmtype2_cod.csv",
+    column="code"
+)
 
 diabetes_type2_icd10 = codelist_from_csv(
-    "codelists/user-r_denholm-type-2-diabetes-secondary-care-bristol.csv",column="code"
-    )
+    "codelists/reducehf-type-2-diabetes-icd10.csv",
+    column="code"
+)
 
 # Other or non-specific diabetes
 diabetes_other_snomed = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-otherdmaudit_cod.csv",column="code"
-    )
+    "codelists/nhsd-primary-care-domain-refsets-otherdmaudit_cod.csv",
+    column="code"
+)
 
 # Gestational diabetes
 diabetes_gestational_snomed = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-gestdiab_cod.csv",column="code"
-                                              )
+    "codelists/nhsd-primary-care-domain-refsets-gestdiab_cod.csv",
+    column="code"
+)
 
 diabetes_gestational_icd10 = codelist_from_csv(
-    "codelists/user-alainamstutz-gestational-diabetes-icd10-bristol.csv",column="code"
-    )
+    "codelists/user-alainamstutz-gestational-diabetes-icd10-bristol.csv",
+    column="code"
+)
 
 # Non-diagnostic diabetes codes
-diabetes_diagnostic_snomed = codelist_from_csv(
-    "codelists/user-anschaf-diabetes-non-diagnostic-codes.csv",column="code"
-                                             )
+diabetes_nondiagnostic_ctv3 = codelist_from_csv(
+    "codelists/reducehf-non-diagnostic-diabetes-codes-clone.csv",
+    column="code"
+)
 
 # HbA1c
 hba1c_snomed = codelist_from_csv(
-    "codelists/opensafely-glycated-haemoglobin-hba1c-tests-numerical-value.csv",column="code"
-                                 )
+    "codelists/user-anschaf-glycated-haemoglobin-hba1c-tests-numerical-value.csv",
+    column="code"
+)
 
 # Antidiabetic drugs
 insulin_dmd = codelist_from_csv(
-    "codelists/opensafely-insulin-medication.csv",column="id"
-                                )
+    "codelists/reducehf-insulin-dmd.csv",
+    column="code"
+)
 
 antidiabetic_drugs_dmd = codelist_from_csv(
-    "codelists/opensafely-antidiabetic-drugs.csv",column="id"
-                                           )
+    "codelists/user-anschaf-antidiabetes-medications-dmd.csv",
+    column="code"
+)
 
-non_metformin_dmd = codelist_from_csv(
-    "codelists/user-r_denholm-non-metformin-antidiabetic-drugs_bristol.csv",column="id"
-                                      )
+metformin_dmd = codelist_from_csv(
+    "codelists/user-anschaf-metformin-dmd.csv",
+    column="code"
+)
+
+non_metformin_dmd = set(antidiabetic_drugs_dmd) - set(metformin_dmd)
 
 # HF (for script development)
 
 hf_snomed = codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-hf_cod.csv",
+    "codelists/reducehf-heart-failure-primary-outcome.csv",
     column = "code"
 )
 
-
 hf_icd10 = codelist_from_csv(
     "codelists/reducehf-heart-failure-secondary-care.csv",
+    column = "code"
+)
+
+hf_primary_icd10 = codelist_from_csv(
+    "codelists/reducehf-heart-failure-primary-outcome-icd.csv",
     column = "code"
 )
 
@@ -314,48 +274,46 @@ hf_exclude = codelist_from_csv(
 # Quality assurance
 
 prostate_cancer_snomed = codelist_from_csv(
-    "codelists/user-RochelleKnight-prostate_cancer_snomed.csv",
+    "codelists/reducehf-prostate-cancer-snomed.csv",
     column="code"
 )
 prostate_cancer_icd10 = codelist_from_csv(
-    "codelists/user-RochelleKnight-prostate_cancer_icd10.csv",
+    "codelists/reducehf-prostate-cancer-icd10.csv",
     column="code"
 )
 pregnancy_snomed = codelist_from_csv(
-    "codelists/user-RochelleKnight-pregnancy_and_birth_snomed.csv",
+    "codelists/reducehf-pregnancy-and-birth-snomed.csv",
     column="code"
 )
 cocp_dmd = codelist_from_csv(
-    "codelists/user-elsie_horne-cocp_dmd.csv",
-    column="dmd_id"
+    "codelists/user-anschaf-oral-contraceptive-dmd.csv",
+    column="code"
 )
+
 hrt_dmd = codelist_from_csv(
-    "codelists/user-elsie_horne-hrt_dmd.csv",
-    column="dmd_id"
+    "codelists/user-anschaf-hormone-replacement-therapy-dmd.csv",
+    column="code"
 )
 
 # HF-related breathlessness
-
-
 breathless_snomed = codelist_from_csv(
-    "codelists/reducehf-beathlessness4all.csv",
+    "codelists/reducehf-breathlessness.csv",
     column="code"
 )   
-# HF-related oedema
 
+# HF-related oedema
 oedema_snomed = codelist_from_csv(
-    "codelists/reducehf-oedema4all.csv",
+    "codelists/reducehf-oedema.csv",
     column="code"
 ) 
-# HF-related fatigue
 
+# HF-related fatigue
 fatigue_snomed = codelist_from_csv(
     "codelists/reducehf-fatigue.csv",
     column="code"
 ) 
 
 # NP testing 
-
 NTpro_snomed = codelist_from_csv(
     "codelists/reducehf-ntpro-num-only.csv",
     column="code"
@@ -367,22 +325,20 @@ NP_snomed = codelist_from_csv(
 ) 
 
 #Echocardiography referral
-
 echo_ref=codelist_from_csv(
     "codelists/reducehf-echocardiography-referral.csv",
     column="code"
 )
+
 #Echocardiography has been completed
 echo_done=codelist_from_csv(
     "codelists/reducehf-echocardiography-result.csv",
     column="code"
 )
 
-
 #BP
-
 systolic_bp = codelist_from_csv(
-    "codelists/opensafely-systolic-blood-pressure-qof.csv",
+    "codelists/nhsd-primary-care-domain-refsets-sysbp_cod.csv",
     column="code"
 )
 
@@ -392,22 +348,20 @@ diastolic_bp = codelist_from_csv(
 )
 
 # Annual reviews
-
 asthma_review = codelist_from_csv(
-    "codelists/opensafely-asthma-annual-review-qof.csv",
+    "codelists/nhsd-primary-care-domain-refsets-rev_cod.csv",
     column="code"
 )
 
 copd_review = codelist_from_csv(
-    "codelists/opensafely-chronic-obstructive-pulmonary-disease-copd-review-qof.csv",
+    "codelists/nhsd-primary-care-domain-refsets-copdrvw_cod.csv",
     column="code"
 )
 
 med_review = codelist_from_csv(
-    "codelists/opensafely-care-planning-medication-review-simple-reference-set-nhs-digital.csv",
+    "codelists/nhsd-primary-care-domain-refsets-medrvw_cod.csv",
     column="code"
 )
-
 
 # Myocardial infarction - secondary care
 mi_icd10 = codelist_from_csv(
@@ -415,10 +369,9 @@ mi_icd10 = codelist_from_csv(
     column="code"
 )
 
-
 #underserved
 migrant = codelist_from_csv(
-    "codelists/user-YaminaB-migration-status.csv",
+    "codelists/opensafely-migration-status.csv",
     column="code"
 )
 
@@ -447,10 +400,4 @@ homeless = codelist_from_csv(
     column="code"
 )
 
-'''
-Not using the following as not specific to HF. Using codelists based on previous studies (HF-related). A/w clincial input
--  breathlesness: https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/breathlessness-codes/20241205/
--  oedema: not currently available - need to create
--  fatigue: https://www.opencodelists.org/codelist/opensafely/symptoms-fatigue/0e9ac677/
-'''
 
