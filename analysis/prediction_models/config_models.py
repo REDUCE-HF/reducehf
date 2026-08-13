@@ -178,3 +178,14 @@ TEST_DATA_PATH  = os.path.join(OUTPUT_DIR, "test_data.csv.gz")
 
 TRAIN_DATA_PATH = os.path.join(OUTPUT_DIR, "train_data.csv.gz")
 WP4_DATA = os.path.join(PROJECT_ROOT, "output/dataset_wp4.csv.gz")
+
+#subgroups data paths
+TRAIN_SUBGROUP_DATA_PATH = os.path.join(
+    OUTPUT_DIR,
+    "train_subgroup_data.csv.gz"
+)
+
+TEST_SUBGROUP_DATA_PATH = os.path.join(
+    OUTPUT_DIR,
+    "test_subgroup_data.csv.gz"
+)
