@@ -19,7 +19,9 @@ from clustering.config import (
     HOUSEHOLD_LABELS,
     HS_COLS,
     OBESITY_BMI_THRESHOLD,
-    DIABETES_UNLIKELY_VALUE
+    DIABETES_UNLIKELY_VALUE,
+    AGE_BINS,
+    AGE_LABELS,
 )
 
 from config_models import (
@@ -31,6 +33,7 @@ from config_models import (
     UNDERSERVED_COLS,
     COPD_HSU_COLS,
     DUMMY_MEASURE_PARAMS,
+    SUBGROUP_COLS,
 )
 from sklearn.metrics import (
     roc_auc_score,
@@ -58,8 +61,14 @@ def build_predictor_features(df):
     )
 
     out["age"] = age
+    # Age bands
+    out["age_band"] = pd.cut(
+    age,
+    bins=AGE_BINS,
+    labels=AGE_LABELS,
+    right=False
+).astype("object")
     
-
     # Household size
     hs_numeric = pd.to_numeric(df["household_size"], errors="coerce") # Remove this one ? 
 

@@ -10,8 +10,7 @@ import numpy as np
 # OpenSafely disclosure threshold
 # -------------------
 
-DISCLOSURE_THRESHOLD = 7
-
+from sdc_helpers import DISCLOSURE_THRESHOLD
 # -------------------
 # Paths
 # -------------------
