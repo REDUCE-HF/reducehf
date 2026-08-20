@@ -91,7 +91,7 @@ dataset = hf_diagnosis.fn(dataset, dataset.patient_index_date, end_date)
 dataset.index_date = case(
     when(
         dataset.hf_diagnosis_date.is_not_null()
-        ).then(dataset.hf_diagnosis_date),
+        ).then(dataset.hf_diagnosis_date - years(1)),
     otherwise = end_date - years(2)
     )
 

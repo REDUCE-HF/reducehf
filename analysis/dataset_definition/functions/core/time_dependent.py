@@ -154,34 +154,31 @@ def fn(dataset, index_date, suffix='', wp=None, earliest_date = None):
     # only needed for WP4 (?) -- CHECK
     if wp==4:
 
-        # Filter raw data 
-        gp_events_2 = filter_gp_events(earliest_date, index_date - years(1))
-        med_events_2 = filter_med_events(earliest_date, index_date - years(1))
 
         # Hba1c latest for pcp-hf
         last_hba1c = last_matching_event_clinical_snomed(
-            gp_events_2,
+            gp_events,
             hba1c_snomed)
         dataset.last_hba1c_value = last_hba1c.numeric_value
         dataset.last_hba1c_date = last_hba1c.date
 
         # latest hypertension medications date for pcp-hf
         dataset.last_hypertension_date_med = last_matching_med_dmd(
-            med_events_2,
+            med_events,
             hypertension_drugs_dmd
             ).date
     
         # latest diabetes medications date for pcp-hf 
         last_insulin_dmd_date = last_matching_med_dmd(
-            med_events_2,
+            med_events,
             insulin_dmd
             ).date
         last_antidiabetic_drugs_dmd_date = last_matching_med_dmd(
-            med_events_2,
+            med_events,
             antidiabetic_drugs_dmd
             ).date
         last_nonmetform_drugs_dmd_date = last_matching_med_dmd(
-            med_events_2,
+            med_events,
             non_metformin_dmd
             ).date
 
