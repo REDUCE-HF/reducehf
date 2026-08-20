@@ -461,6 +461,12 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/insulin-dmd/0a7907f6/",
       "downloaded_at": "2026-04-05 15:43:26.729861Z",
       "sha": "6ec6d0f5e5b44e3ade48513e11a5e2b5c682c1d8"
+    },
+    "ardens-glucose-fasting-level.csv": {
+      "id": "ardens/glucose-fasting-level/2020-11-06",
+      "url": "https://www.opencodelists.org/codelist/ardens/glucose-fasting-level/2020-11-06/",
+      "downloaded_at": "2026-08-20 07:19:04.473574Z",
+      "sha": "01a0068655d5a4621306bd8ab247bbd736126a70"
     }
   }
 }

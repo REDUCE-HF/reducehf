@@ -4,7 +4,6 @@ reducehf/former-smoker/37578701/
 opensafely/weight-snomed/5459abc6/
 opensafely/height-snomed/3b4a3891/
 nhsd-primary-care-domain-refsets/bmival_cod/20250627/
-<<<<<<< Updated upstream
 opensafely/cholesterol-tests-numerical-value/7e3a22f3
 nhsd-primary-care-domain-refsets/hdlcchol_cod/20250912/
 primis-covid19-vacc-uptake/learndis/v2.5/
@@ -21,25 +20,6 @@ reducehf/antihypertensive-drugs/3f1b15fe/
 nhsd-primary-care-domain-refsets/hyp_cod/20210127
 nhsd-primary-care-domain-refsets/copd_cod/20250912/
 opensafely/copd-secondary-care/35734162
-=======
-user/RochelleKnight/prostate_cancer_icd10/6b27d648/
-user/RochelleKnight/pregnancy_and_birth_snomed/1d46bcb3/
-user/elsie_horne/cocp_dmd/1666a7a3/
-user/elsie_horne/hrt_dmd/19196799/
-user/RochelleKnight/prostate_cancer_snomed/0437497e/
-reducehf/oedema4all/27d17fd5/
-opensafely/systolic-blood-pressure-qof/3572b5fb/
-opensafely/asthma-annual-review-qof/33eeb7da/
-opensafely/chronic-obstructive-pulmonary-disease-copd-review-qof/01cfd170/
-opensafely/care-planning-medication-review-simple-reference-set-nhs-digital/61b13c39/
-reducehf/fatigue/383a7587/
-reducehf/breathlessness/40e0f30a/
-reducehf/ntpro-num-only/59f0663f/
-reducehf/np-any/72ffd974/
-reducehf/echocardiography-referral/35ca1fe3/
-reducehf/echocardiography-result/2d36ffc1/
-opensafely/copd-medications-new-dmd/20b7de09/
->>>>>>> Stashed changes
 bristol/copd-exacerbations/2896912f/
 opensafely/copd-exacerbation/6858db5b/
 bristol/ischaemic-heart-disease-icd10/37151caf
@@ -78,7 +58,6 @@ nhsd-primary-care-domain-refsets/illsub_cod/20250627/
 opensafely/house-bound/705feb78/
 opensafely/not-house-bound/0c221ea4/
 nhsd-primary-care-domain-refsets/homeless_cod/20250627/
-<<<<<<< Updated upstream
 nhsd-primary-care-domain-refsets/bmiobese_cod/20250912/
 reducehf/obesity-icd10/49bfe67b/
 nhs-drug-refsets/antihyp_cod/20250912/
@@ -96,13 +75,4 @@ nhsd-primary-care-domain-refsets/copdrvw_cod/20250912/
 nhsd-primary-care-domain-refsets/medrvw_cod/20250912/
 reducehf/non-diagnostic-diabetes-codes-clone/4f7b2e1a/
 reducehf/insulin-dmd/0a7907f6/
-=======
-nhsd-primary-care-domain-refsets/diabp_cod/20250627/
-nhsd-primary-care-domain-refsets/copd_cod/20250912/
-nhsd-primary-care-domain-refsets/dmtype1_cod/20250912/
-nhsd-primary-care-domain-refsets/dmtype2_cod/20250912/
-nhsd-primary-care-domain-refsets/otherdmaudit_cod/20250912/
-nhsd-primary-care-domain-refsets/gestdiab_cod/20250912/
-user/anschaf/diabetes-non-diagnostic-codes/22fa3d8a/
 ardens/glucose-fasting-level/2020-11-06
->>>>>>> Stashed changes

@@ -297,11 +297,7 @@ hrt_dmd = codelist_from_csv(
 
 # HF-related breathlessness
 breathless_snomed = codelist_from_csv(
-<<<<<<< Updated upstream
     "codelists/reducehf-breathlessness.csv",
-=======
-    "codelists/reducehf-breathlessness4all.csv",
->>>>>>> Stashed changes
     column="code"
 )   
 
@@ -353,7 +349,7 @@ diastolic_bp = codelist_from_csv(
 
 #Fasting blood glucose
 fasting_blood_glucose_snomed = codelist_from_csv(
-    "codelists/ardens-glucose-fasting-level-2020-11-06.csv",
+    "codelists/ardens-glucose-fasting-level.csv",
     column="code"
 )
 
