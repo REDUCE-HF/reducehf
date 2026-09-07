@@ -1,4 +1,5 @@
 import os
+import sys
 import warnings
 warnings.filterwarnings('ignore')
 import argparse
@@ -21,6 +22,13 @@ from config import (
     LTC_COLS, UNDERSERVED_COLS, CONDITION_TIME_WINDOW_DAYS, DIABETES_UNLIKELY_VALUE,
     DIAGNOSIS_PRIMARY_COL, DIAGNOSIS_HOSPITAL_COLS, umap_path
 )
+
+
+sys.path.insert(
+    0,
+    os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)
+
 
 # ============================================
 # Common helper functions for clustering scripts
