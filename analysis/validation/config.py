@@ -1,3 +1,18 @@
+import os
+
+
+# Project root: reducehf/
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+
+# WP4 dataset
+WP4_DATASET_PATH = os.path.join(
+    PROJECT_ROOT,
+    "output/dataset_wp4.csv.gz"
+)
+
 main_cols = [
     "patient_id",
     "sex",
@@ -13,7 +28,12 @@ main_cols = [
     "last_hypertension_date_med",
     "last_diabetes_medication_date",
     "hf_diagnosis_date",
-    "fasting_blood_glucose_value"
+    "hf_diagnosis_primary_date",
+    "hf_diagnosis_apc_date",
+    "hf_diagnosis_ec_date",
+    "fasting_blood_glucose_value",
+    "imd_quintile"
 ]
 
-WP4_DATASET_PATH = "output/dataset_wp4.csv.gz"
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "output/validation")
+
