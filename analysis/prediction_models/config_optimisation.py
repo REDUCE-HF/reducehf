@@ -36,7 +36,7 @@ NON_RISK_PER_RISK_VALUES = [1, 0.5]
 
 
 
-# For undersampling goup by group, undersample each at risk rule.
+# For undersampling goup by group, undersample each at risk rule.TBC from WP1 results. 
 AT_RISK_RULES = {
     # 75+
     "age_band": ["75-79", "80-84", "85-89", "90-94", "95-99", "100+"],
