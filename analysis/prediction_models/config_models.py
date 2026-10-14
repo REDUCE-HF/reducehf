@@ -161,6 +161,16 @@ MEASURE_LIMITS = {
     "last_hba1c_value": (20, 200),
 }
 
+# BMI categories for subgroups 
+
+BMI_BINS = [0, 18.5, 25, 30, 100]
+BMI_LABELS = [
+    "underweight (<18.5)",
+    "healthy (18.5-24.9)",
+    "overweight (25-29.9)",
+    "obese (30+)",
+]
+
 DUMMY_MEASURE_PARAMS = {
     "sysbp_value": (130, 20, 50, 290),
     "diasbp_value": (80, 12, 30, 140),
@@ -200,7 +210,10 @@ SUBGROUP_COLS = [
     "imd_quintile",
     "region",
     "rural_urban",
-    "mltc_count", 
+    "mltc_count",
+    "diabetes",
+    "copd",
+    "bmi_category",
     "n_underserved",
     "carehome_at_index",
     "migrant",
