@@ -48,6 +48,10 @@ AT_RISK_RULES = {
     "rural_urban": [5, 6, 7, 8],
     # TODO: region - pick at-risk regions from WP1 results
     "mltc_count": {"min": 2},
+    # long-term conditions
+    "diabetes": [1],
+    "copd": [1],
+    "bmi_category": ["obese (30+)"],
     # binary under-served variables
     "migrant": [1],
     "learndis": [1],
