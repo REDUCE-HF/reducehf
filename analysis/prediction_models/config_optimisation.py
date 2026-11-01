@@ -51,7 +51,8 @@ AT_RISK_RULES = {
     # long-term conditions
     "diabetes": [1],
     "copd": [1],
-    "bmi_category": ["obese (30+)"],
+    # obesity code OR BMI >= 30 (more complete than bmi_category alone)
+    "obesity": [1],
     # binary under-served variables
     "migrant": [1],
     "learndis": [1],

@@ -214,6 +214,7 @@ SUBGROUP_COLS = [
     "diabetes",
     "copd",
     "bmi_category",
+    "obesity",
     "n_underserved",
     "carehome_at_index",
     "migrant",
