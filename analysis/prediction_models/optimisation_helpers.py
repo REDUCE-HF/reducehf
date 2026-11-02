@@ -230,7 +230,7 @@ def get_at_risk_mask(subgroups, rules):
 
 def fit_and_predict(X_train, y_train, X_test, y_test, test_ids, out_dir, cv,
                     X_threshold=None, y_threshold=None,
-                    random_state=RANDOM_STATE):
+                    random_state=RANDOM_STATE,sample_weight=None):
     
 
     if X_threshold is None:
@@ -251,7 +251,12 @@ def fit_and_predict(X_train, y_train, X_test, y_test, test_ids, out_dir, cv,
     performance_rows = []
 
     for model_name, spec in model_specs.items():
-
+        fit_params={}
+        if sample_weight is not None:
+            if model_name == "lr":
+                fit_params["model__sample_weight"] = sample_weight # lr is wrapped in a pipeline, so sample_weight is passed to the model step
+            else: 
+                fit_params["sample_weight"] = sample_weight
         search = tune_model(
             model_name=model_name,
             model=spec["model"],
@@ -262,7 +267,7 @@ def fit_and_predict(X_train, y_train, X_test, y_test, test_ids, out_dir, cv,
             cv=cv,
             scoring="roc_auc",
             n_iter=spec["n_iter"],
-            random_state=random_state,
+            random_state=random_state,fit_params=fit_params,
         )
 
         pd.DataFrame(search.cv_results_).to_csv(
@@ -498,3 +503,13 @@ def plot_confusion_matrices(performance_df, out_dir, method,
         plt.show()
         plt.close(fig)
 
+
+def get_patient_weights(subgroups, rules):
+    """ weight = 1+ number of at-risk groups the patient is in"""
+
+    groups_per_patient = pd.Series(0, index=subgroups.index)
+    
+    for subroup_var, levels in rules.items():
+        in_group = get_rule_mask(subgroups[subroup_var], levels)
+        groups_per_patient += in_group.astype(int)
+    return 1 + groups_per_patient
