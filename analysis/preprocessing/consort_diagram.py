@@ -70,7 +70,7 @@ exclusion_steps['female_prostate'] = [df.shape[0]]
 # Evidence of HF
 
 
-df = df.loc[df.hf_exclude.isna()]
+df = df.loc[df.hf_exclude_date.isna()]
 
 exclusion_steps['hf_evidence_pre_eligibility'] = [df.shape[0]]
 
