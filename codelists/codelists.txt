@@ -41,6 +41,8 @@ reducehf/heart-failure-primary-outcome-icd/7b34dfb4/
 reducehf/prostate-cancer-icd10/226bffe9/
 reducehf/prostate-cancer-snomed/3b7b731e/
 reducehf/pregnancy-and-birth-snomed/095c8cb4/
+user/elsie_horne/cocp_dmd/1666a7a3/
+user/elsie_horne/hrt_dmd/19196799/
 reducehf/breathlessness/40e0f30a/
 reducehf/oedema/27d17fd5/
 reducehf/fatigue/383a7587/
@@ -62,9 +64,10 @@ nhs-drug-refsets/antihyp_cod/20250912/
 opensafely/copd-medications-new-dmd/6eef4ab8/
 user/anschaf/glycated-haemoglobin-hba1c-tests-numerical-value/52f4a19f/
 user/anschaf/insulin-dmd/0a7907f6/
-user/anschaf/diabetes-medications-dmd/5dad5ae4/
-user/anschaf/metformin-dmd/76bcce19/
-user/anschaf/hormone-replacement-therapy-dmd/449de7af/
+user/anschaf/antidiabetes-medications-dmd/0d2bc7ec/
+user/anschaf/metformin-dmd/5b0ce181/
+user/anschaf/oral-contraceptive-dmd/28edfb17/
+user/anschaf/hormone-replacement-therapy-dmd/129147d8/
 opensafely/migration-status/03277ba3/
 nhsd-primary-care-domain-refsets/sysbp_cod/20250912/
 nhsd-primary-care-domain-refsets/rev_cod/20250912/
@@ -72,4 +75,3 @@ nhsd-primary-care-domain-refsets/copdrvw_cod/20250912/
 nhsd-primary-care-domain-refsets/medrvw_cod/20250912/
 reducehf/non-diagnostic-diabetes-codes-clone/4f7b2e1a/
 reducehf/insulin-dmd/0a7907f6/
-user/anschaf/oral-contraceptive-dmd/0fcc414f/
