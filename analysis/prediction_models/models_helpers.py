@@ -144,6 +144,10 @@ def build_predictor_features(df):
             .astype(int)
         )
 
+    # Learning disability
+    learndis_date = pd.to_datetime(df["learndis"], errors="coerce")
+    out["learndis"] = learndis_date.notna().astype(int)
+
     out["n_underserved"] = out[UNDERSERVED_COLS].sum(axis=1)
     out["any_underserved"] = (
     out["n_underserved"] >= 1
@@ -440,9 +444,9 @@ def calculate_accuracy(observed, predicted):
     return results
 
 def tune_model(model_name,model,params,search_type,X_train,y_train,cv,scoring="roc_auc", n_iter=None,
-    random_state=42
+    random_state=42, fit_params=None
 ):
-    """ tune hyperparameters using grid search or random search """ 
+    """ tune hyperparameters using grid search or random search """
 
     if search_type == "grid":
         search = GridSearchCV(
@@ -470,8 +474,10 @@ def tune_model(model_name,model,params,search_type,X_train,y_train,cv,scoring="r
             return_train_score=True
         )
 
-    
-    search.fit(X_train, y_train)
+    if fit_params is None:
+        fit_params = {}
+
+    search.fit(X_train, y_train,**fit_params)
 
     print(f"{model_name}: best CV {scoring} = {search.best_score_:.4f}")
     print(f"{model_name}: best params = {search.best_params_}")
