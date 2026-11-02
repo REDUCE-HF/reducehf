@@ -444,7 +444,7 @@ def calculate_accuracy(observed, predicted):
     return results
 
 def tune_model(model_name,model,params,search_type,X_train,y_train,cv,scoring="roc_auc", n_iter=None,
-    random_state=42
+    random_state=42, fit_params=None
 ):
     """ tune hyperparameters using grid search or random search """
 
@@ -474,8 +474,10 @@ def tune_model(model_name,model,params,search_type,X_train,y_train,cv,scoring="r
             return_train_score=True
         )
 
-    
-    search.fit(X_train, y_train)
+    if fit_params is None:
+        fit_params = {}
+
+    search.fit(X_train, y_train,**fit_params)
 
     print(f"{model_name}: best CV {scoring} = {search.best_score_:.4f}")
     print(f"{model_name}: best params = {search.best_params_}")
