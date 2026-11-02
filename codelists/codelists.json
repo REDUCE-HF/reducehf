@@ -258,18 +258,6 @@
       "downloaded_at": "2026-03-10 15:26:15.898441Z",
       "sha": "d2cbe6eb36ab56fcc0f924840f8c1ab96bf97688"
     },
-    "user-elsie_horne-cocp_dmd.csv": {
-      "id": "user/elsie_horne/cocp_dmd/1666a7a3",
-      "url": "https://www.opencodelists.org/codelist/user/elsie_horne/cocp_dmd/1666a7a3/",
-      "downloaded_at": "2026-03-10 15:26:16.005600Z",
-      "sha": "ace0cce9a466e05dc0ad302be50275d0121908b2"
-    },
-    "user-elsie_horne-hrt_dmd.csv": {
-      "id": "user/elsie_horne/hrt_dmd/19196799",
-      "url": "https://www.opencodelists.org/codelist/user/elsie_horne/hrt_dmd/19196799/",
-      "downloaded_at": "2026-03-10 15:26:16.115245Z",
-      "sha": "95dde1e61efe8ee6af3358e9640bf139c0c1c9d9"
-    },
     "reducehf-breathlessness.csv": {
       "id": "reducehf/breathlessness/40e0f30a",
       "url": "https://www.opencodelists.org/codelist/reducehf/breathlessness/40e0f30a/",
@@ -396,29 +384,23 @@
       "downloaded_at": "2026-04-02 16:21:18.067274Z",
       "sha": "6ec6d0f5e5b44e3ade48513e11a5e2b5c682c1d8"
     },
-    "user-anschaf-antidiabetes-medications-dmd.csv": {
-      "id": "user/anschaf/antidiabetes-medications-dmd/0d2bc7ec",
-      "url": "https://www.opencodelists.org/codelist/user/anschaf/antidiabetes-medications-dmd/0d2bc7ec/",
-      "downloaded_at": "2026-04-02 16:35:55.738713Z",
-      "sha": "b67b537f65f75660a9448405f7161740ecf76071"
+    "user-anschaf-diabetes-medications-dmd.csv": {
+      "id": "user/anschaf/diabetes-medications-dmd/5dad5ae4",
+      "url": "https://www.opencodelists.org/codelist/user/anschaf/diabetes-medications-dmd/5dad5ae4/",
+      "downloaded_at": "2026-11-02 17:38:59.115930+00:00Z",
+      "sha": "39c2a96159ebd49494edb0a8f7079c330cc57718"
     },
     "user-anschaf-metformin-dmd.csv": {
-      "id": "user/anschaf/metformin-dmd/5b0ce181",
-      "url": "https://www.opencodelists.org/codelist/user/anschaf/metformin-dmd/5b0ce181/",
-      "downloaded_at": "2026-04-02 16:40:34.900052Z",
-      "sha": "f55bf1d2e58c38dcb356977ef8afc2522b4a7fb1"
-    },
-    "user-anschaf-oral-contraceptive-dmd.csv": {
-      "id": "user/anschaf/oral-contraceptive-dmd/28edfb17",
-      "url": "https://www.opencodelists.org/codelist/user/anschaf/oral-contraceptive-dmd/28edfb17/",
-      "downloaded_at": "2026-04-02 16:54:00.412134Z",
-      "sha": "298b22a2af606d5dfca6d21aac7726875367545f"
+      "id": "user/anschaf/metformin-dmd/76bcce19",
+      "url": "https://www.opencodelists.org/codelist/user/anschaf/metformin-dmd/76bcce19/",
+      "downloaded_at": "2026-11-02 17:36:23.211296+00:00Z",
+      "sha": "c762eb3baad77714a8c93db9e2cd730de592d514"
     },
     "user-anschaf-hormone-replacement-therapy-dmd.csv": {
-      "id": "user/anschaf/hormone-replacement-therapy-dmd/129147d8",
-      "url": "https://www.opencodelists.org/codelist/user/anschaf/hormone-replacement-therapy-dmd/129147d8/",
-      "downloaded_at": "2026-04-02 17:08:47.175401Z",
-      "sha": "7ccbf0fbe27025d708f44a7e6f2b175c722afd8c"
+      "id": "user/anschaf/hormone-replacement-therapy-dmd/449de7af",
+      "url": "https://www.opencodelists.org/codelist/user/anschaf/hormone-replacement-therapy-dmd/449de7af/",
+      "downloaded_at": "2026-11-02 17:49:19.704829+00:00Z",
+      "sha": "f4968139523f0b4fafedab72376d93391dd46abb"
     },
     "opensafely-migration-status.csv": {
       "id": "opensafely/migration-status/03277ba3",
@@ -461,6 +443,12 @@
       "url": "https://www.opencodelists.org/codelist/reducehf/insulin-dmd/0a7907f6/",
       "downloaded_at": "2026-04-05 15:43:26.729861Z",
       "sha": "6ec6d0f5e5b44e3ade48513e11a5e2b5c682c1d8"
+    },
+    "user-anschaf-oral-contraceptive-dmd.csv": {
+      "id": "user/anschaf/oral-contraceptive-dmd/0fcc414f",
+      "url": "https://www.opencodelists.org/codelist/user/anschaf/oral-contraceptive-dmd/0fcc414f/",
+      "downloaded_at": "2026-11-02 17:34:58.526625+00:00Z",
+      "sha": "529db28de7187d43d8d7e6f29247a7f38d9cba29"
     }
   }
 }
