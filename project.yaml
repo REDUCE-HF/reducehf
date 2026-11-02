@@ -16,267 +16,110 @@ actions:
     outputs:
       moderately_sensitive:
         dataset: output/consort_diagram_dta.csv
-
-
-  # Actions grouped by WP
   
-  #WP1
   generate_dataset_wp1_common:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_common.py --output output/wp1/tmp_dataset_wp1_common.csv.gz
     outputs:
       highly_sensitive:
-        dataset: output/wp1/tmp_dataset_wp1_common.csv.gz
+        dataset: output/tmp_dataset_wp1_common.csv.gz
 
   diabetes_algo_wp1:
-    run: diabetes-algo:v0.0.9 --output output/wp1/tmp_dataset_wp1_common.csv.gz
+    run: diabetes-algo:v0.0.9 --output output/tmp_dataset_wp1_common.csv.gz
     config:
-      df_input: wp1/tmp_dataset_wp1_common.csv.gz
+      df_input: tmp_dataset_wp1_common.csv.gz
       birth_date: dob
       ethnicity_cat: ethnicity_cat
-      df_output: wp1/dataset_wp1_common.csv.gz
+      df_output: dataset_wp1_common.csv.gz
     needs:
       - generate_dataset_wp1_common
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_common.csv.gz
+        dataset: output/dataset_wp1_common.csv.gz
 
   generate_dataset_wp1_2019:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2019.csv.gz
       -- --cohort_index_date "2019-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2019.csv.gz
+        dataset: output/dataset_wp1_2019.csv.gz
 
   generate_dataset_wp1_2020:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2020.csv.gz
       -- --cohort_index_date "2020-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2020.csv.gz
+        dataset: output/dataset_wp1_2020.csv.gz
 
   generate_dataset_wp1_2021:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2021.csv.gz
       -- --cohort_index_date "2021-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2021.csv.gz
+        dataset: output/dataset_wp1_2021.csv.gz
 
   generate_dataset_wp1_2022:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2022.csv.gz
       -- --cohort_index_date "2022-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2022.csv.gz
+        dataset: output/dataset_wp1_2022.csv.gz
 
   generate_dataset_wp1_2023:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2023.csv.gz
       -- --cohort_index_date "2023-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2023.csv.gz
+        dataset: output/dataset_wp1_2023.csv.gz
         
   generate_dataset_wp1_2024:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2024.csv.gz
       -- --cohort_index_date "2024-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2024.csv.gz
+        dataset: output/dataset_wp1_2024.csv.gz
         
   generate_dataset_wp1_2025:
     run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp1_time_dep.py --output output/wp1/dataset_wp1_2025.csv.gz
       -- --cohort_index_date "2025-02-01"
     outputs:
       highly_sensitive:
-        dataset: output/wp1/dataset_wp1_2025.csv.gz
+        dataset: output/dataset_wp1_2025.csv.gz
 
   wp1_processing:
-    run: r:latest analysis/wp1/processing/wp1_processing.R 
+    run: r:v2 analysis/wp1/0_wp1_processing.R
     needs: [diabetes_algo_wp1, generate_dataset_wp1_2019, generate_dataset_wp1_2020, generate_dataset_wp1_2021, generate_dataset_wp1_2022, generate_dataset_wp1_2023, generate_dataset_wp1_2024, generate_dataset_wp1_2025]
     outputs:
       highly_sensitive:
-        csv: output/wp1/processed/wp1_all.csv.gz
-
+        data: output/wp1/wp1_ts_all.csv
+        data2: output/wp1/wp1_main.csv
+ 
   wp1_checks:
-    run: r:latest analysis/wp1/processing/wp1_checks.R 
+    run: r:v2 analysis/wp1/1_wp1_checks.R 
     needs: [wp1_processing]
     outputs:
       moderately_sensitive:
-        csv: output/wp1/checks/check_*.csv
-        figs: output/wp1/checks/check_*.png
- 
+        csv: output/wp1/checks/main/check_*.csv
+        figs: output/wp1/checks/main/check_*.png
+        csv2: output/wp1/checks/ts/check_*.csv
+        figs2: output/wp1/checks/ts/check_*.png
 
-  #WP2
-  generate_dataset_wp2_1:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp2_1.py --output output/tmp_dataset_wp2_1.csv.gz
-    outputs:
-      highly_sensitive:
-        dataset: output/tmp_dataset_wp2_1.csv.gz
-
-
-  diabetes_algo_wp2_1:
-    run: diabetes-algo:v0.0.6 --output output/dataset_wp2_1.csv.gz
-    config:
-      df_input: tmp_dataset_wp2_1.csv.gz
-      birth_date: dob
-      ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp2_1.csv.gz
-    needs:
-      - generate_dataset_wp2_1
-    outputs:
-      highly_sensitive:
-        dataset: output/dataset_wp2_1.csv.gz
-
-  generate_dataset_wp2_2:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp2_2.py --output output/tmp_dataset_wp2_2.csv.gz
-    outputs:
-      highly_sensitive:
-        dataset: output/tmp_dataset_wp2_2.csv.gz
-
-
-  diabetes_algo_wp2_2:
-    run: diabetes-algo:v0.0.6 --output output/dataset_wp2_2.csv.gz
-    config:
-      df_input: tmp_dataset_wp2_2.csv.gz
-      birth_date: dob
-      ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp2_2.csv.gz
-    needs:
-      - generate_dataset_wp2_2
-    outputs:
-      highly_sensitive:
-        dataset: output/dataset_wp2_2.csv.gz
-
-
-  #WP3
-
-  # data extraction
-  generate_dataset_wp3:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp3.py --output output/tmp_dataset_wp3.csv.gz
-    outputs:
-      highly_sensitive:
-        dataset: output/tmp_dataset_wp3.csv.gz
-
-
-  diabetes_algo_wp3:
-    run: diabetes-algo:v0.0.6 --output output/dataset_wp3.csv.gz
-    config:
-      df_input: tmp_dataset_wp3.csv.gz
-      birth_date: dob
-      ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp3.csv.gz
-    needs:
-      - generate_dataset_wp3
-    outputs:
-      highly_sensitive:
-        dataset: output/dataset_wp3.csv.gz
-
-  # clustering
-  prepare_clustering_data:
-    run: python:v2 analysis/clustering/01_prepare_data.py
-    needs: [diabetes_algo_wp3]
-    outputs:
-      highly_sensitive:
-        raw_data: output/clustering/clustering_raw.csv.gz
-        scaled_data: output/clustering/clustering_scaled.csv.gz
-
-  find_optimal_k:
-    run: python:v2 analysis/clustering/02_find_optimal_k.py
-    needs: [prepare_clustering_data]
-    outputs:
-      highly_sensitive:
-        d_gower: output/clustering/D_gower.csv.gz
-        x_pca: output/clustering/X_pca.csv.gz
-        labels_ke: output/clustering/labels_pca_kmeans_euclidean.csv.gz
-        labels_ae: output/clustering/labels_pca_agglomerative_euclidean.csv.gz
-        labels_kg: output/clustering/labels_raw_kmedoids_gower.csv.gz
-        labels_ag: output/clustering/labels_raw_agglomerative_gower.csv.gz
-      moderately_sensitive:
-        opt_k_results: output/clustering/optimal_k_results.csv
-        opt_k_summary: output/clustering/optimal_k_summary.csv
-
-  tune_optics:
-    run: python:v2 analysis/clustering/03_tune_optics.py
-    needs: [prepare_clustering_data, find_optimal_k]
-    outputs:
-      highly_sensitive:
-        labels_raw: output/clustering/labels_raw_optics.csv.gz
-        labels_pca: output/clustering/labels_pca_optics.csv.gz
-      moderately_sensitive:
-        optics_tuning_results: output/clustering/optics_tuning_results.csv
-        reachability_figure: output/clustering/plots/reachability_figure.png
-
-  validate_clusters:
-    run: python:v2 analysis/clustering/04_validate_clusters.py
-    needs: [prepare_clustering_data, find_optimal_k, tune_optics]
-    outputs:
-      highly_sensitive:
-        labels: output/clustering/labels_*.csv.gz
-      moderately_sensitive:
-        validation_results: output/clustering/validation_results.csv
-        validation_figure: output/clustering/plots/validation_figure.png
-
-  visualize_clusters:
-    run: python:v2 analysis/clustering/05_visualize_clusters.py
-    needs: [prepare_clustering_data, find_optimal_k, validate_clusters]
+  wp1_timeseries:
+    run: r:v2 analysis/wp1/2_wp1_timeseries.R 
+    needs: [wp1_processing]
     outputs:
       moderately_sensitive:
-        visualization_summary: output/clustering/visualization_summary.csv
-        utilization_means: output/clustering/*_utilisation_means.csv
-        utilization_counts: output/clustering/*_utilisation_counts.csv
-        utilization_figures: output/clustering/plots/*_numeric.png
-        binary_means: output/clustering/*_binary_means.csv
-        binary_counts: output/clustering/*_binary_counts.csv
-        binary_figures: output/clustering/plots/*_binary.png
-        #umap_figures: output/clustering/umap_*.png
+        csv: output/wp1/wp1_timeseries.csv
 
-  variance_of_means:
-    run: python:v2 analysis/clustering/06_vom.py
-    needs: [diabetes_algo_wp3, validate_clusters]
-    outputs:
-      highly_sensitive:
-        membership_features: output/clustering/membership_features.csv.gz
-        membership_features_encoded: output/clustering/membership_features_encoded.csv.gz
-      moderately_sensitive:
-        vom_results: output/clustering/variance_of_means.csv
-        vom_figure: output/clustering/plots/vom_figure.png
-
-  one_vs_rest:
-    run: python:v2 analysis/clustering/07_ovr.py
-    needs: [validate_clusters, variance_of_means]
+  wp1_tables:
+    run: r:v2 analysis/wp1/3_wp1_tables.R 
+    needs: [wp1_processing]
     outputs:
       moderately_sensitive:
-         feature_importance: output/clustering/ovr_feature_importance_all.csv
-         top_features_figure: output/clustering/plots/ovr_top_features_by_cluster.png
-         heatmap_figure: output/clustering/plots/ovr_feature_heatmap.png
-        
-  
-  #WP4
-  generate_dataset_wp4:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition/dataset_definition_wp4.py --output output/tmp_dataset_wp4.csv.gz
+        csv: output/wp1/tables/wp1_*.csv
+
+  wp1_combos:
+    run: r:v2 analysis/wp1/4_wp1_combinations.R 
+    needs: [wp1_processing]
     outputs:
-      highly_sensitive:
-        dataset: output/tmp_dataset_wp4.csv.gz
-
-  diabetes_algo_wp4:
-    run: diabetes-algo:v0.0.6 --output output/dataset_wp4.csv.gz
-    config:
-      df_input: tmp_dataset_wp4.csv.gz
-      birth_date: dob
-      ethnicity_cat: ethnicity_cat
-      df_output: dataset_wp4.csv.gz
-    needs:
-      - generate_dataset_wp4
-    outputs:
-      highly_sensitive:
-        dataset: output/dataset_wp4.csv.gz
-  
-
-
-  
-# potential other actions to add:
-  # create flow_chart (inclusions / exclusions);
-  # quality assurance and other checks (e.g. checks for outliers, impossible values, weird distributions);
-  # data processing steps for each work package (e.g. data manipulation to create new variables);
-  # modelling;
-  # creating output tables / figures;
-  # etc.
+      moderately_sensitive:
+        csv: output/wp1/wp1_combinations.csv
