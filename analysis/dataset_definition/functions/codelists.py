@@ -232,7 +232,7 @@ insulin_dmd = codelist_from_csv(
 )
 
 antidiabetic_drugs_dmd = codelist_from_csv(
-    "codelists/user-anschaf-antidiabetes-medications-dmd.csv",
+    "codelists/user-anschaf-diabetes-medications-dmd.csv",
     column="code"
 )
 
