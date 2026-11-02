@@ -429,13 +429,19 @@ def recalculate_rates(out):
     return out
 
 
-def save_with_sdc(df, path, count_cols=GROUP_COUNT_COLS + CONFUSION_COUNT_COLS):
+def save_with_sdc(df, path, count_cols=GROUP_COUNT_COLS + CONFUSION_COUNT_COLS, release_exact=False):
 
     out = df.copy()
 
     if not IS_DUMMY_DATA:
-        out = apply_sdc_to_counts(out, count_cols, threshold=DISCLOSURE_THRESHOLD)
-        out = recalculate_rates(out)
+        rounded = apply_sdc_to_counts(out, count_cols, threshold=DISCLOSURE_THRESHOLD)
+        rounded = recalculate_rates(rounded)
+    
+        if not release_exact:
+            out = rounded
+        elif "skip_reason" in out.columns:
+            skipped = out["skip_reason"].notna()
+            out.loc[skipped] = rounded.loc[skipped]
 
     out.to_csv(path, index=False)
 
