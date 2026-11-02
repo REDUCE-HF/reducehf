@@ -15,6 +15,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
 )
 
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sdc_helpers import DISCLOSURE_THRESHOLD, apply_sdc_to_counts
@@ -508,7 +509,7 @@ def get_patient_weights(subgroups, rules):
     """ weight = 1+ number of at-risk groups the patient is in"""
 
     groups_per_patient = pd.Series(0, index=subgroups.index)
-    
+
     for subroup_var, levels in rules.items():
         in_group = get_rule_mask(subgroups[subroup_var], levels)
         groups_per_patient += in_group.astype(int)
