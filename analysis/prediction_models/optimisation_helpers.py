@@ -44,6 +44,7 @@ from models_helpers import (
     evaluate_fitted_model,
     calculate_accuracy,
     safe_divide,
+    find_threshold,
 )
 
 
@@ -514,3 +515,75 @@ def get_patient_weights(subgroups, rules):
         in_group = get_rule_mask(subgroups[subroup_var], levels)
         groups_per_patient += in_group.astype(int)
     return 1 + groups_per_patient
+
+def adjust_thresholds_in_subgroups(train_predictions, test_predictions,
+                                   train_subgroups, test_subgroups,
+                                   subgroup_vars=SUBGROUP_VARS):
+    train_data = train_predictions.merge(
+        train_subgroups,
+        on=["patient_id", "hf_outcome"],
+        how="left",
+    )
+
+    test_data = test_predictions.merge(
+        test_subgroups,
+        on=["patient_id", "hf_outcome"],
+        how="left",
+    )
+
+    rows = []
+
+    for model_name in get_model_names(test_predictions):
+
+        for group in get_subgroup_levels(
+            test_data,
+            subgroup_vars,
+            train_subgroups=train_data,
+        ):
+
+            train_in_group = train_data.loc[group["train_mask"]]
+            test_in_group = test_data.loc[group["test_mask"]]
+
+            y_train = train_in_group["hf_outcome"]
+            train_prob = train_in_group[f"{model_name}_prob"]
+
+            y_true = test_in_group["hf_outcome"]
+            y_prob = test_in_group[f"{model_name}_prob"]
+
+            counts = count_classes(y_train=y_train, y_test=y_true)
+
+            row = {
+                "model": model_name,
+                "subgroup_variable": group["subgroup_variable"],
+                "subgroup_level": group["subgroup_level"],
+                **counts,
+                "event_rate": y_true.mean(),
+                "threshold_method": "subgroup_event_rate_train",
+            }
+
+            reason = get_skip_reason(counts)
+
+            if reason is None:
+
+                # threshold, share flagged in training equals the true rate
+                threshold = find_threshold(
+                    probabilities=train_prob,
+                    true_rate=y_train.mean(),
+                )
+
+                # same threshold to the test patients of this subgroup
+                y_pred = (y_prob >= threshold).astype(int)
+
+                row["threshold"] = threshold
+                row.update(evaluate_predictions(y_true, y_prob, y_pred))
+
+            else:
+                row["threshold"] = np.nan
+                row.update({col: np.nan for col in CONFUSION_COUNT_COLS})
+                row.update({col: np.nan for col in METRIC_COLS})
+
+            row["skip_reason"] = reason
+
+            rows.append(row)
+
+    return pd.DataFrame(rows)
