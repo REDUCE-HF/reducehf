@@ -25,64 +25,64 @@ df <- read_feather(here::here("test", "file4analysisWP2_2_COVID.feather"))
 
 
 
-td1 <-df
-summary(td1$nt1_result)
-td1$nt1_result <- td1$nt1_result*12
-summary(td1$nt1_result)
-
-td2 <-df
-summary(td2$nt1_result)
-td2$nt1_result <- td2$nt1_result*7
-summary(td2$nt1_result)
-
-
-td3 <-df
-td3$nt1_result <- td3$nt1_result*4
-
-td4 <-df
-td4$nt1_result <- td4$nt1_result*2
-
-td5 <-df
-td5$bmi<-42
-summary(td5$bmi)
-
-td6 <-df
-td6$diag<-1
-
-td7 <-df
-
-td8 <-df
-td8$bmi<-16
-summary(td8$nt1_result)
-td8$nt1_result <- td8$nt1_result*11
-summary(td8$nt1_result)
-
-td9 <-df
-td9$bmi<-24
-summary(td9$nt1_result)
-td9$nt1_result <- td9$nt1_result*11
-summary(td9$nt1_result)
-
-td10 <-df
-td10$bmi<-32
-summary(td10$nt1_result)
-td10$nt1_result <- td10$nt1_result*11
-
-td11 <-df
-td11$bmi<-37
-summary(td11$nt1_result)
-td11$nt1_result <- td11$nt1_result*11
-
-td12<-df
-table(td12$diag)
-td12$diag<-1
-summary(td12$nt1_result)
-
-merged <-rbind(td1,td2,td3,td4,td5, td6,td7,td8, td9,td10,td11, td12)
-df <-merged
-summary(df$bmi)
-
-rm(td1,td2,td3,td4,td5, td6,td7,td8,td9,td10,td11,td12, merged)
+# td1 <-df
+# summary(td1$nt1_result)
+# td1$nt1_result <- td1$nt1_result*12
+# summary(td1$nt1_result)
+# 
+# td2 <-df
+# summary(td2$nt1_result)
+# td2$nt1_result <- td2$nt1_result*7
+# summary(td2$nt1_result)
+# 
+# 
+# td3 <-df
+# td3$nt1_result <- td3$nt1_result*4
+# 
+# td4 <-df
+# td4$nt1_result <- td4$nt1_result*2
+# 
+# td5 <-df
+# td5$bmi<-42
+# summary(td5$bmi)
+# 
+# td6 <-df
+# td6$diag<-1
+# 
+# td7 <-df
+# 
+# td8 <-df
+# td8$bmi<-16
+# summary(td8$nt1_result)
+# td8$nt1_result <- td8$nt1_result*11
+# summary(td8$nt1_result)
+# 
+# td9 <-df
+# td9$bmi<-24
+# summary(td9$nt1_result)
+# td9$nt1_result <- td9$nt1_result*11
+# summary(td9$nt1_result)
+# 
+# td10 <-df
+# td10$bmi<-32
+# summary(td10$nt1_result)
+# td10$nt1_result <- td10$nt1_result*11
+# 
+# td11 <-df
+# td11$bmi<-37
+# summary(td11$nt1_result)
+# td11$nt1_result <- td11$nt1_result*11
+# 
+# td12<-df
+# table(td12$diag)
+# td12$diag<-1
+# summary(td12$nt1_result)
+# 
+# merged <-rbind(td1,td2,td3,td4,td5, td6,td7,td8, td9,td10,td11, td12)
+# df <-merged
+# summary(df$bmi)
+# 
+# rm(td1,td2,td3,td4,td5, td6,td7,td8,td9,td10,td11,td12, merged)
 # END OF TEMP###########################################
 
 all(!is.na(df$nt1_date))
